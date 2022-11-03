@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+}
+
+group = 'net.foulest'
+version = '1.0.0'
+description = 'PixelAddons'
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+
+    maven { url = 'https://files.minecraftforge.net/maven' }
+
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+configurations {
+    provided
+    implementation.extendsFrom(provided)
+}
+
+// The three dependencies below, AtomDev, CatServer, and Pixelmon, need to be downloaded locally.
+// Download all files and place them in the 'libs' folder like this: https://i.imgur.com/jC5uK4B.png
+dependencies {
+    // https://github.com/josephworks/AtomMC/releases/download/v2.1/AtomDev.jar
+    implementation group: 'org.atom', name: 'AtomDev', version: '1.12.2'
+
+    // https://catmc.org/download/universal
+    implementation group: 'catserver', name: 'CatServer', version: '1.12.2'
+
+    // https://reforged.gg (Download 1.12.2)
+    implementation group: 'com.pixelmonmod', name: 'Pixelmon', version: '1.12.2'
+
+    implementation group: 'org.spigotmc', name: 'spigot', version: '1.12.2-R0.1-SNAPSHOT'
+    provided group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    from {
+        configurations.provided.asFileTree.files.collect {
+            zipTree(it)
+        }
+    }
+}
