@@ -24,7 +24,7 @@ configurations {
 }
 
 // The three dependencies below, AtomDev, CatServer, and Pixelmon, need to be downloaded locally.
-// Download all files and place them in the 'libs' folder like this: https://i.imgur.com/jC5uK4B.png
+// Download all files and place them in a folder named 'libs' like this: https://i.imgur.com/jC5uK4B.png
 dependencies {
     // https://github.com/josephworks/AtomMC/releases/download/v2.1/AtomDev.jar
     implementation group: 'org.atom', name: 'AtomDev', version: '1.12.2'
