@@ -69,3 +69,4 @@ target/
 /build/tmp/jar/MANIFEST.MF
 /build/tmp/compileJava/source-classes-mapping.txt
 /libs/
+build/tmp/compileJava/previous-compilation-data.bin

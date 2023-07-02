@@ -21,7 +21,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
@@ -258,7 +258,12 @@ public class EventListener implements Listener {
                 chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
             }
 
-            printHoverMessage(player, pokemon, chatMessage.toString());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    printHoverMessage(player, pokemon, chatMessage.toString());
+                }
+            }.runTaskLater(PixelAddons.getInstance(), 10L);
         }
 
         if (forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
@@ -281,7 +286,12 @@ public class EventListener implements Listener {
                     chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
                 }
 
-                printHoverMessage(player, pokemon, chatMessage.toString());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        printHoverMessage(player, pokemon, chatMessage.toString());
+                    }
+                }.runTaskLater(PixelAddons.getInstance(), 10L);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
