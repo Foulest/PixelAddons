@@ -25,7 +25,7 @@ import static com.pixelmonmod.pixelmon.api.command.PixelmonCommand.requireEntity
 public class StopBattleCmd {
 
     @Command(name = "stopbattle", description = "Stops your current battle.",
-            usage = "/stopbattle", inGameOnly = true)
+            usage = "/stopbattle", aliases = {"endbattle", "exitbattle"}, inGameOnly = true)
     public void onCommand(CommandArgs args) throws CommandException {
         Player player = args.getPlayer();
 

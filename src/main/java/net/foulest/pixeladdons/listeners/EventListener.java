@@ -73,7 +73,7 @@ public class EventListener implements Listener {
 
         if (!player.hasPlayedBefore()) {
             for (String line : Settings.commandsOnJoin) {
-                if (line.equals("")) {
+                if (line.isEmpty()) {
                     break;
                 }
 
@@ -84,71 +84,6 @@ public class EventListener implements Listener {
                 } catch (Exception ex) {
                     MessageUtil.log("&cAn error occurred when trying to run command: '" + line + "'");
                 }
-            }
-        }
-    }
-
-    /**
-     * Disables throwing knife crashing.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntitySpawn(EntitySpawnEvent event) {
-        if (event.getEntity().getName().contains("dungeontactics:throwing_knife")) {
-            event.setCancelled(true);
-            event.getEntity().remove();
-        }
-    }
-
-    /**
-     * Disables throwing knife crashing.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getItem() == null) {
-            return;
-        }
-
-        if (event.getItem().getType().name().contains("DUNGEONTACTICS_THROWING_KNIFE")) {
-            event.setCancelled(true);
-        }
-    }
-
-    /**
-     * Disables throwing knife crashing.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getItemInHand() == null) {
-            return;
-        }
-
-        if (event.getItemInHand().getType().name().contains("DUNGEONTACTICS_THROWING_KNIFE")) {
-            event.setCancelled(true);
-        }
-    }
-
-    /**
-     * Disables throwing knife crashing.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if (event.getEntity().getName().contains("dungeontactics:throwingknife")) {
-            event.setCancelled(true);
-            event.getEntity().remove();
-        }
-    }
-
-    /**
-     * Disables throwing knife crashing.
-     * Removes fade leaf flowers.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChunkLoad(ChunkLoadEvent event) {
-        Chunk chunk = event.getChunk();
-
-        for (Entity entity : chunk.getEntities()) {
-            if (entity.getName().contains("dungeontactics:throwingknife")) {
-                entity.remove();
             }
         }
     }
@@ -315,7 +250,8 @@ public class EventListener implements Listener {
             itemName = WordUtils.capitalize(itemName);
 
             MessageUtil.messagePlayer(player, "&rYour &e" + pokemon.getSpecies().getPokemonName()
-                    + " &fpicked up a &e[" + itemName + "&e]");
+                    + " &fpicked up a" + ((itemName.startsWith("A") || itemName.startsWith("E") || itemName.startsWith("I")
+                    || itemName.startsWith("O") || itemName.startsWith("U")) ? "n" : "") + " &e[" + itemName + "&e]");
         }
 
         if (forgeEvent instanceof EggHatchEvent.Post) {
@@ -437,7 +373,7 @@ public class EventListener implements Listener {
                     break;
             }
 
-            if (!chatMessage.toString().equals("")) {
+            if (!chatMessage.toString().isEmpty()) {
                 printHoverMessage(player, pokemon, chatMessage.toString());
             }
         }

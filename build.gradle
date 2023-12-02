@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.0.0'
+version = '1.0.1'
 description = 'PixelAddons'
 compileJava.options.encoding = 'UTF-8'
 
@@ -48,12 +48,17 @@ dependencies {
     // https://reforged.gg (Download 1.12.2)
     implementation group: 'com.pixelmonmod', name: 'Pixelmon', version: '1.12.2'
 
+    implementation group: 'com.envyful', name: 'PixelHuntRemastered', version: '3.0.2'
+
     implementation group: 'org.spigotmc', name: 'spigot', version: '1.12.2-R0.1-SNAPSHOT'
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-    provided group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
+
+    provided group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 }
 
 jar {

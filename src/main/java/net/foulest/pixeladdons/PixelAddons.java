@@ -1,5 +1,6 @@
 package net.foulest.pixeladdons;
 
+import lombok.Getter;
 import net.foulest.pixeladdons.cmds.*;
 import net.foulest.pixeladdons.listeners.EventListener;
 import net.foulest.pixeladdons.util.Settings;
@@ -14,12 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class PixelAddons extends JavaPlugin {
 
+    @Getter
     private static PixelAddons instance;
     private CommandFramework framework;
-
-    public static PixelAddons getInstance() {
-        return instance;
-    }
 
     @Override
     public void onEnable() {
@@ -31,7 +29,7 @@ public class PixelAddons extends JavaPlugin {
 
         loadListeners(new EventListener());
 
-        loadCommands(new HatchCmd(), new StatsCmd(), new ShowCmd(), new StopBattleCmd());
+        loadCommands(new HatchCmd(), new RerollCmd(), new StatsCmd(), new ShowCmd(), new StopBattleCmd());
     }
 
     /**
