@@ -63,11 +63,9 @@ public class StatsUtil {
             case Male:
                 message.append(" &b(M)");
                 break;
-
             case Female:
                 message.append(" &d(F)");
                 break;
-
             default:
                 break;
         }
@@ -140,7 +138,6 @@ public class StatsUtil {
                 .append(spDefenceIV).append(" ")
                 .append(speedIV).append(" &7(")
                 .append(ivPercent).append("%)");
-
         return convertToList(message);
     }
 

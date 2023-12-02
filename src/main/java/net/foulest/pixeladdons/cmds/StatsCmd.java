@@ -29,7 +29,7 @@ public class StatsCmd {
 
         PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
 
-        if (args.length() == 2 && !args.getArgs(1).equals("")) {
+        if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
             Player target = Bukkit.getPlayer(args.getArgs(1));
             party = Pixelmon.storageManager.getParty(target.getUniqueId());
         }

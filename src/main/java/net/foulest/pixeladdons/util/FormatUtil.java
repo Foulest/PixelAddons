@@ -14,7 +14,6 @@ public class FormatUtil {
         } else if (stat >= 28) {
             return "&2";
         }
-
         return "&7";
     }
 
@@ -30,7 +29,6 @@ public class FormatUtil {
         } else if (stat >= 200) {
             return "&2";
         }
-
         return "&7";
     }
 

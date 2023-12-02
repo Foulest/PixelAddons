@@ -18,7 +18,7 @@ import java.util.List;
 @SuppressWarnings("MethodMayBeStatic")
 public class RerollCmd {
 
-    List<Player> votingToReroll = new ArrayList<>();
+    public static List<Player> votingToReroll = new ArrayList<>();
 
     @Command(name = "reroll", description = "Votes to re-roll the hunt.",
             usage = "/reroll", aliases = {"rtv"}, inGameOnly = true)
@@ -45,15 +45,13 @@ public class RerollCmd {
                     + " &e(" + votingToReroll.size() + "/" + Bukkit.getOnlinePlayers().size() + ")");
         }
 
-        int onlineSize = 0;
+        handleReroll();
+    }
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (online != null && !online.isDead()) {
-                onlineSize++;
-            }
-        }
-
-        if (votingToReroll.size() == onlineSize) {
+    public static void handleReroll() {
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            votingToReroll.clear();
+        } else if (Bukkit.getOnlinePlayers().size() == votingToReroll.size()) {
             PixelHuntFactory.reloadHunts();
             MessageUtil.broadcastMessage("&e[Hunt] &7The hunt has been &fre-rolled&7!");
             votingToReroll.clear();

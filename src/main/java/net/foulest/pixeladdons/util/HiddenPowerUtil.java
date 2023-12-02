@@ -18,52 +18,36 @@ public class HiddenPowerUtil {
         switch (hiddenPowerInt) {
             case 0:
                 return EnumType.getAllTypes().get(6);
-
             case 1:
                 return EnumType.getAllTypes().get(9);
-
             case 2:
                 return EnumType.getAllTypes().get(7);
-
             case 3:
                 return EnumType.getAllTypes().get(8);
-
             case 4:
                 return EnumType.getAllTypes().get(12);
-
             case 5:
                 return EnumType.getAllTypes().get(11);
-
             case 6:
                 return EnumType.getAllTypes().get(13);
-
             case 7:
                 return EnumType.getAllTypes().get(16);
-
             case 8:
                 return EnumType.getAllTypes().get(1);
-
             case 9:
                 return EnumType.getAllTypes().get(2);
-
             case 10:
                 return EnumType.getAllTypes().get(4);
-
             case 11:
                 return EnumType.getAllTypes().get(3);
-
             case 12:
                 return EnumType.getAllTypes().get(10);
-
             case 13:
                 return EnumType.getAllTypes().get(5);
-
             case 14:
                 return EnumType.getAllTypes().get(14);
-
             case 15:
                 return EnumType.getAllTypes().get(15);
-
             default:
                 return EnumType.getAllTypes().get(17);
         }

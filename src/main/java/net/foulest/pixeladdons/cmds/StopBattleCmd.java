@@ -35,19 +35,19 @@ public class StopBattleCmd {
         }
 
         EntityPlayerMP playerMP = requireEntityPlayer(player.getName());
-        BattleControllerBase bc = BattleRegistry.getBattle(playerMP);
+        BattleControllerBase battleController = BattleRegistry.getBattle(playerMP);
 
-        if (bc != null) {
-            ForceEndBattleEvent event = new ForceEndBattleEvent(bc, EnumBattleForceEndCause.ENDBATTLE);
+        if (battleController != null) {
+            ForceEndBattleEvent event = new ForceEndBattleEvent(battleController, EnumBattleForceEndCause.ENDBATTLE);
 
             if (Pixelmon.EVENT_BUS.post(event)) {
                 MessageUtil.messagePlayer(player, "&cFailed to end battle.");
-            } else if (bc.removeSpectator(playerMP)) {
+            } else if (battleController.removeSpectator(playerMP)) {
                 Pixelmon.network.sendTo(new EndSpectate(), playerMP);
             } else {
-                bc.endBattle(EnumBattleEndCause.FORCE);
+                battleController.endBattle(EnumBattleEndCause.FORCE);
                 MessageUtil.messagePlayer(player, "&aBattle ended successfully.");
-                BattleRegistry.deRegisterBattle(bc);
+                BattleRegistry.deRegisterBattle(battleController);
             }
 
         } else {

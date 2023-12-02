@@ -12,6 +12,7 @@ import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
+import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.StatsUtil;
@@ -34,6 +35,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -86,6 +88,15 @@ public class EventListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+
+        // Handles hunt re-rolls.
+        RerollCmd.votingToReroll.remove(player);
+        RerollCmd.handleReroll();
     }
 
     @EventHandler
