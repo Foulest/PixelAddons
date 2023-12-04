@@ -13,6 +13,7 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.cmds.RerollCmd;
+import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.StatsUtil;
@@ -24,23 +25,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.apache.commons.text.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author Foulest
@@ -72,6 +67,7 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        PlayerDataManager.getPlayerData(player);
 
         if (!player.hasPlayedBefore()) {
             for (String line : Settings.commandsOnJoin) {
@@ -84,7 +80,7 @@ public class EventListener implements Listener {
                 try {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), line);
                 } catch (Exception ex) {
-                    MessageUtil.log("&cAn error occurred when trying to run command: '" + line + "'");
+                    MessageUtil.log(Level.WARNING, "An error occurred when trying to run command: '" + line + "'");
                 }
             }
         }
@@ -93,10 +89,13 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        PlayerDataManager.removePlayerData(player);
 
-        // Handles hunt re-rolls.
-        RerollCmd.votingToReroll.remove(player);
-        RerollCmd.handleReroll();
+        if (Settings.pixelHuntIntegration) {
+            // Handles hunt re-rolls.
+            RerollCmd.votingToReroll.remove(player);
+            RerollCmd.handleReroll();
+        }
     }
 
     @EventHandler
@@ -176,7 +175,7 @@ public class EventListener implements Listener {
                             }
                         }
                     }
-                }.runTaskLater(PixelAddons.getInstance(), 5L);
+                }.runTaskLater(PixelAddons.instance, 5L);
             }
         }
     }
@@ -209,7 +208,7 @@ public class EventListener implements Listener {
                 public void run() {
                     printHoverMessage(player, pokemon, chatMessage.toString());
                 }
-            }.runTaskLater(PixelAddons.getInstance(), 10L);
+            }.runTaskLater(PixelAddons.instance, 10L);
         }
 
         if (forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
@@ -237,7 +236,7 @@ public class EventListener implements Listener {
                     public void run() {
                         printHoverMessage(player, pokemon, chatMessage.toString());
                     }
-                }.runTaskLater(PixelAddons.getInstance(), 10L);
+                }.runTaskLater(PixelAddons.instance, 10L);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

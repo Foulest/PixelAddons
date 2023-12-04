@@ -6,8 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author Foulest
- * @project PixelAddons
+ * @author minnymin3
+ * @project Vulture
+ * <p>
+ * <a href="https://github.com/mcardy/CommandFramework">...</a>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -16,7 +18,7 @@ public @interface Completer {
     /**
      * The command that this completer completes.
      * If it is a sub command then its values would be separated by periods.
-     * ie. a command that would be a sub command of test would be 'test.subcommandname'
+     * i.e. a command that would be a sub command of test would be 'test.subcommandname'
      */
     String name();
 

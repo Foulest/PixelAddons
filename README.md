@@ -1,9 +1,8 @@
 # PixelAddons
-A private server-side plugin that enhances the Pixelmon experience.
+A private server-side plugin that improves the Pixelmon Reforged experience.
 
-Instructions on how to source the required dependencies can be found in the build.gradle file.
-
-# Dependencies
-- 1.12.2 CatSpigot
-- Pixelmon Reforged Mod
-- AtomDev (only in project)
+## Dependencies
+- [CatServer (1.12.2)](https://catmc.org/)
+- [Pixelmon Reforged](https://reforged.gg)
+- [PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered) *(not required, but recommended)*
+- [AtomDev](https://github.com/josephworks/AtomMC) *(only in project)*

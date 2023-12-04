@@ -9,48 +9,86 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Settings {
 
     public static File file;
     public static FileConfiguration config;
-    public static List<String> commandsOnJoin = new ArrayList<>();
 
+    public static List<String> commandsOnJoin = new ArrayList<>();
+    public static boolean pixelHuntIntegration = true;
+
+    /**
+     * Initialize and set up default configuration values.
+     */
     public static void setupSettings() {
-        file = new File(PixelAddons.getInstance().getDataFolder(), "settings.yml");
+        initConfig();
+        setDefaultConfigValues();
+        saveConfig();
+    }
+
+    /**
+     * Loads configuration values into the relevant static fields.
+     */
+    public static void loadSettings() {
+        if (!file.exists()) {
+            setupSettings();
+        }
+
+        config = YamlConfiguration.loadConfiguration(file);
+
+        commandsOnJoin = config.getStringList("commands-on-first-join");
+        pixelHuntIntegration = config.getBoolean("pixelhunt-integration");
+    }
+
+    /**
+     * Saves the current settings into the configuration file.
+     */
+    public static void saveSettings() {
+        config.set("commands-on-first-join", commandsOnJoin);
+        config.set("pixelhunt-integration", pixelHuntIntegration);
+
+        saveConfig();
+    }
+
+    /**
+     * Initializes the configuration file.
+     */
+    private static void initConfig() {
+        file = new File(PixelAddons.instance.getDataFolder(), "settings.yml");
 
         if (!file.exists()) {
             try {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
             } catch (IOException ex) {
-                MessageUtil.log("Couldn't create the config file.");
+                MessageUtil.log(Level.WARNING, "Couldn't create the config file.");
                 ex.printStackTrace();
-                return;
             }
         }
 
         config = YamlConfiguration.loadConfiguration(file);
+    }
+
+    /**
+     * Sets the default values for the configuration file.
+     */
+    private static void setDefaultConfigValues() {
         config.addDefault("commands-on-first-join", Collections.<String>emptyList());
+        config.addDefault("pixelhunt-integration", true);
+
         config.options().copyDefaults(true);
+    }
 
+    /**
+     * Saves the configuration file.
+     */
+    private static void saveConfig() {
         try {
             config.save(file);
         } catch (IOException ex) {
-            MessageUtil.log("Couldn't save the config file.");
-        }
-    }
-
-    public static void loadSettings() {
-        config = YamlConfiguration.loadConfiguration(file);
-        commandsOnJoin = config.getStringList("commands-on-first-join");
-    }
-
-    public static void saveSettings() {
-        try {
-            config.save(file);
-        } catch (IOException ex) {
-            MessageUtil.log("Couldn't save the config file.");
+            MessageUtil.log(Level.WARNING, "Couldn't save the config file.");
         }
     }
 }

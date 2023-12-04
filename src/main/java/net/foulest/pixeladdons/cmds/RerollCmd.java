@@ -1,8 +1,8 @@
 package net.foulest.pixeladdons.cmds;
 
 import com.envyful.pixel.hunt.remastered.api.PixelHuntFactory;
-import net.foulest.pixeladdons.data.PlayerData;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
@@ -24,9 +24,9 @@ public class RerollCmd {
             usage = "/reroll", aliases = {"rtv"}, inGameOnly = true)
     public void onCommand(CommandArgs args) {
         Player player = args.getPlayer();
-        PlayerData playerData = PlayerData.getInstance(player);
 
-        if (playerData == null) {
+        if (!Settings.pixelHuntIntegration) {
+            MessageUtil.messagePlayer(player, "&cPixelHunt integration is disabled.");
             return;
         }
 
@@ -37,11 +37,11 @@ public class RerollCmd {
 
         if (votingToReroll.contains(player)) {
             votingToReroll.remove(player);
-            MessageUtil.broadcastMessage("&e[Hunt] &f" + player.getName() + " &7has cancelled their re-roll vote."
+            MessageUtil.broadcast("&e[Hunt] &f" + player.getName() + " &7has cancelled their re-roll vote."
                     + " &e(" + votingToReroll.size() + "/" + Bukkit.getOnlinePlayers().size() + ")");
         } else {
             votingToReroll.add(player);
-            MessageUtil.broadcastMessage("&e[Hunt] &f" + player.getName() + " &7has voted to re-roll the hunt."
+            MessageUtil.broadcast("&e[Hunt] &f" + player.getName() + " &7has voted to re-roll the hunt."
                     + " &e(" + votingToReroll.size() + "/" + Bukkit.getOnlinePlayers().size() + ")");
         }
 
@@ -49,11 +49,15 @@ public class RerollCmd {
     }
 
     public static void handleReroll() {
+        if (!Settings.pixelHuntIntegration) {
+            return;
+        }
+
         if (Bukkit.getOnlinePlayers().isEmpty()) {
             votingToReroll.clear();
         } else if (Bukkit.getOnlinePlayers().size() == votingToReroll.size()) {
             PixelHuntFactory.reloadHunts();
-            MessageUtil.broadcastMessage("&e[Hunt] &7The hunt has been &fre-rolled&7!");
+            MessageUtil.broadcast("&e[Hunt] &7The hunt has been &fre-rolled&7!");
             votingToReroll.clear();
         }
     }

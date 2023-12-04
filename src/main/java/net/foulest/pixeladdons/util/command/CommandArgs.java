@@ -1,12 +1,19 @@
 package net.foulest.pixeladdons.util.command;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * @author Foulest
- * @project PixelAddons
+ * @author minnymin3
+ * @project Vulture
+ * <p>
+ * <a href="https://github.com/mcardy/CommandFramework">...</a>
  */
+@Getter
+@Setter
 public class CommandArgs {
 
     private final CommandSender sender;
@@ -14,7 +21,8 @@ public class CommandArgs {
     private final String label;
     private final String[] args;
 
-    protected CommandArgs(CommandSender sender, org.bukkit.command.Command command, String label, String[] args, int subCommand) {
+    protected CommandArgs(@NonNull CommandSender sender, @NonNull org.bukkit.command.Command command,
+                          @NonNull String label, @NonNull String[] args, int subCommand) {
         String[] modArgs = new String[args.length - subCommand];
 
         if (args.length - subCommand >= 0) {
@@ -33,20 +41,6 @@ public class CommandArgs {
         this.command = command;
         this.label = cmdLabel;
         this.args = modArgs;
-    }
-
-    /**
-     * Gets the command sender.
-     */
-    public CommandSender getSender() {
-        return sender;
-    }
-
-    /**
-     * Gets the original command object.
-     */
-    public org.bukkit.command.Command getCommand() {
-        return command;
     }
 
     /**

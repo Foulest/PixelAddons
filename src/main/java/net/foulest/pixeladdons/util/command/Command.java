@@ -6,8 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author Foulest
- * @project PixelAddons
+ * @author minnymin3
+ * @project Vulture
+ * <p>
+ * <a href="https://github.com/mcardy/CommandFramework">...</a>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,7 +17,7 @@ public @interface Command {
 
     /**
      * The name of the command. If it is a sub command then its values would be separated by periods.
-     * ie. a command that would be a sub command of test would be 'test.subcommandname'.
+     * i.e. a command that would be a sub command of test would be 'test.subcommandname'.
      */
     String name();
 
@@ -27,7 +29,7 @@ public @interface Command {
     /**
      * The message sent to the player when they do not have permission to execute it.
      */
-    String noPerm() default "&cNo permission.";
+    String noPermission() default "&cNo permission.";
 
     /**
      * A list of alternate names that the command is executed under.
@@ -46,7 +48,7 @@ public @interface Command {
     String usage();
 
     /**
-     * Whether or not the command is available to players only.
+     * If the command is available to players only.
      */
     boolean inGameOnly() default false;
 }

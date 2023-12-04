@@ -6,6 +6,7 @@ import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.data.PlayerData;
+import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
@@ -26,12 +27,8 @@ public class HatchCmd {
             usage = "/hatch <slot>", inGameOnly = true)
     public void onCommand(CommandArgs args) {
         Player player = args.getPlayer();
-        PlayerData playerData = PlayerData.getInstance(player);
+        PlayerData playerData = PlayerDataManager.getPlayerData(player);
         DecimalFormat df = new DecimalFormat("###,###.###");
-
-        if (playerData == null) {
-            return;
-        }
 
         if (args.length() != 1) {
             MessageUtil.messagePlayer(player, "&cUsage: /hatch <slot>");
@@ -112,7 +109,7 @@ public class HatchCmd {
             playerData.setConfirmHatch(true);
             MessageUtil.messagePlayer(player, "&eHatch this egg for &a$5,000&e? Run the command again to confirm.");
 
-            Bukkit.getScheduler().runTaskLater(PixelAddons.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskLater(PixelAddons.instance, () -> {
                 if (playerData.isConfirmHatch()) {
                     playerData.setConfirmHatch(false);
                     MessageUtil.messagePlayer(player, "&cHatch command cancelled due to inactivity.");
