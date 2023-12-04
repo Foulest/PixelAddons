@@ -2,11 +2,8 @@ package net.foulest.pixeladdons.data;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.foulest.pixeladdons.util.MessageUtil;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter

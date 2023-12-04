@@ -381,6 +381,9 @@ public class EventListener implements Listener {
 
                     chatMessage.append(" &rfor christmas!");
                     break;
+
+                default:
+                    break;
             }
 
             if (!chatMessage.toString().isEmpty()) {
