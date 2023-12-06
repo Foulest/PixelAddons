@@ -209,39 +209,25 @@ public class EventListener implements Listener {
     public void onPokemonCatch(ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
-        // Handles Pokemon catch messages.
-        if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
-            CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
-            Player player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
-            Pokemon pokemon = captureEvent.getPokemon().getStoragePokemonData();
-            String pokemonName = pokemon.getSpecies().getPokemonName();
+        // Check if the event is either a regular capture or a raid capture
+        if (forgeEvent instanceof CaptureEvent.SuccessfulCapture
+                || forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
+            Player player;
+            Pokemon pokemon;
+            String pokemonName;
 
-            // Returns if the player is offline.
-            if (!player.isOnline()) {
-                return;
+            // Differentiate the handling based on the event type
+            if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
+                CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
+                player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
+                pokemon = captureEvent.getPokemon().getStoragePokemonData();
+            } else {
+                CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
+                player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
+                pokemon = captureEvent.getRaidPokemon();
             }
 
-            // Formats the message.
-            String chatMessage = catchMessage
-                    .replace("%player%", player.getName())
-                    .replace("%color%", FormatUtil.getDisplayColor(pokemon))
-                    .replace("%pokemon%", pokemonName);
-
-            // Prints the hover message.
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    printStatsHoverMessage(player, pokemon, chatMessage);
-                }
-            }.runTaskLater(PixelAddons.instance, 10L);
-        }
-
-        // Handles raid Pokemon catch messages.
-        if (forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
-            CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
-            Player player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
-            Pokemon pokemon = captureEvent.getRaidPokemon();
-            String pokemonName = pokemon.getSpecies().getPokemonName();
+            pokemonName = pokemon.getSpecies().getPokemonName();
 
             // Returns if the player is offline.
             if (!player.isOnline()) {

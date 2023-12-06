@@ -20,7 +20,7 @@ import static net.foulest.pixeladdons.util.Settings.*;
 public class RerollCmd {
 
     public static long lastReroll;
-    public static List<Player> votingToReroll = new ArrayList<>();
+    public static final List<Player> votingToReroll = new ArrayList<>();
 
     @Command(name = "reroll", description = "Votes to re-roll the hunt.",
             usage = "/reroll", aliases = {"rtv"}, inGameOnly = true)
