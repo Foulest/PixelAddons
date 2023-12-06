@@ -6,6 +6,12 @@ import com.pixelmonmod.pixelmon.enums.EnumType;
 
 public class HiddenPowerUtil {
 
+    /**
+     * Gets the hidden power type of a Pokemon.
+     *
+     * @param pokemon Pokemon to get the hidden power type of.
+     * @return Hidden power type of the Pokemon.
+     */
     public static EnumType getHiddenPower(Pokemon pokemon) {
         int hp = (pokemon.getIVs().getStat(StatsType.HP) % 2 == 0) ? 0 : 1;
         int atk = (pokemon.getIVs().getStat(StatsType.Attack) % 2 == 0) ? 0 : 1;
@@ -15,6 +21,7 @@ public class HiddenPowerUtil {
         int spe = (pokemon.getIVs().getStat(StatsType.Speed) % 2 == 0) ? 0 : 1;
         int hiddenPowerInt = (int) Math.floor((double) ((hp + (2 * atk) + (4 * def) + (8 * spe) + (16 * spa) + (32 * spd)) * 15) / 63);
 
+        // Returns the hidden power type.
         switch (hiddenPowerInt) {
             case 0:
                 return EnumType.getAllTypes().get(6);

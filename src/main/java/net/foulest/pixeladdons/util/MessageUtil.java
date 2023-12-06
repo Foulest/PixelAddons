@@ -1,9 +1,14 @@
 package net.foulest.pixeladdons.util;
 
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import net.foulest.pixeladdons.PixelAddons;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -20,6 +25,7 @@ import java.util.logging.Level;
  */
 @Getter
 @Setter
+@SuppressWarnings("unused")
 public final class MessageUtil {
 
     public static void messagePlayer(@NonNull CommandSender sender, @NonNull String message) {
@@ -87,5 +93,35 @@ public final class MessageUtil {
 
         timeBuilder.append(secs).append("s");
         return timeBuilder.toString();
+    }
+
+    /**
+     * Prints a hover message with the Pokemon's stats.
+     *
+     * @param player      The player to send the message to.
+     * @param pokemon     The Pokemon to get the stats from.
+     * @param chatMessage The message to send.
+     */
+    public static void printStatsHoverMessage(@NonNull Player player,
+                                              @NonNull Pokemon pokemon,
+                                              @NonNull String chatMessage) {
+        List<String> statsList = StatsUtil.getStats(player, pokemon);
+
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            TextComponent message = new TextComponent(MessageUtil.colorize(chatMessage));
+            TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
+            TextComponent hoverMessage = new TextComponent(new ComponentBuilder("").create());
+
+            for (String line : statsList) {
+                hoverMessage.addExtra(new TextComponent(MessageUtil.colorize(line)));
+
+                if (!statsList.get(statsList.size() - 1).equals(line)) {
+                    hoverMessage.addExtra(newLine);
+                }
+            }
+
+            message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[]{hoverMessage}));
+            online.spigot().sendMessage(message);
+        }
     }
 }

@@ -16,42 +16,54 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import org.bukkit.entity.Player;
 
 import static com.pixelmonmod.pixelmon.api.command.PixelmonCommand.requireEntityPlayer;
+import static net.foulest.pixeladdons.util.Settings.*;
 
 /**
  * @author Foulest
  * @project PixelAddons
  */
 @SuppressWarnings("MethodMayBeStatic")
-public class StopBattleCmd {
+public class EndBattleCmd {
 
-    @Command(name = "stopbattle", description = "Stops your current battle.",
-            usage = "/stopbattle", aliases = {"endbattle", "exitbattle"}, inGameOnly = true)
+    @Command(name = "endbattle", description = "Ends your current battle.",
+            usage = "/endbattle", aliases = {"stopbattle", "exitbattle"}, inGameOnly = true)
     public void onCommand(CommandArgs args) throws CommandException {
         Player player = args.getPlayer();
 
+        // Checks if the command is enabled.
+        if (!endBattleCommandEnabled) {
+            MessageUtil.messagePlayer(player, commandDisabledMessage
+                    .replace("%command%", "/endbattle"));
+            return;
+        }
+
+        // Checks for correct command usage.
         if (args.length() != 0) {
-            MessageUtil.messagePlayer(player, "&cUsage: /stopbattle");
+            MessageUtil.messagePlayer(player, commandUsageMessage
+                    .replace("%usage%", "/endbattle"));
             return;
         }
 
         EntityPlayerMP playerMP = requireEntityPlayer(player.getName());
         BattleControllerBase battleController = BattleRegistry.getBattle(playerMP);
 
+        // Checks if the player is in a battle.
         if (battleController != null) {
             ForceEndBattleEvent event = new ForceEndBattleEvent(battleController, EnumBattleForceEndCause.ENDBATTLE);
 
+            // Removes the player from the battle.
             if (Pixelmon.EVENT_BUS.post(event)) {
-                MessageUtil.messagePlayer(player, "&cFailed to end battle.");
+                MessageUtil.messagePlayer(player, failedToEndBattleMessage);
             } else if (battleController.removeSpectator(playerMP)) {
                 Pixelmon.network.sendTo(new EndSpectate(), playerMP);
             } else {
                 battleController.endBattle(EnumBattleEndCause.FORCE);
-                MessageUtil.messagePlayer(player, "&aBattle ended successfully.");
+                MessageUtil.messagePlayer(player, battleEndedSuccessfullyMessage);
                 BattleRegistry.deRegisterBattle(battleController);
             }
-
         } else {
-            MessageUtil.messagePlayer(player, "&cYou are not in a battle.");
+            // Notifies the player that they are not in a battle.
+            MessageUtil.messagePlayer(player, notInBattleMessage);
             Pixelmon.network.sendTo(new ExitBattle(), playerMP);
         }
     }

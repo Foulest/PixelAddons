@@ -1,151 +1,132 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
+import com.pixelmonmod.pixelmon.enums.EnumNature;
 import com.pixelmonmod.pixelmon.enums.EnumPokerusType;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StatsUtil {
 
-    public static List<String> getStats(Player owner, Pokemon pokemon) {
-        StringBuilder message = new StringBuilder();
-        DecimalFormat df = new DecimalFormat("#.#");
+    public static List<String> getStats(Player player, Pokemon pokemon) {
+        List<String> statsPanel = new ArrayList<>();
 
-        // Handles eggs.
-        if (pokemon.isEgg()) {
-            if (pokemon.isLegendary()) {
-                message.append("&d").append(owner.getName()).append("&d's Egg");
-            } else {
-                message.append("&a").append(owner.getName()).append("&a's Egg");
+        // Get the EVs of the Pokemon
+        int hpEV = pokemon.getEVs().getStat(StatsType.HP);
+        int attackEV = pokemon.getEVs().getStat(StatsType.Attack);
+        int defenceEV = pokemon.getEVs().getStat(StatsType.Defence);
+        int spAttackEV = pokemon.getEVs().getStat(StatsType.SpecialAttack);
+        int spDefenceEV = pokemon.getEVs().getStat(StatsType.SpecialDefence);
+        int speedEV = pokemon.getEVs().getStat(StatsType.Speed);
+
+        // Get the IVs of the Pokemon
+        int hpIV = pokemon.getIVs().getStat(StatsType.HP);
+        int attackIV = pokemon.getIVs().getStat(StatsType.Attack);
+        int defenceIV = pokemon.getIVs().getStat(StatsType.Defence);
+        int spAttackIV = pokemon.getIVs().getStat(StatsType.SpecialAttack);
+        int spDefenceIV = pokemon.getIVs().getStat(StatsType.SpecialDefence);
+        int speedIV = pokemon.getIVs().getStat(StatsType.Speed);
+
+        // Define all placeholders and their corresponding values
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%color%", FormatUtil.getDisplayColor(pokemon));
+        placeholders.put("%player%", player.getName());
+        placeholders.put("%pokemon%", (pokemon.isEgg() ? "Egg" : pokemon.getSpecies().getPokemonName()));
+        placeholders.put("%shinyStar%", pokemon.isShiny() ? " &6★" : "");
+        placeholders.put("%PKRS%", (pokemon.getPokerus() != null && pokemon.getPokerus().type != EnumPokerusType.UNINFECTED) ? " &5(PKRS)" : "");
+        placeholders.put("%gender%", pokemon.getGender() == Gender.Male ? "&b(M)" : (pokemon.getGender() == Gender.Female ? "&d(F)" : ""));
+        placeholders.put("%level%", String.valueOf(pokemon.getLevel()));
+        placeholders.put("%ability%", pokemon.getAbility().getLocalizedName());
+        placeholders.put("%nature%", pokemon.getNature().getLocalizedName());
+        placeholders.put("%natureEffect%", getNatureEffect(pokemon));
+        placeholders.put("%hiddenPower%", HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName());
+
+        placeholders.put("%hpEV%", FormatUtil.evColor(hpEV) + hpEV);
+        placeholders.put("%attackEV%", FormatUtil.evColor(attackEV) + attackEV);
+        placeholders.put("%defenceEV%", FormatUtil.evColor(defenceEV) + defenceEV);
+        placeholders.put("%spAttackEV%", FormatUtil.evColor(spAttackEV) + spAttackEV);
+        placeholders.put("%spDefenceEV%", FormatUtil.evColor(spDefenceEV) + spDefenceEV);
+        placeholders.put("%speedEV%", FormatUtil.evColor(speedEV) + speedEV);
+
+        placeholders.put("%hpIV%", (pokemon.getIVs().isHyperTrained(StatsType.HP) ? "&6&o" : FormatUtil.ivColor(hpIV)) + hpIV);
+        placeholders.put("%attackIV%", (pokemon.getIVs().isHyperTrained(StatsType.Attack) ? "&6&o" : FormatUtil.ivColor(attackIV)) + attackIV);
+        placeholders.put("%defenceIV%", (pokemon.getIVs().isHyperTrained(StatsType.Defence) ? "&6&o" : FormatUtil.ivColor(defenceIV)) + defenceIV);
+        placeholders.put("%spAttackIV%", (pokemon.getIVs().isHyperTrained(StatsType.SpecialAttack) ? "&6&o" : FormatUtil.ivColor(spAttackIV)) + spAttackIV);
+        placeholders.put("%spDefenceIV%", (pokemon.getIVs().isHyperTrained(StatsType.SpecialDefence) ? "&6&o" : FormatUtil.ivColor(spDefenceIV)) + spDefenceIV);
+        placeholders.put("%speedIV%", (pokemon.getIVs().isHyperTrained(StatsType.Speed) ? "&6&o" : FormatUtil.ivColor(speedIV)) + speedIV);
+
+        placeholders.put("%evPercent%", getEVPercent(pokemon));
+        placeholders.put("%ivPercent%", getIVPercent(pokemon));
+
+        // Iterate over each line in the settings and replace placeholders
+        for (String line : Settings.statsPanelMessage) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                line = line.replace(entry.getKey(), entry.getValue());
             }
-
-            if (pokemon.isShiny()) {
-                message.append(" &6★");
-            }
-
-            message.append("\n").append("&fAbility: &e").append(pokemon.getAbility().getLocalizedName());
-            message.append("\n").append("&fNature: &e").append(pokemon.getNature().getLocalizedName());
-
-            String increasedStat = FormatUtil.formatStat(pokemon.getNature().increasedStat.getUnlocalizedName());
-            String decreasedStat = FormatUtil.formatStat(pokemon.getNature().decreasedStat.getUnlocalizedName());
-
-            if (pokemon.getNature().increasedStat == StatsType.None && pokemon.getNature().decreasedStat == StatsType.None) {
-                message.append(" &7(No Effect)");
-            } else {
-                message.append(" &7(&a+").append(increasedStat).append(" &c-").append(decreasedStat).append("&7)");
-            }
-
-            message.append("\n").append("&fHidden Power: &e").append(HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName());
-            message.append("\n").append("&fEgg Cycles: &e").append(pokemon.getEggCycles());
-            return convertToList(message);
+            statsPanel.add(line);
         }
-
-        if (pokemon.isLegendary()) {
-            message.append("&d").append(owner.getName()).append("&d's ").append(pokemon.getSpecies().getPokemonName());
-        } else {
-            message.append("&a").append(owner.getName()).append("&a's ").append(pokemon.getSpecies().getPokemonName());
-        }
-
-        if (pokemon.isShiny()) {
-            message.append(" &6★");
-        }
-
-        if (pokemon.getPokerus() != null && pokemon.getPokerus().type != EnumPokerusType.UNINFECTED) {
-            message.append(" &5(PKRS)");
-        }
-
-        switch (pokemon.getGender()) {
-            case Male:
-                message.append(" &b(M)");
-                break;
-            case Female:
-                message.append(" &d(F)");
-                break;
-            default:
-                break;
-        }
-
-        if (pokemon.hasSpecFlag("untradeable")) {
-            message.append(" &7(Locked)");
-        }
-
-        message.append("\n").append("&fLevel: &e").append(pokemon.getLevel())
-                .append(" &7┃ ").append("&fAbility: &e").append(pokemon.getAbility().getLocalizedName());
-
-        message.append("\n").append("&fNature: &e").append(pokemon.getNature().getLocalizedName());
-
-        String increasedStat = FormatUtil.formatStat(pokemon.getNature().increasedStat.getUnlocalizedName());
-        String decreasedStat = FormatUtil.formatStat(pokemon.getNature().decreasedStat.getUnlocalizedName());
-
-        if (pokemon.getNature().increasedStat == StatsType.None && pokemon.getNature().decreasedStat == StatsType.None) {
-            message.append(" &7(No Effect)");
-        } else {
-            message.append(" &7(&a+").append(increasedStat).append(" &c-").append(decreasedStat).append("&7)");
-        }
-
-        message.append("\n").append("&fHidden Power: &e").append(HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName());
-
-        message.append("\n").append(" ");
-        message.append("\n").append("&7(HP/Atk/Def/SpA/SpD/Spe)");
-
-        String hpEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.HP)) + pokemon.getEVs().getStat(StatsType.HP);
-        String attackEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.Attack)) + pokemon.getEVs().getStat(StatsType.Attack);
-        String DefenceEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.Defence)) + pokemon.getEVs().getStat(StatsType.Defence);
-        String spAttackEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.SpecialAttack)) + pokemon.getEVs().getStat(StatsType.SpecialAttack);
-        String spDefenceEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.SpecialDefence)) + pokemon.getEVs().getStat(StatsType.SpecialDefence);
-        String speedEV = FormatUtil.evColor(pokemon.getEVs().getStat(StatsType.Speed)) + pokemon.getEVs().getStat(StatsType.Speed);
-
-        double evPercent = Double.parseDouble(df.format(((double) (pokemon.getEVs().getStat(StatsType.HP) + pokemon.getEVs().getStat(StatsType.Attack)
-                + pokemon.getEVs().getStat(StatsType.Defence) + pokemon.getEVs().getStat(StatsType.SpecialAttack)
-                + pokemon.getEVs().getStat(StatsType.SpecialDefence) + pokemon.getEVs().getStat(StatsType.Speed)) / 510) * 100));
-
-        message.append("\n").append("&fEVs: &7")
-                .append(hpEV).append(" ")
-                .append(attackEV).append(" ")
-                .append(DefenceEV).append(" ")
-                .append(spAttackEV).append(" ")
-                .append(spDefenceEV).append(" ")
-                .append(speedEV).append(" &7(")
-                .append(evPercent).append("%)");
-
-        String hpIV = pokemon.getIVs().isHyperTrained(StatsType.HP) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.HP)) + pokemon.getIVs().getStat(StatsType.HP);
-        String attackIV = pokemon.getIVs().isHyperTrained(StatsType.Attack) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.Attack)) + pokemon.getIVs().getStat(StatsType.Attack);
-        String defenceIV = pokemon.getIVs().isHyperTrained(StatsType.Defence) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.Defence)) + pokemon.getIVs().getStat(StatsType.Defence);
-        String spAttackIV = pokemon.getIVs().isHyperTrained(StatsType.SpecialAttack) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.SpecialAttack)) + pokemon.getIVs().getStat(StatsType.SpecialAttack);
-        String spDefenceIV = pokemon.getIVs().isHyperTrained(StatsType.SpecialDefence) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.SpecialDefence)) + pokemon.getIVs().getStat(StatsType.SpecialDefence);
-        String speedIV = pokemon.getIVs().isHyperTrained(StatsType.Speed) ? "&6&o31" : FormatUtil.ivColor(pokemon.getIVs().getStat(StatsType.Speed)) + pokemon.getIVs().getStat(StatsType.Speed);
-
-        int hpIVAdj = pokemon.getIVs().isHyperTrained(StatsType.HP) ? 31 : pokemon.getIVs().getStat(StatsType.HP);
-        int attackIVAdj = pokemon.getIVs().isHyperTrained(StatsType.Attack) ? 31 : pokemon.getIVs().getStat(StatsType.Attack);
-        int defenceIVAdj = pokemon.getIVs().isHyperTrained(StatsType.Defence) ? 31 : pokemon.getIVs().getStat(StatsType.Defence);
-        int spAttackIVAdj = pokemon.getIVs().isHyperTrained(StatsType.SpecialAttack) ? 31 : pokemon.getIVs().getStat(StatsType.SpecialAttack);
-        int spDefenceIVAdj = pokemon.getIVs().isHyperTrained(StatsType.SpecialDefence) ? 31 : pokemon.getIVs().getStat(StatsType.SpecialDefence);
-        int speedIVAdj = pokemon.getIVs().isHyperTrained(StatsType.Speed) ? 31 : pokemon.getIVs().getStat(StatsType.Speed);
-
-        double ivPercent = Double.parseDouble(df.format(((double) (hpIVAdj + attackIVAdj + defenceIVAdj
-                + spAttackIVAdj + spDefenceIVAdj + speedIVAdj) / 186) * 100));
-
-        message.append("\n").append("&fIVs: &7")
-                .append(hpIV).append(" ")
-                .append(attackIV).append(" ")
-                .append(defenceIV).append(" ")
-                .append(spAttackIV).append(" ")
-                .append(spDefenceIV).append(" ")
-                .append(speedIV).append(" &7(")
-                .append(ivPercent).append("%)");
-        return convertToList(message);
+        return statsPanel;
     }
 
-    public static List<String> convertToList(StringBuilder builder) {
-        String[] splitData = builder.toString().split("\n");
-        List<String> output = new ArrayList<>();
+    public static String getNatureEffect(Pokemon pokemon) {
+        EnumNature nature = pokemon.getNature();
 
-        Collections.addAll(output, splitData);
-        return output;
+        // Get the increased and decreased stats
+        StatsType increasedStat = nature.increasedStat;
+        StatsType decreasedStat = nature.decreasedStat;
+
+        // Format the stats
+        String increasedStatFormatted = FormatUtil.formatStat(increasedStat.getUnlocalizedName());
+        String decreasedStatFormatted = FormatUtil.formatStat(decreasedStat.getUnlocalizedName());
+
+        // Check if the nature has an effect
+        if (increasedStat == StatsType.None && decreasedStat == StatsType.None) {
+            return "&7No Effect";
+        } else {
+            return "&a+" + increasedStatFormatted + " &c-" + decreasedStatFormatted;
+        }
+    }
+
+    public static String getEVPercent(Pokemon pokemon) {
+        DecimalFormat df = new DecimalFormat("#.#");
+
+        // Get the total EVs across all stats
+        int totalEVs = pokemon.getEVs().getStat(StatsType.HP) +
+                pokemon.getEVs().getStat(StatsType.Attack) +
+                pokemon.getEVs().getStat(StatsType.Defence) +
+                pokemon.getEVs().getStat(StatsType.SpecialAttack) +
+                pokemon.getEVs().getStat(StatsType.SpecialDefence) +
+                pokemon.getEVs().getStat(StatsType.Speed);
+
+        // Calculate the percentage
+        double evPercent = ((double) totalEVs / 510) * 100;
+
+        // Format and return the percentage
+        return df.format(evPercent) + "%";
+    }
+
+    public static String getIVPercent(Pokemon pokemon) {
+        DecimalFormat df = new DecimalFormat("#.#");
+
+        // Calculate the total IVs across all stats
+        int totalIVs = pokemon.getIVs().getStat(StatsType.HP) +
+                pokemon.getIVs().getStat(StatsType.Attack) +
+                pokemon.getIVs().getStat(StatsType.Defence) +
+                pokemon.getIVs().getStat(StatsType.SpecialAttack) +
+                pokemon.getIVs().getStat(StatsType.SpecialDefence) +
+                pokemon.getIVs().getStat(StatsType.Speed);
+
+        // Calculate the percentage
+        double ivPercent = ((double) totalIVs / 186) * 100;
+
+        // Format and return the percentage
+        return df.format(ivPercent) + "%";
     }
 }

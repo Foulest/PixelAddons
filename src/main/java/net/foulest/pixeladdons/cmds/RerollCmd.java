@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.foulest.pixeladdons.util.Settings.*;
+
 /**
  * @author Foulest
  * @project PixelAddons
@@ -26,41 +28,58 @@ public class RerollCmd {
     public void onCommand(CommandArgs args) {
         Player player = args.getPlayer();
 
-        if (!Settings.pixelHuntIntegration) {
-            MessageUtil.messagePlayer(player, "&cPixelHunt integration is disabled.");
+        // Checks if the command is enabled.
+        if (!Settings.rerollCommandEnabled) {
+            MessageUtil.messagePlayer(player, commandDisabledMessage
+                    .replace("%command%", "/reroll"));
             return;
         }
 
+        // Checks for correct command usage.
         if (args.length() != 0) {
-            MessageUtil.messagePlayer(player, "&cUsage: /reroll");
+            MessageUtil.messagePlayer(player, commandUsageMessage
+                    .replace("%usage%", "/reroll"));
             return;
         }
 
-        if (Settings.pixelHuntCooldown > 0) {
+        // Checks if the re-roll command is on cooldown.
+        if (Settings.rerollCommandCooldown > 0) {
             long now = System.currentTimeMillis();
-            long cooldownTimeRemainingMillis = (lastReroll + (Settings.pixelHuntCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
+            long cooldownTimeRemainingMillis = (lastReroll + (Settings.rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
             long cooldownTimeRemaining = cooldownTimeRemainingMillis / 1000; // Convert milliseconds back to seconds
             String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
 
             if (cooldownTimeRemaining > 0) {
-                MessageUtil.messagePlayer(player, "&cYou must wait &e" + cooldownFormatted + " &cbetween re-rolls.");
+                MessageUtil.messagePlayer(player, rerollCommandCooldownMessage
+                        .replace("%time%", cooldownFormatted));
                 return;
             }
         }
 
+        // Counts the player's vote and broadcasts it.
+        // If the player has already voted, it removes their vote.
         if (votingToReroll.contains(player)) {
             votingToReroll.remove(player);
-            MessageUtil.broadcast("&e[Hunt] &f" + player.getName() + " &7has cancelled their re-roll vote."
-                    + " &e(" + votingToReroll.size() + "/" + Bukkit.getOnlinePlayers().size() + ")");
+
+            // Broadcasts the cancellation of the vote.
+            MessageUtil.broadcast(rerollVoteCancelledMessage
+                    .replace("%player%", player.getName())
+                    .replace("%votes%", String.valueOf(votingToReroll.size()))
+                    .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
         } else {
             votingToReroll.add(player);
 
+            // Only broadcasts the vote if there are other players online.
+            // Otherwise, it would be pointless to broadcast it.
             if (Bukkit.getOnlinePlayers().size() > 1) {
-                MessageUtil.broadcast("&e[Hunt] &f" + player.getName() + " &7has voted to re-roll the hunt."
-                        + " &e(" + votingToReroll.size() + "/" + Bukkit.getOnlinePlayers().size() + ")");
+                MessageUtil.broadcast(rerollVoteSubmittedMessage
+                        .replace("%player%", player.getName())
+                        .replace("%votes%", String.valueOf(votingToReroll.size()))
+                        .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
             }
         }
 
+        // Executes the re-roll if all players have voted.
         handleReroll();
     }
 
@@ -69,7 +88,8 @@ public class RerollCmd {
      * This is a separate method, so it can be called from other classes.
      */
     public static void handleReroll() {
-        if (!Settings.pixelHuntIntegration) {
+        // Checks if the command is enabled.
+        if (!Settings.rerollCommandEnabled) {
             return;
         }
 
@@ -82,9 +102,14 @@ public class RerollCmd {
             PixelHuntFactory.reloadHunts();
 
             // Broadcasts the re-roll.
-            MessageUtil.broadcast("&e[Hunt] &7The hunt has been &fre-rolled"
-                    + (votingToReroll.size() == 1 ? " &7by &f" + votingToReroll.get(0).getName() : "") + "&7!");
+            if (votingToReroll.size() == 1) {
+                MessageUtil.broadcast(rerollHuntMessageWithPlayer
+                        .replace("%player%", votingToReroll.get(0).getName()));
+            } else {
+                MessageUtil.broadcast(rerollHuntMessage);
+            }
 
+            // Resets the cooldown and clears the list.
             lastReroll = System.currentTimeMillis();
             votingToReroll.clear();
         }

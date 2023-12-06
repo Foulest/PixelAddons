@@ -14,13 +14,9 @@ import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
+import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
-import net.foulest.pixeladdons.util.StatsUtil;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.apache.commons.text.WordUtils;
@@ -35,7 +31,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+
+import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
+import static net.foulest.pixeladdons.util.Settings.*;
 
 /**
  * @author Foulest
@@ -43,68 +41,63 @@ import java.util.logging.Level;
  */
 public class EventListener implements Listener {
 
-    public static void printHoverMessage(Player player, Pokemon pokemon, String chatMessage) {
-        List<String> statsList = StatsUtil.getStats(player, pokemon);
-
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            TextComponent message = new TextComponent(MessageUtil.colorize(chatMessage));
-            TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
-            TextComponent hoverMessage = new TextComponent(new ComponentBuilder("").create());
-
-            for (String line : statsList) {
-                hoverMessage.addExtra(new TextComponent(MessageUtil.colorize(line)));
-
-                if (!statsList.get(statsList.size() - 1).equals(line)) {
-                    hoverMessage.addExtra(newLine);
-                }
-            }
-
-            message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[]{hoverMessage}));
-            online.spigot().sendMessage(message);
-        }
-    }
-
+    /**
+     * Handles player data loading and first-join commands.
+     *
+     * @param event PlayerJoinEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.getPlayerData(player);
 
+        // Handles first-join commands.
         if (!player.hasPlayedBefore()) {
             for (String line : Settings.commandsOnJoin) {
                 if (line.isEmpty()) {
                     break;
                 }
 
+                // Replaces %player% with the player's name.
                 line = line.replace("%player%", player.getName());
 
-                try {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), line);
-                } catch (Exception ex) {
-                    MessageUtil.log(Level.WARNING, "An error occurred when trying to run command: '" + line + "'");
-                }
+                // Runs the command as console.
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), line);
             }
         }
     }
 
+    /**
+     * Handles player data unloading and re-roll voting.
+     *
+     * @param event PlayerQuitEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.removePlayerData(player);
 
-        if (Settings.pixelHuntIntegration) {
-            // Handles hunt re-rolls.
+        // Removes the player from the re-roll list if they are on it.
+        if (Settings.rerollCommandEnabled) {
             RerollCmd.votingToReroll.remove(player);
             RerollCmd.handleReroll();
         }
     }
 
+    /**
+     * Handles EV gain messages.
+     *
+     * @param event ForgeEvent
+     */
     @EventHandler
     public void onEVGain(ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
+        // Handles EV gain messages.
         if (forgeEvent instanceof EVsGainedEvent) {
             EVsGainedEvent eVsGainedEvent = (EVsGainedEvent) forgeEvent;
 
+            // Checks if the Pokemon has an owner.
             if (eVsGainedEvent.pokemon.getOwnerPlayer() != null
                     && Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID()) != null) {
                 Player player = Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID());
@@ -112,19 +105,23 @@ public class EventListener implements Listener {
                 PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
                 int[] oldEVs = evStore.getArray();
 
+                // Returns if the player is offline.
                 if (!player.isOnline()) {
                     return;
                 }
 
+                // Handles EV gain messages.
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         Pokemon pokemon = party.get(party.getSlot(eVsGainedEvent.pokemon.getUUID()));
 
+                        // Returns if the Pokemon is null.
                         if (pokemon == null) {
                             return;
                         }
 
+                        // Calculates the EV differences.
                         int[] newEVs = pokemon.getEVs().getArray();
                         int hpDiff = newEVs[0] - oldEVs[0];
                         int atkDiff = newEVs[1] - oldEVs[1];
@@ -135,43 +132,67 @@ public class EventListener implements Listener {
                         List<String> msgList = new ArrayList<>();
 
                         if (hpDiff > 0) {
-                            msgList.add("&a+" + hpDiff + " &aHP &7(" + newEVs[0] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(hpDiff))
+                                    .replace("%stat%", "HP")
+                                    .replace("%newEVs%", String.valueOf(newEVs[0])));
                         }
 
                         if (atkDiff > 0) {
-                            msgList.add("&a+" + atkDiff + " Atk &7(" + newEVs[1] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(atkDiff))
+                                    .replace("%stat%", "Atk")
+                                    .replace("%newEVs%", String.valueOf(newEVs[1])));
                         }
 
                         if (defDiff > 0) {
-                            msgList.add("&a+" + defDiff + " Def &7(" + newEVs[2] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(defDiff))
+                                    .replace("%stat%", "Def")
+                                    .replace("%newEVs%", String.valueOf(newEVs[2])));
                         }
 
                         if (spaDiff > 0) {
-                            msgList.add("&a+" + spaDiff + " SpA &7(" + newEVs[3] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(spaDiff))
+                                    .replace("%stat%", "SpA")
+                                    .replace("%newEVs%", String.valueOf(newEVs[3])));
                         }
 
                         if (spdDiff > 0) {
-                            msgList.add("&a+" + spdDiff + " SpD &7(" + newEVs[4] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(spdDiff))
+                                    .replace("%stat%", "SpD")
+                                    .replace("%newEVs%", String.valueOf(newEVs[4])));
                         }
 
                         if (speDiff > 0) {
-                            msgList.add("&a+" + speDiff + " Spe &7(" + newEVs[5] + ")");
+                            msgList.add(evIncreaseMessage
+                                    .replace("%diff%", String.valueOf(speDiff))
+                                    .replace("%stat%", "Spe")
+                                    .replace("%newEVs%", String.valueOf(newEVs[5])));
                         }
 
-                        StringBuilder temp = new StringBuilder();
+                        StringBuilder totalEVsGained = new StringBuilder();
 
+                        // Formats the message.
                         if (!msgList.isEmpty()) {
                             for (int i = 0; i < msgList.size(); i++) {
-                                if (msgList.size() > 1 && i + 1 < msgList.size()) {
-                                    temp.append(msgList.get(i)).append(" ");
-                                } else {
-                                    temp.append(msgList.get(i));
+                                totalEVsGained.append(msgList.get(i));
+
+                                if (i + 1 < msgList.size()) {
+                                    totalEVsGained.append(" ");
                                 }
                             }
 
+                            String pokemonName = pokemon.getSpecies().getPokemonName();
+                            String chatMessage = evGainMessage
+                                    .replace("%pokemon%", pokemonName)
+                                    .replace("%evGains%", totalEVsGained.toString());
+
+                            // Sends the message.
                             if (player.isOnline()) {
-                                MessageUtil.messagePlayer(player, "&fYour &a" + pokemon.getSpecies().getPokemonName()
-                                        + " &fgained " + temp + " &fEVs!");
+                                MessageUtil.messagePlayer(player, chatMessage);
                             }
                         }
                     }
@@ -180,78 +201,82 @@ public class EventListener implements Listener {
         }
     }
 
+    /**
+     * Handles Pokemon catch messages.
+     *
+     * @param event ForgeEvent
+     */
     @EventHandler
     public void onPokemonCatch(ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
+        // Handles Pokemon catch messages.
         if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
             CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
             Player player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
             Pokemon pokemon = captureEvent.getPokemon().getStoragePokemonData();
+            String pokemonName = pokemon.getSpecies().getPokemonName();
 
+            // Returns if the player is offline.
             if (!player.isOnline()) {
                 return;
             }
 
-            StringBuilder chatMessage = new StringBuilder("&r" + player.getDisplayName() + " caught a wild ");
+            // Formats the message.
+            String chatMessage = catchMessage
+                    .replace("%player%", player.getName())
+                    .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                    .replace("%pokemon%", pokemonName);
 
-            if (pokemon.isShiny()) {
-                chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-            } else if (pokemon.isLegendary()) {
-                chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-            } else {
-                chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-            }
-
+            // Prints the hover message.
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    printHoverMessage(player, pokemon, chatMessage.toString());
+                    printStatsHoverMessage(player, pokemon, chatMessage);
                 }
             }.runTaskLater(PixelAddons.instance, 10L);
         }
 
+        // Handles raid Pokemon catch messages.
         if (forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
-            try {
-                CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
-                Player player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
-                Pokemon pokemon = captureEvent.getRaidPokemon();
+            CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
+            Player player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
+            Pokemon pokemon = captureEvent.getRaidPokemon();
+            String pokemonName = pokemon.getSpecies().getPokemonName();
 
-                if (!player.isOnline()) {
-                    return;
-                }
-
-                StringBuilder chatMessage = new StringBuilder("&r" + player.getDisplayName() + " caught a wild ");
-
-                if (pokemon.isShiny()) {
-                    chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                } else if (pokemon.isLegendary()) {
-                    chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                } else {
-                    chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                }
-
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        printHoverMessage(player, pokemon, chatMessage.toString());
-                    }
-                }.runTaskLater(PixelAddons.instance, 10L);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            // Returns if the player is offline.
+            if (!player.isOnline()) {
+                return;
             }
+
+            // Formats the message.
+            String chatMessage = catchMessage
+                    .replace("%player%", player.getName())
+                    .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                    .replace("%pokemon%", pokemonName);
+
+            // Prints the hover message.
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    printStatsHoverMessage(player, pokemon, chatMessage);
+                }
+            }.runTaskLater(PixelAddons.instance, 10L);
         }
 
+        // Handles Pokemon pickup messages.
         if (forgeEvent instanceof PickupEvent) {
             PickupEvent pickupEvent = (PickupEvent) forgeEvent;
             Player player = Bukkit.getPlayer(pickupEvent.player.player.getUniqueID());
             Pokemon pokemon = pickupEvent.pokemon.pokemon;
             ItemStack itemStack = pickupEvent.stack;
 
+            // Returns if the player is offline.
             if (!player.isOnline()) {
                 return;
             }
 
+            // Formats the item name.
             String itemName = itemStack.toString();
             itemName = itemName.replace("1x", "");
             itemName = itemName.replace("@0", "");
@@ -259,135 +284,115 @@ public class EventListener implements Listener {
             itemName = itemName.replace("_", " ");
             itemName = WordUtils.capitalize(itemName);
 
-            MessageUtil.messagePlayer(player, "&rYour &e" + pokemon.getSpecies().getPokemonName()
-                    + " &fpicked up a" + ((itemName.startsWith("A") || itemName.startsWith("E") || itemName.startsWith("I")
-                    || itemName.startsWith("O") || itemName.startsWith("U")) ? "n" : "") + " &e[" + itemName + "&e]");
+            // Get the correct article for the item name.
+            String article = "a" + ((itemName.startsWith("A") || itemName.startsWith("E") || itemName.startsWith("I")
+                    || itemName.startsWith("O") || itemName.startsWith("U")) ? "n" : "");
+
+            // Formats the message.
+            String chatMessage = pickupMessage
+                    .replace("%pokemon%", pokemon.getSpecies().getPokemonName())
+                    .replace("%an%", article)
+                    .replace("%color%", pickupColor)
+                    .replace("%itemName%", itemName);
+
+            // Prints the message.
+            MessageUtil.messagePlayer(player, chatMessage);
         }
 
+        // Handles egg hatch messages.
         if (forgeEvent instanceof EggHatchEvent.Post) {
             EggHatchEvent.Post eggHatchEvent = (EggHatchEvent.Post) forgeEvent;
             Player player = Bukkit.getPlayer(eggHatchEvent.getPokemon().getOwnerPlayer().getUniqueID());
             Pokemon pokemon = eggHatchEvent.getPokemon();
+            String pokemonName = pokemon.getSpecies().getPokemonName();
 
+            // Returns if the player is offline.
             if (!player.isOnline()) {
                 return;
             }
 
-            StringBuilder chatMessage = new StringBuilder("&r" + player.getDisplayName() + "'s egg hatched into ");
+            // Formats the message.
+            String chatMessage = eggHatchMessage
+                    .replace("%player%", player.getName())
+                    .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                    .replace("%pokemon%", pokemonName);
 
-            if (pokemon.isShiny()) {
-                chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-            } else if (pokemon.isLegendary()) {
-                chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-            } else {
-                chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-            }
-
-            printHoverMessage(player, pokemon, chatMessage.toString());
+            // Prints the hover message.
+            printStatsHoverMessage(player, pokemon, chatMessage);
         }
 
+        // Handles Pokemon receive messages.
         if (forgeEvent instanceof PixelmonReceivedEvent) {
             PixelmonReceivedEvent receivedEvent = (PixelmonReceivedEvent) forgeEvent;
             Player player = Bukkit.getPlayer(receivedEvent.player.getUniqueID());
             Pokemon pokemon = receivedEvent.pokemon;
+            String pokemonName = pokemon.getSpecies().getPokemonName();
             ReceiveType receiveType = receivedEvent.receiveType;
 
+            // Returns if the player is offline.
             if (!player.isOnline()) {
                 return;
             }
 
-            StringBuilder chatMessage = new StringBuilder();
+            String chatMessage = "";
 
+            // Formats the message.
             switch (receiveType) {
                 case Custom:
-                    chatMessage = new StringBuilder("&7(Custom) &r" + player.getDisplayName() + " received a wild ");
-
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
-                    break;
-
-                case Trade:
-                case Evolution:
-                case PokeBall:
+                    chatMessage = pokemonReceiveCustomMessage
+                            .replace("%player%", player.getName())
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 case Fossil:
-                    chatMessage = new StringBuilder("&r" + player.getDisplayName() + " revived a ");
+                    // Get the correct article for the Pokemon name.
+                    String article = "a" + ((pokemonName.startsWith("A") || pokemonName.startsWith("E")
+                            || pokemonName.startsWith("I") || pokemonName.startsWith("O")
+                            || pokemonName.startsWith("U")) ? "n" : "");
 
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
-
-                    chatMessage.append(" &rfrom a fossil!");
+                    chatMessage = fossilRevivalMessage
+                            .replace("%player%", player.getName())
+                            .replace("%an%", article)
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 case Starter:
-                    chatMessage = new StringBuilder("&r" + player.getDisplayName() + " chose ");
-
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
-
-                    chatMessage.append(" &ras their starter!");
+                    chatMessage = chooseStarterMessage
+                            .replace("%player%", player.getName())
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 case Command:
-                    chatMessage = new StringBuilder("&7(Command) &r" + player.getDisplayName() + " received a wild ");
-
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
+                    chatMessage = pokemonReceiveCommandMessage
+                            .replace("%player%", player.getName())
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 case SelectPokemon:
-                    chatMessage = new StringBuilder("&7(SelectPokemon) &r" + player.getDisplayName() + " received a wild ");
-
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
+                    chatMessage = pokemonReceiveSelectMessage
+                            .replace("%player%", player.getName())
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 case Christmas:
-                    chatMessage = new StringBuilder("&r" + player.getDisplayName() + " received a wild ");
-
-                    if (pokemon.isShiny()) {
-                        chatMessage.append("&6[").append(pokemon.getDisplayName()).append("]");
-                    } else if (pokemon.isLegendary()) {
-                        chatMessage.append("&d[").append(pokemon.getDisplayName()).append("]");
-                    } else {
-                        chatMessage.append("&a[").append(pokemon.getDisplayName()).append("]");
-                    }
-
-                    chatMessage.append(" &rfor christmas!");
+                    chatMessage = pokemonReceiveChristmasMessage
+                            .replace("%player%", player.getName())
+                            .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                            .replace("%pokemon%", pokemonName);
                     break;
 
                 default:
                     break;
             }
 
-            if (!chatMessage.toString().isEmpty()) {
-                printHoverMessage(player, pokemon, chatMessage.toString());
+            // Prints the hover message.
+            if (!chatMessage.isEmpty()) {
+                printStatsHoverMessage(player, pokemon, chatMessage);
             }
         }
     }

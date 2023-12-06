@@ -3,12 +3,15 @@ package net.foulest.pixeladdons.cmds;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import net.foulest.pixeladdons.listeners.EventListener;
+import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import static net.foulest.pixeladdons.util.Settings.*;
 
 /**
  * @author Foulest
@@ -18,76 +21,86 @@ import org.bukkit.entity.Player;
 public class ShowCmd {
 
     @Command(name = "show", description = "Shows the stats of your selected Pokemon in chat.",
-            usage = "/show <slot>", inGameOnly = true)
+            usage = "/show <slot>", aliases = {"pkshow", "pokeshow"}, inGameOnly = true)
     public void onCommand(CommandArgs args) {
         Player player = args.getPlayer();
 
+        // Checks if the command is enabled.
+        if (!Settings.showCommandEnabled) {
+            MessageUtil.messagePlayer(player, commandDisabledMessage
+                    .replace("%command%", "/show"));
+            return;
+        }
+
+        // Checks for correct command usage.
         if (args.length() != 1) {
-            MessageUtil.messagePlayer(player, "&cUsage: /show <slot>");
+            MessageUtil.messagePlayer(player, commandUsageMessage
+                    .replace("%usage%", "/show <slot>"));
             return;
         }
 
         PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
 
+        // Checks if the player has a starter Pokemon.
         if (!party.starterPicked) {
-            MessageUtil.messagePlayer(player, "&cStarter Pokemon not found.");
+            MessageUtil.messagePlayer(player, starterNotFoundMessage);
             return;
         }
 
+        // Checks if the slot is a number.
         try {
             Integer.parseInt(args.getArgs(0));
         } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, "&cInvalid slot. (Not a number)");
+            MessageUtil.messagePlayer(player, invalidSlotMessage
+                    .replace("%reason%", "Not a number"));
             return;
         }
 
         int slot = Integer.parseInt(args.getArgs(0));
 
+        // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, "&cInvalid slot. (Number is invalid)");
+            MessageUtil.messagePlayer(player, invalidSlotMessage
+                    .replace("%reason%", "Slot is invalid"));
             return;
         }
 
         slot -= 1;
 
+        // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, "&cInvalid slot. (Pokemon is missing)");
+            MessageUtil.messagePlayer(player, invalidSlotMessage
+                    .replace("%reason%", "Slot is empty"));
             return;
         }
 
         Pokemon pokemon = party.get(slot);
 
+        // Checks if the Pokemon is valid.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, "&cInvalid slot. (Pokemon is missing)");
+            MessageUtil.messagePlayer(player, invalidSlotMessage
+                    .replace("%reason%", "Pokemon is missing"));
             return;
         }
 
         Player owner = Bukkit.getPlayer(pokemon.getOwnerPlayerUUID());
 
+        // Checks if the owner is valid.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, "&cInvalid slot. (Owner is missing)");
+            MessageUtil.messagePlayer(player, invalidSlotMessage
+                    .replace("%reason%", "Owner is missing"));
             return;
         }
 
-        StringBuilder chatMessage = new StringBuilder("&r" + player.getDisplayName() + " is showing off their ");
+        String pokemonName = pokemon.getSpecies().getPokemonName();
 
-        if (pokemon.isEgg()) {
-            if (pokemon.isShiny()) {
-                chatMessage.append("&6[Egg]");
-            } else {
-                chatMessage.append("&b[Egg]");
-            }
+        // Handles printing the stats.
+        String chatMessage = showMessage
+                .replace("%player%", owner.getName())
+                .replace("%color%", FormatUtil.getDisplayColor(pokemon))
+                .replace("%pokemon%", pokemonName);
 
-        } else {
-            if (pokemon.isShiny()) {
-                chatMessage.append("&6[").append(pokemon.getSpecies().getPokemonName()).append("]");
-            } else if (pokemon.isLegendary()) {
-                chatMessage.append("&d[").append(pokemon.getSpecies().getPokemonName()).append("]");
-            } else {
-                chatMessage.append("&a[").append(pokemon.getSpecies().getPokemonName()).append("]");
-            }
-        }
-
-        EventListener.printHoverMessage(owner, pokemon, String.valueOf(chatMessage));
+        // Prints the hover message.
+        MessageUtil.printStatsHoverMessage(owner, pokemon, chatMessage);
     }
 }

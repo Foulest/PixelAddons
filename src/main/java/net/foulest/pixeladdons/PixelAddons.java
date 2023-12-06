@@ -19,7 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PixelAddons extends JavaPlugin {
 
     public static PixelAddons instance;
-    public final String pluginName = "Vulture";
+    public final String pluginName = "PixelAddons";
     public CommandFramework framework;
 
     @Override
@@ -45,7 +45,8 @@ public class PixelAddons extends JavaPlugin {
 
         // Loads the plugin's commands.
         Bukkit.getLogger().info("[" + pluginName + "] Loading Commands...");
-        loadCommands(new HatchCmd(), new RerollCmd(), new StatsCmd(), new ShowCmd(), new StopBattleCmd());
+        loadCommands(new HatchCmd(), new PixelAddonsCmd(), new RerollCmd(),
+                new StatsCmd(), new ShowCmd(), new EndBattleCmd());
 
         Bukkit.getLogger().info("[" + pluginName + "] Loaded successfully.");
     }
