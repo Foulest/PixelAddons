@@ -10,7 +10,7 @@ A private server-side plugin that improves the Pixelmon Reforged experience.
 All commands, features, and messages are extensively configurable.
 
 ## Features
-- **Pokemon Stat Panels:** After every catch, a broadcast message containing a **hoverable stat panel** for the newly acquired Pokemon is displayed in chat, showing the Pokemon's gender, level, ability, nature, Hidden Power type, EVs, and IVs. This panel can be shown off using `/show <slot>`, and you can view it again using `/stats <slot>`. You can even view other players Pokemon using `/stats <slot> <player>` if you want to. Aliases of the `/stats` command include `/ivs`, `/iv`, `/evs`, `/ev`, and `/pkstats`. Here's an example of a stat panel:
+- **Pokemon Stat Panels:** After every catch, a broadcast message containing a **hoverable stat panel** for the newly acquired Pokemon is displayed in chat, showing the Pokemon's gender, level, ability, nature, Hidden Power type, EVs, and IVs. This panel can be shown off using `/show <slot>`, and you can view it again using `/stats <slot>`. You can even view other players Pokemon using `/stats <slot> <player>` if you want to. Here's an example of a stat panel:
 
 > ![Stat Panel Image](https://i.imgur.com/DcmbssN.png)
 
@@ -18,7 +18,7 @@ All commands, features, and messages are extensively configurable.
 
 > ![Broadcast Image](https://i.imgur.com/rXqzPWK.png)
 
-- **End Battle Command:** PixelAddons overwrites the Pixelmon Reforged `/endbattle` command. This command was previously locked behind a hard to find permission and didn't always work. Now, there is no permission needed to end any glitched battle without having to close your game. Aliases of the `/endbattle` command include `/stopbattle` and `/exitbattle`.
+- **End Battle Command:** PixelAddons overwrites the Pixelmon Reforged `/endbattle` command. This command was previously locked behind a hard to find permission and didn't always work. Now, there is no permission needed to end any glitched battle without having to close your game..
 
 - **Hatch Command:** PixelAddons includes a `/hatch <slot>` command that allows you to instantly hatch eggs for a configurable price. This drastically improves the egg hatching experience if players can use their in-game money they earned to expedite the process. The command prompts the users to confirm the egg hatch by having them run the command twice to prevent accidental hatches.
 
@@ -31,3 +31,6 @@ All commands, features, and messages are extensively configurable.
 - **[Pixelmon Reforged](https://reforged.gg)**
 - **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** *(not required, but recommended)*
 - **[AtomDev](https://github.com/josephworks/AtomMC)** *(only in project)*
+
+## Getting Help
+For support or queries, please open an issue in the [Issues section](https://github.com/Foulest/Vulture/issues).
