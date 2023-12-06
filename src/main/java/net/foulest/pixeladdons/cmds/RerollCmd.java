@@ -40,8 +40,6 @@ public class RerollCmd {
             long now = System.currentTimeMillis();
             long cooldownTimeRemainingMillis = (lastReroll + (Settings.pixelHuntCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
             long cooldownTimeRemaining = cooldownTimeRemainingMillis / 1000; // Convert milliseconds back to seconds
-
-            System.out.println("lastReroll=" + lastReroll + " now=" + now + " cooldown=" + Settings.pixelHuntCooldown + "s");
             String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
 
             if (cooldownTimeRemaining > 0) {
