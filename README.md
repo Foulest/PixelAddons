@@ -5,7 +5,9 @@
 [![DevSkim Badge](https://github.com/Foulest/PixelAddons/actions/workflows/devskim.yml/badge.svg)](https://github.com/Foulest/PixelAddons/actions/workflows/devskim.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/338803e66b67417686545c92133604a9)](https://app.codacy.com/gh/Foulest/PixelAddons/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-A private server-side plugin that improves the Pixelmon Reforged experience. All commands and features are configurable.
+A private server-side plugin that improves the Pixelmon Reforged experience.
+
+All commands, features, and messages are extensively configurable.
 
 ## Features
 - **Pokemon Stat Panels:** After every catch, a broadcast message containing a **hoverable stat panel** for the newly acquired Pokemon is displayed in chat, showing the Pokemon's gender, level, ability, nature, Hidden Power type, EVs, and IVs. This panel can be shown off using `/show <slot>`, and you can view it again using `/stats <slot>`. You can even view other players Pokemon using `/stats <slot> <player>` if you want to. Aliases of the `/stats` command include `/ivs`, `/iv`, `/evs`, `/ev`, and `/pkstats`. Here's an example of a stat panel:
