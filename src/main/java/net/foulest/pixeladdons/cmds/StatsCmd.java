@@ -4,7 +4,6 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.util.MessageUtil;
-import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.StatsUtil;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;

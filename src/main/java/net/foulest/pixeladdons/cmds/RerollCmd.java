@@ -2,7 +2,6 @@ package net.foulest.pixeladdons.cmds;
 
 import com.envyful.pixel.hunt.remastered.api.PixelHuntFactory;
 import net.foulest.pixeladdons.util.MessageUtil;
-import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;

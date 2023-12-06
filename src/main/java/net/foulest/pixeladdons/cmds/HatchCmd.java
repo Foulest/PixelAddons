@@ -8,7 +8,6 @@ import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.data.PlayerData;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.MessageUtil;
-import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;

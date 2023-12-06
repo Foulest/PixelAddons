@@ -16,7 +16,6 @@ import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
-import net.foulest.pixeladdons.util.Settings;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.apache.commons.text.WordUtils;
