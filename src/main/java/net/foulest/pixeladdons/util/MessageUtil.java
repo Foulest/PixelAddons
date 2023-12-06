@@ -61,4 +61,31 @@ public final class MessageUtil {
     public static String stripColor(@NonNull String message) {
         return ChatColor.stripColor(message);
     }
+
+    /**
+     * Formats seconds into Xh Xm Xs.
+     * Does not include hours or minutes if they are 0.
+     * Example: 1h 2m 3s is kept, but 0h 2m 3s is formatted to 2m 3s.
+     *
+     * @param seconds Seconds to format.
+     * @return Formatted time.
+     */
+    public static String formatTime(long seconds) {
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+
+        StringBuilder timeBuilder = new StringBuilder();
+
+        if (hours > 0) {
+            timeBuilder.append(hours).append("h ");
+        }
+
+        if (minutes > 0 || hours > 0) {
+            timeBuilder.append(minutes).append("m ");
+        }
+
+        timeBuilder.append(secs).append("s");
+        return timeBuilder.toString();
+    }
 }

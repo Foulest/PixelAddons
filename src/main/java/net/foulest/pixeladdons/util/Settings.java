@@ -18,6 +18,7 @@ public class Settings {
 
     public static List<String> commandsOnJoin = new ArrayList<>();
     public static boolean pixelHuntIntegration = true;
+    public static long pixelHuntCooldown = 900;
 
     /**
      * Initialize and set up default configuration values.
@@ -39,7 +40,8 @@ public class Settings {
         config = YamlConfiguration.loadConfiguration(file);
 
         commandsOnJoin = config.getStringList("commands-on-first-join");
-        pixelHuntIntegration = config.getBoolean("pixelhunt-integration");
+        pixelHuntIntegration = config.getBoolean("addons.pixelhunt.enabled");
+        pixelHuntCooldown = config.getLong("addons.pixelhunt.cooldown");
     }
 
     /**
@@ -47,7 +49,8 @@ public class Settings {
      */
     public static void saveSettings() {
         config.set("commands-on-first-join", commandsOnJoin);
-        config.set("pixelhunt-integration", pixelHuntIntegration);
+        config.set("addons.pixelhunt.enabled", pixelHuntIntegration);
+        config.set("addons.pixelhunt.cooldown", pixelHuntCooldown);
 
         saveConfig();
     }
@@ -76,7 +79,8 @@ public class Settings {
      */
     private static void setDefaultConfigValues() {
         config.addDefault("commands-on-first-join", Collections.<String>emptyList());
-        config.addDefault("pixelhunt-integration", true);
+        config.addDefault("addons.pixelhunt.enabled", true);
+        config.addDefault("addons.pixelhunt.cooldown", 900);
 
         config.options().copyDefaults(true);
     }
