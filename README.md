@@ -12,7 +12,7 @@ A private server-side plugin that improves the Pixelmon Reforged experience. All
 
 > ![Stat Panel Image](https://i.imgur.com/DcmbssN.png)
 
-- **Event Broadcasts**: The stat panels above are embedded into broadcast messages which get sent after every catch, starter pick, egg hatch, and fossil revival. Additionally, when Pokemon use the **Pickup** ability, a message is sent to the player telling them what item their Pokemon found. The color of the Pokemon's name in the broadcast changes whether the Pokemon is normal, shiny, and legendary as well. Here's an example of the plugin's broadcast messages:
+- **Event Broadcasts**: The stat panels above are embedded into broadcast messages which get sent after every catch, starter pick, egg hatch, and fossil revival. Additionally, when Pokemon use the **Pickup** ability, a message is sent to the player telling them what item their Pokemon found. When your Pokemon gain EVs after fights, an EV gain message is displayed as well. The color of the Pokemon's name in the broadcast changes whether the Pokemon is normal, shiny, and legendary as well. Here's an example of the post-catch broadcast messages:
 
 > ![Broadcast Image](https://i.imgur.com/rXqzPWK.png)
 
