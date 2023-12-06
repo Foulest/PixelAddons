@@ -20,12 +20,12 @@ A private server-side plugin that improves the Pixelmon Reforged experience. All
 
 - **Hatch Command:** PixelAddons includes a `/hatch <slot>` command that allows you to instantly hatch eggs for a configurable price. This drastically improves the egg hatching experience if players can use their in-game money they earned to expedite the process. The command prompts the users to confirm the egg hatch by having them run the command twice to prevent accidental hatches.
 
-- **Hunt Reroll Command:** PixelAddons integrates with PixelHuntReloaded and adds a command that allows players to re-roll the active hunt using `/reroll` (executes `/hunt reload` on the backend.) The re-roll needs all online members to vote for the re-roll by running the command. Once all online players agree to re-roll the hunt, the hunt is re-rolled. If only one player is online, a vote is not needed and the hunt is re-rolled. A configurable cooldown between re-rolls is available to limit the abuse of the command.
+- **Hunt Reroll Command:** PixelAddons integrates with **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** and adds a command that allows players to re-roll the active hunt using `/reroll` (executes `/hunt reload` on the backend.) The re-roll needs all online members to vote for the re-roll by running the command. Once all online players agree to re-roll the hunt, the hunt is re-rolled. If only one player is online, a vote is not needed and the hunt is re-rolled. A configurable cooldown between re-rolls is available to limit the abuse of the command.
 
 - **Commands on First Join:** When players first join the server, PixelAddons can execute a list of commands on their behalf. This is primarily used to give players items on first join, such as Poke Balls, tools, food, etc. This feature is present in Essentials, but for servers not using Essentials, it exists in PixelAddons as well.
 
 ## Dependencies
-- [CatServer (1.12.2)](https://catmc.org/)
-- [Pixelmon Reforged](https://reforged.gg)
-- [PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered) *(not required, but recommended)*
-- [AtomDev](https://github.com/josephworks/AtomMC) *(only in project)*
+- **[CatServer (1.12.2)](https://catmc.org/)**
+- **[Pixelmon Reforged](https://reforged.gg)**
+- **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** *(not required, but recommended)*
+- **[AtomDev](https://github.com/josephworks/AtomMC)** *(only in project)*
