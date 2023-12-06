@@ -53,7 +53,7 @@ public class EventListener implements Listener {
 
         // Handles first-join commands.
         if (!player.hasPlayedBefore()) {
-            for (String line : Settings.commandsOnJoin) {
+            for (String line : commandsOnJoin) {
                 if (line.isEmpty()) {
                     break;
                 }
@@ -78,7 +78,7 @@ public class EventListener implements Listener {
         PlayerDataManager.removePlayerData(player);
 
         // Removes the player from the re-roll list if they are on it.
-        if (Settings.rerollCommandEnabled) {
+        if (rerollCommandEnabled) {
             RerollCmd.votingToReroll.remove(player);
             RerollCmd.handleReroll();
         }

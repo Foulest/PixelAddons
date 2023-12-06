@@ -27,7 +27,7 @@ public class StatsCmd {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.
-        if (!Settings.statsCommandEnabled) {
+        if (!statsCommandEnabled) {
             MessageUtil.messagePlayer(player, commandDisabledMessage
                     .replace("%command%", "/stats"));
             return;
@@ -45,7 +45,7 @@ public class StatsCmd {
         // Handles viewing other players' stats.
         if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
             // Checks if viewing other players' stats is disabled.
-            if (!Settings.statsCommandViewOtherPlayers) {
+            if (!statsCommandViewOtherPlayers) {
                 MessageUtil.messagePlayer(player, statsViewOtherPlayersMessage);
                 return;
             }

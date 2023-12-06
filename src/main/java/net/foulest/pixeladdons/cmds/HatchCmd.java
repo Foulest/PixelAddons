@@ -118,7 +118,7 @@ public class HatchCmd {
         }
 
         // Checks if the player has enough money.
-        if (bankAccount.get().getMoney() < Settings.hatchCommandCost) {
+        if (bankAccount.get().getMoney() < hatchCommandCost) {
             MessageUtil.messagePlayer(player, notEnoughMoneyMessage
                     .replace("%amount%", formattedCost));
             return;
@@ -126,7 +126,7 @@ public class HatchCmd {
 
         // Handles hatching the egg.
         if (playerData.isConfirmHatch()) {
-            bankAccount.get().setMoney(bankAccount.get().getMoney() - Settings.hatchCommandCost);
+            bankAccount.get().setMoney(bankAccount.get().getMoney() - hatchCommandCost);
             pokemon.hatchEgg();
 
             playerData.setConfirmHatch(false);

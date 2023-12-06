@@ -26,7 +26,7 @@ public class ShowCmd {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.
-        if (!Settings.showCommandEnabled) {
+        if (!showCommandEnabled) {
             MessageUtil.messagePlayer(player, commandDisabledMessage
                     .replace("%command%", "/show"));
             return;

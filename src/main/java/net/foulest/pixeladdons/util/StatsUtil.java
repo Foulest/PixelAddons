@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.foulest.pixeladdons.util.Settings.statsPanelMessage;
+
 public class StatsUtil {
 
     public static List<String> getStats(Player player, Pokemon pokemon) {
@@ -66,7 +68,7 @@ public class StatsUtil {
         placeholders.put("%ivPercent%", getIVPercent(pokemon));
 
         // Iterate over each line in the settings and replace placeholders
-        for (String line : Settings.statsPanelMessage) {
+        for (String line : statsPanelMessage) {
             for (Map.Entry<String, String> entry : placeholders.entrySet()) {
                 line = line.replace(entry.getKey(), entry.getValue());
             }

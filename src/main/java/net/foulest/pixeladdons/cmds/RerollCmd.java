@@ -29,7 +29,7 @@ public class RerollCmd {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.
-        if (!Settings.rerollCommandEnabled) {
+        if (!rerollCommandEnabled) {
             MessageUtil.messagePlayer(player, commandDisabledMessage
                     .replace("%command%", "/reroll"));
             return;
@@ -43,9 +43,9 @@ public class RerollCmd {
         }
 
         // Checks if the re-roll command is on cooldown.
-        if (Settings.rerollCommandCooldown > 0) {
+        if (rerollCommandCooldown > 0) {
             long now = System.currentTimeMillis();
-            long cooldownTimeRemainingMillis = (lastReroll + (Settings.rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
+            long cooldownTimeRemainingMillis = (lastReroll + (rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
             long cooldownTimeRemaining = cooldownTimeRemainingMillis / 1000; // Convert milliseconds back to seconds
             String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
 
@@ -89,7 +89,7 @@ public class RerollCmd {
      */
     public static void handleReroll() {
         // Checks if the command is enabled.
-        if (!Settings.rerollCommandEnabled) {
+        if (!rerollCommandEnabled) {
             return;
         }
 
