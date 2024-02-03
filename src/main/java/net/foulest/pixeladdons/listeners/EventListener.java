@@ -88,6 +88,11 @@ public class EventListener implements Listener {
     public void onEVGain(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
+        // Returns if the event is null.
+        if (forgeEvent == null) {
+            return;
+        }
+
         // Handles EV gain messages.
         if (forgeEvent instanceof EVsGainedEvent) {
             EVsGainedEvent eVsGainedEvent = (EVsGainedEvent) forgeEvent;
@@ -96,6 +101,12 @@ public class EventListener implements Listener {
             if (eVsGainedEvent.pokemon.getOwnerPlayer() != null
                     && Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID()) != null) {
                 Player player = Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID());
+
+                // Returns if the player is null.
+                if (player == null) {
+                    return;
+                }
+
                 EVStore evStore = eVsGainedEvent.evStore;
                 PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
                 int[] oldEVs = evStore.getArray();
@@ -205,6 +216,11 @@ public class EventListener implements Listener {
     public void onPokemonCatch(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
+        // Returns if the event is null.
+        if (forgeEvent == null) {
+            return;
+        }
+
         // Check if the event is either a regular capture or a raid capture
         if (forgeEvent instanceof CaptureEvent.SuccessfulCapture
                 || forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
@@ -224,6 +240,11 @@ public class EventListener implements Listener {
             }
 
             pokemonName = pokemon.getSpecies().getPokemonName();
+
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
 
             // Returns if the player is offline.
             if (!player.isOnline()) {
@@ -251,6 +272,11 @@ public class EventListener implements Listener {
             Player player = Bukkit.getPlayer(pickupEvent.player.player.getUniqueID());
             Pokemon pokemon = pickupEvent.pokemon.pokemon;
             ItemStack itemStack = pickupEvent.stack;
+
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
 
             // Returns if the player is offline.
             if (!player.isOnline()) {
@@ -287,6 +313,11 @@ public class EventListener implements Listener {
             Pokemon pokemon = eggHatchEvent.getPokemon();
             String pokemonName = pokemon.getSpecies().getPokemonName();
 
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
+
             // Returns if the player is offline.
             if (!player.isOnline()) {
                 return;
@@ -309,6 +340,11 @@ public class EventListener implements Listener {
             Pokemon pokemon = receivedEvent.pokemon;
             String pokemonName = pokemon.getSpecies().getPokemonName();
             ReceiveType receiveType = receivedEvent.receiveType;
+
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
 
             // Returns if the player is offline.
             if (!player.isOnline()) {
