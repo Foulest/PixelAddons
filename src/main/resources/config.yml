@@ -53,6 +53,7 @@ pixeladdons:
     commands:
       misc:
         no-permission: "&cNo permission."
+        invalid-usage: "&cInvalid usage. (%reason%)"
         disabled: "&cThe %command% command is disabled."
         usage: "&cUsage: %usage%"
       end-battle:
@@ -61,7 +62,6 @@ pixeladdons:
         not-in-battle: "&cYou are not in a battle."
       hatch:
         starter-not-found: "&cYou do not have a starter Pokemon."
-        invalid-slot: "&cInvalid slot. (%reason%)"
         bank-account-not-found: "&cBank account not found."
         not-enough-money: "&cYou need at least $%amount% to hatch this egg."
         pokemon-hatched: "&aYour %pokemon% was successfully hatched for $%amount%.";

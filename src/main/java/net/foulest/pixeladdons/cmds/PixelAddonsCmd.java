@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+import static net.foulest.pixeladdons.util.Settings.commandNoPermissionMessage;
 import static net.foulest.pixeladdons.util.Settings.commandUsageMessage;
 
 /**
@@ -42,7 +43,7 @@ public class PixelAddonsCmd {
         switch (subCommand.toLowerCase()) {
             case "reload":
                 if (!sender.hasPermission("pixeladdons.reload")) {
-                    MessageUtil.messagePlayer(sender, "&cNo permission.");
+                    MessageUtil.messagePlayer(sender, commandNoPermissionMessage);
                     return;
                 }
 
@@ -70,7 +71,7 @@ public class PixelAddonsCmd {
      */
     private void handleHelp(@NotNull CommandSender sender, CommandArgs args) {
         if (!sender.hasPermission("pixeladdons.main")) {
-            MessageUtil.messagePlayer(sender, "&cNo permission.");
+            MessageUtil.messagePlayer(sender, commandNoPermissionMessage);
             return;
         }
 

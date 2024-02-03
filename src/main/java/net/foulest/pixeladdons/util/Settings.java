@@ -61,7 +61,7 @@ public class Settings {
 
     // Hatch command messages
     public static String starterNotFoundMessage;
-    public static String invalidSlotMessage;
+    public static String commandInvalidUsageMessage;
     public static String bankAccountNotFoundMessage;
     public static String notEnoughMoneyMessage;
     public static String pokemonHatchedMessage;
@@ -113,13 +113,6 @@ public class Settings {
             // Log a warning if the default configuration cannot be found within the JAR
             MessageUtil.log(Level.WARNING, "Could not find " + fileName + " in the plugin JAR.");
             return;
-        } else {
-            try {
-                // Close the defConfigStream properly to avoid resource leaks
-                defConfigStream.close();
-            } catch (IOException ex) {
-                MessageUtil.printException(ex);
-            }
         }
 
         // Proceed to check if the config file exists in the plugin's data folder
@@ -133,16 +126,17 @@ public class Settings {
         // Now that we've ensured the file exists (either it already did, or we've just created it),
         // we can safely load it into our CustomYamlConfiguration object
         config = CustomYamlConfiguration.loadConfiguration(file);
+        CustomYamlConfiguration defConfig = CustomYamlConfiguration
+                .loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8));
 
-        // Load the default configuration for comparison and to set defaults
-        try (InputStream defConfigStreamForDefaults = PixelAddons.getInstance().getResource(fileName)) {
-            CustomYamlConfiguration defConfig = CustomYamlConfiguration
-                    .loadConfiguration(new InputStreamReader(defConfigStreamForDefaults, StandardCharsets.UTF_8));
+        // Ensure defaults are applied
+        config.setDefaults(defConfig);
+        config.options().copyDefaults(true);
+        saveConfig(); // Save the config with defaults applied
 
-            // Ensure defaults are applied
-            config.setDefaults(defConfig);
-            config.options().copyDefaults(true);
-            saveConfig(); // Save the config with defaults applied
+        // Close the defConfigStream properly to avoid resource leaks
+        try {
+            defConfigStream.close();
         } catch (IOException ex) {
             MessageUtil.printException(ex);
         }
@@ -184,6 +178,7 @@ public class Settings {
 
         // Misc command messages
         commandNoPermissionMessage = config.getString("pixeladdons.messages.commands.misc.no-permission");
+        commandInvalidUsageMessage = config.getString("pixeladdons.messages.commands.invalid-usage");
         commandDisabledMessage = config.getString("pixeladdons.messages.commands.misc.disabled");
         commandUsageMessage = config.getString("pixeladdons.messages.commands.misc.usage");
 
@@ -194,7 +189,6 @@ public class Settings {
 
         // Hatch command messages
         starterNotFoundMessage = config.getString("pixeladdons.messages.commands.hatch.starter-not-found");
-        invalidSlotMessage = config.getString("pixeladdons.messages.commands.hatch.invalid-slot");
         bankAccountNotFoundMessage = config.getString("pixeladdons.messages.commands.hatch.bank-account-not-found");
         notEnoughMoneyMessage = config.getString("pixeladdons.messages.commands.hatch.not-enough-money");
         pokemonHatchedMessage = config.getString("pixeladdons.messages.commands.hatch.pokemon-hatched");
@@ -210,7 +204,7 @@ public class Settings {
 
         // Show command messages
         showMessage = config.getString("pixeladdons.messages.commands.show.message");
-        
+
         // Event messages
         evGainMessage = config.getString("pixeladdons.messages.events.ev-gain");
         evIncreaseMessage = config.getString("pixeladdons.messages.events.ev-increase");

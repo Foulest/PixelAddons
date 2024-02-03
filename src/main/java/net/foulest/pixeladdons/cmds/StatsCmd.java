@@ -50,18 +50,18 @@ public class StatsCmd {
                 return;
             }
 
+            Player target = Bukkit.getPlayer(args.getArgs(1));
+
             // Checks if the player is invalid.
-            if (Bukkit.getPlayer(args.getArgs(1)) == null) {
-                MessageUtil.messagePlayer(player, invalidSlotMessage
+            if (target == null) {
+                MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                         .replace("%reason%", "Player is invalid"));
                 return;
             }
 
-            Player target = Bukkit.getPlayer(args.getArgs(1));
-
             // Checks if the player is offline.
             if (!target.isOnline()) {
-                MessageUtil.messagePlayer(player, invalidSlotMessage
+                MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                         .replace("%reason%", "Player is offline"));
                 return;
             }
@@ -79,7 +79,7 @@ public class StatsCmd {
         try {
             Integer.parseInt(args.getArgs(0));
         } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
@@ -88,7 +88,7 @@ public class StatsCmd {
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is invalid"));
             return;
         }
@@ -97,7 +97,7 @@ public class StatsCmd {
 
         // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is empty"));
             return;
         }
@@ -106,7 +106,7 @@ public class StatsCmd {
 
         // Checks if the Pokemon is missing.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Pokemon is missing"));
             return;
         }
@@ -115,7 +115,7 @@ public class StatsCmd {
 
         // Checks if the owner is missing.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Owner is missing"));
             return;
         }

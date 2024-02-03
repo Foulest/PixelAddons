@@ -60,7 +60,7 @@ public class HatchCmd {
         try {
             Integer.parseInt(args.getArgs(0));
         } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
@@ -69,7 +69,7 @@ public class HatchCmd {
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is invalid"));
             return;
         }
@@ -78,7 +78,7 @@ public class HatchCmd {
 
         // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is empty"));
             return;
         }
@@ -87,14 +87,14 @@ public class HatchCmd {
 
         // Checks if the Pokemon is valid.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Egg is missing"));
             return;
         }
 
         // Checks if the Pokemon is an egg.
         if (!pokemon.isEgg()) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Not an egg"));
             return;
         }
@@ -103,7 +103,7 @@ public class HatchCmd {
 
         // Checks if the owner is valid.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Owner is missing"));
             return;
         }

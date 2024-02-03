@@ -51,7 +51,7 @@ public class ShowCmd {
         try {
             Integer.parseInt(args.getArgs(0));
         } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Not a number"));
             return;
         }
@@ -60,7 +60,7 @@ public class ShowCmd {
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is invalid"));
             return;
         }
@@ -69,7 +69,7 @@ public class ShowCmd {
 
         // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Slot is empty"));
             return;
         }
@@ -78,7 +78,7 @@ public class ShowCmd {
 
         // Checks if the Pokemon is valid.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Pokemon is missing"));
             return;
         }
@@ -87,7 +87,7 @@ public class ShowCmd {
 
         // Checks if the owner is valid.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, invalidSlotMessage
+            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
                     .replace("%reason%", "Owner is missing"));
             return;
         }
