@@ -9,6 +9,7 @@ import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import static net.foulest.pixeladdons.util.Settings.*;
 
@@ -21,7 +22,7 @@ public class ShowCmd {
 
     @Command(name = "show", description = "Shows the stats of your selected Pokemon in chat.",
             usage = "/show <slot>", aliases = {"pkshow", "pokeshow"}, inGameOnly = true)
-    public void onCommand(CommandArgs args) {
+    public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.

@@ -6,6 +6,7 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumNature;
 import com.pixelmonmod.pixelmon.enums.EnumPokerusType;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -17,7 +18,15 @@ import static net.foulest.pixeladdons.util.Settings.statsPanelMessage;
 
 public class StatsUtil {
 
-    public static List<String> getStats(Player player, Pokemon pokemon) {
+    /**
+     * Gets the stats panel of a Pokemon.
+     *
+     * @param player  The player to get the stats for.
+     * @param pokemon The Pokemon to get the stats for.
+     * @return The stats panel of the Pokemon.
+     */
+    public static @NotNull List<String> getStatsPanel(@NotNull Player player,
+                                                      @NotNull Pokemon pokemon) {
         List<String> statsPanel = new ArrayList<>();
 
         // Get the EVs of the Pokemon
@@ -77,7 +86,13 @@ public class StatsUtil {
         return statsPanel;
     }
 
-    public static String getNatureEffect(Pokemon pokemon) {
+    /**
+     * Gets the effect of a nature.
+     *
+     * @param pokemon The Pokemon to get the nature effect for.
+     * @return The effect of the nature.
+     */
+    public static @NotNull String getNatureEffect(@NotNull Pokemon pokemon) {
         EnumNature nature = pokemon.getNature();
 
         // Get the increased and decreased stats
@@ -96,16 +111,22 @@ public class StatsUtil {
         }
     }
 
-    public static String getEVPercent(Pokemon pokemon) {
+    /**
+     * Gets the percentage of EVs across all stats.
+     *
+     * @param pokemon The Pokemon to get the EV percentage for.
+     * @return The percentage of EVs across all stats.
+     */
+    public static @NotNull String getEVPercent(@NotNull Pokemon pokemon) {
         DecimalFormat df = new DecimalFormat("#.#");
 
         // Get the total EVs across all stats
-        int totalEVs = pokemon.getEVs().getStat(StatsType.HP) +
-                pokemon.getEVs().getStat(StatsType.Attack) +
-                pokemon.getEVs().getStat(StatsType.Defence) +
-                pokemon.getEVs().getStat(StatsType.SpecialAttack) +
-                pokemon.getEVs().getStat(StatsType.SpecialDefence) +
-                pokemon.getEVs().getStat(StatsType.Speed);
+        int totalEVs = pokemon.getEVs().getStat(StatsType.HP)
+                + pokemon.getEVs().getStat(StatsType.Attack)
+                + pokemon.getEVs().getStat(StatsType.Defence)
+                + pokemon.getEVs().getStat(StatsType.SpecialAttack)
+                + pokemon.getEVs().getStat(StatsType.SpecialDefence)
+                + pokemon.getEVs().getStat(StatsType.Speed);
 
         // Calculate the percentage
         double evPercent = ((double) totalEVs / 510) * 100;
@@ -114,16 +135,22 @@ public class StatsUtil {
         return df.format(evPercent) + "%";
     }
 
-    public static String getIVPercent(Pokemon pokemon) {
+    /**
+     * Gets the percentage of IVs across all stats.
+     *
+     * @param pokemon The Pokemon to get the IV percentage for.
+     * @return The percentage of IVs across all stats.
+     */
+    public static @NotNull String getIVPercent(@NotNull Pokemon pokemon) {
         DecimalFormat df = new DecimalFormat("#.#");
 
         // Calculate the total IVs across all stats
-        int totalIVs = pokemon.getIVs().getStat(StatsType.HP) +
-                pokemon.getIVs().getStat(StatsType.Attack) +
-                pokemon.getIVs().getStat(StatsType.Defence) +
-                pokemon.getIVs().getStat(StatsType.SpecialAttack) +
-                pokemon.getIVs().getStat(StatsType.SpecialDefence) +
-                pokemon.getIVs().getStat(StatsType.Speed);
+        int totalIVs = pokemon.getIVs().getStat(StatsType.HP)
+                + pokemon.getIVs().getStat(StatsType.Attack)
+                + pokemon.getIVs().getStat(StatsType.Defence)
+                + pokemon.getIVs().getStat(StatsType.SpecialAttack)
+                + pokemon.getIVs().getStat(StatsType.SpecialDefence)
+                + pokemon.getIVs().getStat(StatsType.Speed);
 
         // Calculate the percentage
         double ivPercent = ((double) totalIVs / 186) * 100;

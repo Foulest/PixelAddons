@@ -1,6 +1,8 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +10,12 @@ import java.util.List;
 
 import static net.foulest.pixeladdons.util.Settings.*;
 
+/**
+ * Utility class for formatting.
+ *
+ * @author Foulest
+ * @project PixelAddons
+ */
 public class FormatUtil {
 
     /**
@@ -16,7 +24,7 @@ public class FormatUtil {
      * @param pokemon Pokemon to get the display color of.
      * @return Display color of the Pokemon.
      */
-    public static String getDisplayColor(Pokemon pokemon) {
+    public static String getDisplayColor(@NotNull Pokemon pokemon) {
         if (pokemon.isShiny()) {
             return shinyColor;
         } else if (pokemon.getSpecies().isLegendary()) {
@@ -35,7 +43,8 @@ public class FormatUtil {
      * @param stat Stat to get color of.
      * @return Color of the stat.
      */
-    public static String ivColor(int stat) {
+    @Contract(pure = true)
+    public static @NotNull String ivColor(int stat) {
         if (stat >= 0 && stat < 10) {
             return "&c";
         } else if (stat >= 10 && stat < 20) {
@@ -56,7 +65,8 @@ public class FormatUtil {
      * @param stat Stat to get color of.
      * @return Color of the stat.
      */
-    public static String evColor(int stat) {
+    @Contract(pure = true)
+    public static @NotNull String evColor(int stat) {
         if (stat >= 0 && stat < 50) {
             return "&c";
         } else if (stat >= 50 && stat < 150) {
@@ -77,7 +87,7 @@ public class FormatUtil {
      * @param stat Stat to format.
      * @return Formatted stat.
      */
-    public static String formatStat(String stat) {
+    public static @NotNull String formatStat(String stat) {
         stat = stat.replace("enum.stat.", "");
         stat = stat.replace("hp", "HP");
         stat = stat.replace("attack", "Atk");
@@ -94,7 +104,7 @@ public class FormatUtil {
      * @param builder StringBuilder to convert.
      * @return Converted List.
      */
-    public static List<String> convertToList(StringBuilder builder) {
+    public static @NotNull List<String> convertToList(@NotNull StringBuilder builder) {
         String[] splitData = builder.toString().split("\n");
         List<String> output = new ArrayList<>();
 

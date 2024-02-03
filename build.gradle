@@ -1,18 +1,19 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'maven-publish'
     id 'java'
 }
 
 group = 'net.foulest'
-version = '1.0.5'
-description = 'PixelAddons'
+version = '1.0.6'
+description = project.name
+
 compileJava.options.encoding = 'UTF-8'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    // Maven central repository
+    // Maven repositories
     mavenCentral()
-
-    // Maven local repository
     mavenLocal()
 
     // Local libraries
@@ -21,19 +22,22 @@ repositories {
     }
 
     maven {
-        url = 'https://files.minecraftforge.net/maven'
+        url 'https://files.minecraftforge.net/maven'
     }
 
     maven {
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        url 'https://oss.sonatype.org/content/repositories/central'
+        name 'Sonatype Central'
     }
 
     maven {
-        url = 'https://oss.sonatype.org/content/repositories/central'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+        name 'Sonatype Snapshots'
     }
 
     maven {
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots'
+        name 'Spigot Snapshots'
 
         content {
             includeGroup 'org.bukkit'
@@ -42,54 +46,82 @@ repositories {
     }
 }
 
-configurations {
-    provided // Custom configuration for compile-only dependencies
-    implementation.extendsFrom(provided)
-}
-
 dependencies {
     // AtomDev - (I don't remember what this is for)
     // https://github.com/josephworks/AtomMC/releases/download/v2.1/AtomDev.jar
-    implementation group: 'org.atom', name: 'AtomDev', version: '1.12.2'
+    compileOnly group: 'org.atom', name: 'AtomDev', version: '1.12.2'
 
     // CatServer - for listening to Forge events
     // https://catmc.org/download/universal
-    implementation group: 'catserver', name: 'CatServer', version: '1.12.2'
+    compileOnly group: 'catserver', name: 'CatServer', version: '1.12.2'
 
     // Pixelmon - for listening to Pixelmon events
     // https://reforged.gg (Download 1.12.2)
-    implementation group: 'com.pixelmonmod', name: 'Pixelmon', version: '1.12.2'
+    compileOnly group: 'com.pixelmonmod', name: 'Pixelmon', version: '1.12.2'
 
     // PixelHunt Remastered - for listening to PixelHunt events
     // https://pixelmonmod.com/wiki/PixelHunt_Remastered
-    implementation group: 'com.envyful', name: 'PixelHuntRemastered', version: '3.0.2'
+    compileOnly group: 'com.envyful', name: 'PixelHuntRemastered', version: '3.0.2'
 
     // Spigot 1.12.2 - necessary for project
     // https://hub.spigotmc.org/nexus/content/repositories/snapshots
-    implementation group: 'org.spigotmc', name: 'spigot', version: '1.12.2-R0.1-SNAPSHOT'
-    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot', version: '1.12.2-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
 
-    // Apache Commons Lang - for string manipulation
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-
-    // Apache Commons Text - for string manipulation
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-    provided group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+    // JetBrains Annotations - for code inspection and documentation
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    compileOnly group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 }
 
-jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+tasks {
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+        minimize()
 
-    // Include compile-only dependencies in the JAR
-    from {
-        configurations.provided.collect { file ->
-            zipTree(file)
+        relocate 'org.apache', 'net.foulest.pixeladdons.shaded.org.apache'
+        relocate 'org.jetbrains', 'net.foulest.pixeladdons.shaded.org.jetbrains'
+    }
+
+    compileJava {
+        dependsOn(clean)
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
+    processResources {
+        filesMatching('**/plugin.yml') {
+            expand(project.properties)
+        }
+    }
+
+    tasks.register('sourceJar', Jar) {
+        from sourceSets.main.allJava
+    }
+
+    jar.configure {
+        archiveClassifier = 'default'
+    }
+
+    shadowJar.configure {
+        archiveClassifier = null
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "net.foulest.pixeladdons"
+            artifactId = project.name
+            version = project.version
+
+            from components.java
         }
     }
 }

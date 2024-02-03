@@ -4,22 +4,28 @@ import lombok.Getter;
 import net.foulest.pixeladdons.cmds.*;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.listeners.EventListener;
+import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.CommandFramework;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Level;
 
 /**
+ * Main class for PixelAddons.
+ *
  * @author Foulest
  * @project PixelAddons
  */
 @Getter
 public class PixelAddons extends JavaPlugin {
 
+    @Getter
     public static PixelAddons instance;
-    public final String pluginName = "PixelAddons";
     public CommandFramework framework;
 
     @Override
@@ -31,39 +37,34 @@ public class PixelAddons extends JavaPlugin {
     @Override
     public void onEnable() {
         // Initializes the Command Framework.
-        Bukkit.getLogger().info("[" + pluginName + "] Initializing Command Framework...");
+        MessageUtil.log(Level.INFO, "Initializing Command Framework...");
         framework = new CommandFramework(this);
 
         // Creates the default settings config.
-        Bukkit.getLogger().info("[" + pluginName + "] Loading Settings...");
-        Settings.setupSettings();
+        MessageUtil.log(Level.INFO, "Loading Settings...");
         Settings.loadSettings();
 
         // Loads the plugin's listeners.
-        Bukkit.getLogger().info("[" + pluginName + "] Loading Listeners...");
+        MessageUtil.log(Level.INFO, "Loading Listeners...");
         loadListeners(new EventListener());
 
         // Loads the plugin's commands.
-        Bukkit.getLogger().info("[" + pluginName + "] Loading Commands...");
+        MessageUtil.log(Level.INFO, "Loading Commands...");
         loadCommands(new HatchCmd(), new PixelAddonsCmd(), new RerollCmd(),
                 new StatsCmd(), new ShowCmd(), new EndBattleCmd());
 
-        Bukkit.getLogger().info("[" + pluginName + "] Loaded successfully.");
+        MessageUtil.log(Level.INFO, "Loaded successfully.");
     }
 
     @Override
     public void onDisable() {
         // Saves all online players' player data.
-        Bukkit.getLogger().info("[" + pluginName + "] Saving Player Data...");
+        MessageUtil.log(Level.INFO, "Saving Player Data...");
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             PlayerDataManager.removePlayerData(player);
         }
 
-        // Saves the settings.
-        Bukkit.getLogger().info("[" + pluginName + "] Saving Settings...");
-        Settings.saveSettings();
-
-        Bukkit.getLogger().info("[" + pluginName + "] Shut down successfully.");
+        MessageUtil.log(Level.INFO, "Shut down successfully.");
     }
 
     /**
@@ -71,7 +72,7 @@ public class PixelAddons extends JavaPlugin {
      *
      * @param listeners Listener to load.
      */
-    private void loadListeners(Listener... listeners) {
+    private void loadListeners(Listener @NotNull ... listeners) {
         for (Listener listener : listeners) {
             Bukkit.getPluginManager().registerEvents(listener, this);
         }
@@ -82,7 +83,7 @@ public class PixelAddons extends JavaPlugin {
      *
      * @param commands Command to load.
      */
-    private void loadCommands(Object... commands) {
+    private void loadCommands(Object @NotNull ... commands) {
         for (Object command : commands) {
             framework.registerCommands(command);
         }

@@ -1,13 +1,13 @@
 package net.foulest.pixeladdons.cmds;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,7 @@ public class PixelAddonsCmd {
 
     @Command(name = "pixeladdons", description = "Main command for PixelAddons.",
             permission = "pixeladdons.main", usage = "/pixeladdons")
-    public void onCommand(@NonNull CommandArgs args) {
+    public void onCommand(@NotNull CommandArgs args) {
         CommandSender sender = args.getSender();
 
         // No additional arguments, display help menu.
@@ -62,7 +62,13 @@ public class PixelAddonsCmd {
         }
     }
 
-    private void handleHelp(@NonNull CommandSender sender, @NonNull CommandArgs args) {
+    /**
+     * Handles the help command.
+     *
+     * @param sender The command sender
+     * @param args   The command arguments
+     */
+    private void handleHelp(@NotNull CommandSender sender, CommandArgs args) {
         if (!sender.hasPermission("pixeladdons.main")) {
             MessageUtil.messagePlayer(sender, "&cNo permission.");
             return;
@@ -70,7 +76,7 @@ public class PixelAddonsCmd {
 
         // A list of available commands with their usages.
         List<String> commands = Collections.singletonList(
-                "&7* &f/pixeladdons reload &7- Reloads the config."
+                "&f/pixeladdons reload &7- Reloads the config."
         );
 
         int itemsPerPage = 4;
@@ -93,7 +99,7 @@ public class PixelAddonsCmd {
         int endIndex = Math.min(commands.size(), startIndex + itemsPerPage);
 
         MessageUtil.messagePlayer(sender, "");
-        MessageUtil.messagePlayer(sender, "&ePixelAddons Help &7&o(Page " + page + "/" + maxPages + ")");
+        MessageUtil.messagePlayer(sender, "&ePixelAddons Help &7(Page " + page + "/" + maxPages + ")");
 
         for (int i = startIndex; i < endIndex; i++) {
             MessageUtil.messagePlayer(sender, commands.get(i));

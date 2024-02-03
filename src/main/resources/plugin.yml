@@ -1,4 +1,4 @@
 name: PixelAddons
-version: '1.0.5'
+version: ${project.version}
 main: net.foulest.pixeladdons.PixelAddons
 author: Foulest

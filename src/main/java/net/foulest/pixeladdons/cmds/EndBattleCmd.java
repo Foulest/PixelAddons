@@ -14,6 +14,7 @@ import net.foulest.pixeladdons.util.command.CommandArgs;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import static com.pixelmonmod.pixelmon.api.command.PixelmonCommand.requireEntityPlayer;
 import static net.foulest.pixeladdons.util.Settings.*;
@@ -27,7 +28,7 @@ public class EndBattleCmd {
 
     @Command(name = "endbattle", description = "Ends your current battle.",
             usage = "/endbattle", aliases = {"stopbattle", "exitbattle"}, inGameOnly = true)
-    public void onCommand(CommandArgs args) throws CommandException {
+    public void onCommand(@NotNull CommandArgs args) throws CommandException {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.

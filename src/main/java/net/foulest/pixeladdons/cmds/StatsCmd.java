@@ -9,6 +9,7 @@ import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import static net.foulest.pixeladdons.util.Settings.*;
 
@@ -22,7 +23,7 @@ public class StatsCmd {
     @Command(name = "stats", description = "Shows the stats of your selected Pokemon.",
             aliases = {"ivs", "evs", "iv", "ev", "pkstats", "pokestats"},
             usage = "/stats <slot> [player]", inGameOnly = true)
-    public void onCommand(CommandArgs args) {
+    public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.
@@ -45,7 +46,7 @@ public class StatsCmd {
         if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
             // Checks if viewing other players' stats is disabled.
             if (!statsCommandViewOtherPlayers) {
-                MessageUtil.messagePlayer(player, statsViewOtherPlayersMessage);
+                MessageUtil.messagePlayer(player, commandNoPermissionMessage);
                 return;
             }
 
@@ -122,7 +123,7 @@ public class StatsCmd {
         // Handles printing the stats.
         MessageUtil.messagePlayer(player, "");
 
-        for (String line : StatsUtil.getStats(owner, pokemon)) {
+        for (String line : StatsUtil.getStatsPanel(owner, pokemon)) {
             MessageUtil.messagePlayer(player, line);
         }
 

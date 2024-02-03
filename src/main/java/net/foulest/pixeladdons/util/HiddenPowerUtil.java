@@ -3,7 +3,14 @@ package net.foulest.pixeladdons.util;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumType;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Utility class for hidden power.
+ *
+ * @author Foulest
+ * @project PixelAddons
+ */
 public class HiddenPowerUtil {
 
     /**
@@ -12,7 +19,7 @@ public class HiddenPowerUtil {
      * @param pokemon Pokemon to get the hidden power type of.
      * @return Hidden power type of the Pokemon.
      */
-    public static EnumType getHiddenPower(Pokemon pokemon) {
+    public static EnumType getHiddenPower(@NotNull Pokemon pokemon) {
         int hp = (pokemon.getIVs().getStat(StatsType.HP) % 2 == 0) ? 0 : 1;
         int atk = (pokemon.getIVs().getStat(StatsType.Attack) % 2 == 0) ? 0 : 1;
         int def = (pokemon.getIVs().getStat(StatsType.Defence) % 2 == 0) ? 0 : 1;

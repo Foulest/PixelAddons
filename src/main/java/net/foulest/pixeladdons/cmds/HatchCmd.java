@@ -12,6 +12,7 @@ import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public class HatchCmd {
 
     @Command(name = "hatch", description = "Hatches the selected Pokemon egg.",
             usage = "/hatch <slot>", inGameOnly = true)
-    public void onCommand(CommandArgs args) {
+    public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
         PlayerData playerData = PlayerDataManager.getPlayerData(player);
         DecimalFormat df = new DecimalFormat("###,###.###");

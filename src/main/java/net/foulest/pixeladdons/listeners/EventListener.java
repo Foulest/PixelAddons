@@ -18,7 +18,6 @@ import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import org.apache.commons.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +34,6 @@ import java.util.List;
 import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
 import static net.foulest.pixeladdons.util.Settings.*;
 
-/**
- * @author Foulest
- * @project PixelAddons
- */
 public class EventListener implements Listener {
 
     /**
@@ -46,7 +42,7 @@ public class EventListener implements Listener {
      * @param event PlayerJoinEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.getPlayerData(player);
 
@@ -72,7 +68,7 @@ public class EventListener implements Listener {
      * @param event PlayerQuitEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.removePlayerData(player);
 
@@ -89,7 +85,7 @@ public class EventListener implements Listener {
      * @param event ForgeEvent
      */
     @EventHandler
-    public void onEVGain(ForgeEvent event) {
+    public void onEVGain(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
         // Handles EV gain messages.
@@ -206,7 +202,7 @@ public class EventListener implements Listener {
      * @param event ForgeEvent
      */
     @EventHandler
-    public void onPokemonCatch(ForgeEvent event) {
+    public void onPokemonCatch(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
         // Check if the event is either a regular capture or a raid capture
@@ -267,7 +263,7 @@ public class EventListener implements Listener {
             itemName = itemName.replace("@0", "");
             itemName = itemName.replace("item.", "");
             itemName = itemName.replace("_", " ");
-            itemName = WordUtils.capitalize(itemName);
+            itemName = MessageUtil.capitalize(itemName);
 
             // Get the correct article for the item name.
             String article = "a" + ((itemName.startsWith("A") || itemName.startsWith("E") || itemName.startsWith("I")
@@ -324,7 +320,7 @@ public class EventListener implements Listener {
             // Formats the message.
             switch (receiveType) {
                 case Custom:
-                    chatMessage = pokemonReceiveCustomMessage
+                    chatMessage = receivePokemonCustomMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
@@ -351,21 +347,21 @@ public class EventListener implements Listener {
                     break;
 
                 case Command:
-                    chatMessage = pokemonReceiveCommandMessage
+                    chatMessage = receivePokemonCommandMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case SelectPokemon:
-                    chatMessage = pokemonReceiveSelectMessage
+                    chatMessage = receivePokemonSelectMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case Christmas:
-                    chatMessage = pokemonReceiveChristmasMessage
+                    chatMessage = receivePokemonChristmasMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);

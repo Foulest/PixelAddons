@@ -6,6 +6,7 @@ import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class RerollCmd {
 
     @Command(name = "reroll", description = "Votes to re-roll the hunt.",
             usage = "/reroll", aliases = {"rtv"}, inGameOnly = true)
-    public void onCommand(CommandArgs args) {
+    public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
         // Checks if the command is enabled.

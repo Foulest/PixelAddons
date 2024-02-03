@@ -1,0 +1,102 @@
+# PixelAddons
+# Version: ${project.version}
+#
+# Created by: Foulest (https://github.com/Foulest/PixelAddons)
+# License: GPLv3 (https://github.com/Foulest/PixelAddons/LICENSE)
+pixeladdons:
+  commands:
+    # The 'on-first-join' command allows you to run commands when a player first joins the server.
+    # This is useful for giving players items, money, or Pokemon when they first join.
+    on-first-join: []
+    # The 'end-battle' command allows players to end their battle.
+    # This overrides the normal battle ending command baked into Pixelmon.
+    end-battle:
+      enabled: true
+    # The 'hatch' command allows players to hatch eggs on command.
+    # This skips the normal process of walking to hatch the egg.
+    # The 'cost' option is the amount of money required to hatch the egg.
+    hatch:
+      enabled: true
+      cost: 5000
+    # The 'reroll' command allows players to vote to re-roll the hunt.
+    # This is only supported if the PixelHunt Reloaded mod is installed.
+    # The 'cooldown' option is the time in seconds between re-rolls.
+    reroll:
+      enabled: true
+      cooldown: 900
+    # The 'show' command allows players to show their Pokemon in chat.
+    # The output is the same as the 'pixeladdons.messages.stats-panel' section.
+    show:
+      enabled: true
+    # The 'stats' command allows players to view the stats of their Pokemon.
+    # You can modify the output message in the 'pixeladdons.messages.stats-panel' section.
+    # The 'view-other-players' option allows players to view the stats of other players' Pokemon.
+    stats:
+      enabled: true
+      view-other-players: true
+  # You can modify the messages for commands, events, receiving Pokemon, and the stats panel.
+  # The '%placeholder%' options are replaced with the corresponding values.
+  # It's not recommended to modify the '%placeholder%' options unless you know what you're doing.
+  # Every message is customizable, so you can change the colors, formatting, and placeholders.
+  messages:
+    # The 'colors' options allow you to modify the colors of the Pokemon names in the messages.
+    # 'normal' is for regular Pokemon, 'shiny' is for shiny Pokemon, 'egg' is for eggs,
+    # 'legendary' is for legendary Pokemon, 'ultra-beast' is for Ultra Beasts,
+    # and 'pickup' is for items picked up during the Pickup event.
+    colors:
+      normal: "&a"
+      shiny: "&6"
+      egg: "&b"
+      legendary: "&d"
+      ultra-beast: "&d"
+      pickup: "&e"
+    commands:
+      misc:
+        no-permission: "&cNo permission."
+        disabled: "&cThe %command% command is disabled."
+        usage: "&cUsage: %usage%"
+      end-battle:
+        failed: "&cFailed to end battle."
+        success: "&aBattle ended successfully."
+        not-in-battle: "&cYou are not in a battle."
+      hatch:
+        starter-not-found: "&cYou do not have a starter Pokemon."
+        invalid-slot: "&cInvalid slot. (%reason%)"
+        bank-account-not-found: "&cBank account not found."
+        not-enough-money: "&cYou need at least $%amount% to hatch this egg."
+        pokemon-hatched: "&aYour %pokemon% was successfully hatched for $%amount%.";
+        confirm-hatch: "&eHatch this egg for &a$%amount%&e? Run the command again to confirm.";
+        cancelled-hatch: "&cHatch command cancelled due to inactivity.";
+      reroll:
+        cooldown: "&cYou must wait &e%time% &cbetween hunt re-rolls."
+        vote-submitted: "&e[Hunt] &f%player% &7has voted to re-roll the hunt. &e(%votes%/%online%)"
+        vote-cancelled: "&e[Hunt] &f%player% &7has cancelled their re-roll vote. &e(%votes%/%online%)"
+        success: "&e[Hunt] &7The hunt has been &fre-rolled&7!"
+        success-other: "&e[Hunt] &7The hunt has been &fre-rolled &7by &f%player%&7!"
+      show:
+        message: "&r%player% is showing off their %color%[%pokemon%]"
+    events:
+      ev-gain: "&fYour &a%pokemon% &fgained %evGains% &fEVs!"
+      ev-increase: "&a+%diff% %stat% &7(%newEVs%)"
+      catch: "&r%player% caught a wild %color%[%pokemon%]"
+      pickup: "&rYour &e%pokemon% &fpicked up %an% %color%[%itemName%]"
+      egg-hatch: "&r%player%'s egg hatched into %color%[%pokemon%]"
+      fossil-revival: "&r%player% revived %an% %color%[%pokemon%] &rfrom a fossil!";
+      choose-starter: "&r%player% chose %color%[%pokemon%] &ras their starter!";
+    receive-pokemon:
+      custom: "&7(Custom) &r%player% received a wild %color%[%pokemon%]"
+      command: "&7(Command) &r%player% received a wild %color%[%pokemon%]"
+      select: "&7(Select) &r%player% received a wild %color%[%pokemon%]"
+      christmas: "&r%player% received a wild %color%[%pokemon%] &rfor christmas!";
+    # This is the message that is displayed when a player uses the /stats command.
+    # You can modify the output to display the Pokemon's stats in chat.
+    # This is also shown on hover when players use /show and when a Pokemon is caught.
+    stats-panel:
+      - "&r%color%%player%'s %pokemon%%shinyStar%%PKRS% %gender%"
+      - "&rLevel: &e%level% &7┃ &rAbility: &e%ability%"
+      - "&rNature: &e%nature% &7(%natureEffect%&7)"
+      - "&rHidden Power: &e%hiddenPower%"
+      - "&7"
+      - "&7(HP/Atk/Def/SpA/SpD/Spe)"
+      - "&rEVs: &r%hpEV% %attackEV% %defenceEV% %spAttackEV% %spDefenceEV% %speedEV% &7(%evPercent%)"
+      - "&rIVs: &r%hpIV% %attackIV% %defenceIV% %spAttackIV% %spDefenceIV% %speedIV% &7(%ivPercent%)"

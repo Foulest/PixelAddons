@@ -44,7 +44,6 @@ hs_err_pid*
 # Java compiled files
 *.class
 *.ear
-*.jar
 *.nar
 *.war
 
@@ -87,3 +86,7 @@ release.properties
 
 # Misc
 machinet.conf
+libs/Pixelmon.jar
+libs/PixelHuntRemastered-*.jar
+libs/CatServer.jar
+libs/AtomDev.jar
