@@ -27,19 +27,18 @@ All commands, features, and messages are extensively configurable.
 
 - **End Battle Command:** PixelAddons overwrites the Pixelmon Reforged `/endbattle` command. This command was previously
   locked behind a hard to find permission and didn't always work. Now, there is no permission needed to end any glitched
-  battle without having to close your game..
+  battle without having to close your game.
 
 - **Hatch Command:** PixelAddons includes a `/hatch <slot>` command that allows you to instantly hatch eggs for a
   configurable price. This drastically improves the egg hatching experience if players can use their in-game money they
   earned to expedite the process. The command prompts the users to confirm the egg hatch by having them run the command
   twice to prevent accidental hatches.
 
-- **Hunt Reroll Command:** PixelAddons integrates with *
-  *[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** and adds a command that allows players to
-  re-roll the active hunt using `/reroll` (executes `/hunt reload` on the backend.) The re-roll needs all online members
-  to vote for the re-roll by running the command. Once all online players agree to re-roll the hunt, the hunt is
-  re-rolled. If only one player is online, a vote is not needed and the hunt is re-rolled. A configurable cooldown
-  between re-rolls is available to limit the abuse of the command.
+- **Hunt Reroll Command:** PixelAddons integrates with **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** and adds a command that allows
+  players to re-roll the active hunt using `/reroll` (executes `/hunt reload` on the backend.) The re-roll needs all
+  online members to vote for the re-roll by running the command. Once all online players agree to re-roll the hunt, the
+  hunt is re-rolled. If only one player is online, a vote is not needed and the hunt is re-rolled. A configurable
+  cooldown between re-rolls is available to limit the abuse of the command.
 
 - **Commands on First Join:** When players first join the server, PixelAddons can execute a list of commands on their
   behalf. This is primarily used to give players items on first join, such as Poke Balls, tools, food, etc. This feature
