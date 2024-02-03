@@ -47,19 +47,19 @@ dependencies {
     // https://hub.spigotmc.org/nexus/content/repositories/snapshots
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.20.4-R0.1-SNAPSHOT'
 
-    // AtomDev - for accessing Minecraft classes
+    // AtomDev - for accessing Minecraft classes; provided in libs
     // https://github.com/josephworks/AtomMC/releases/download/v2.1/AtomDev.jar
     compileOnly group: 'org.atom', name: 'AtomDev', version: '1.12.2'
 
-    // CatServer - for listening to Forge events
+    // CatServer - for listening to Forge events; provided in libs
     // https://catmc.org/download/universal
     compileOnly group: 'catserver', name: 'CatServer', version: '1.12.2'
 
-    // Pixelmon - for listening to Pixelmon events
+    // Pixelmon - for listening to Pixelmon events; provided in libs
     // https://reforged.gg (Download 1.12.2)
     compileOnly group: 'com.pixelmonmod', name: 'Pixelmon', version: '1.12.2'
 
-    // PixelHunt Remastered - for listening to PixelHunt events
+    // PixelHunt Remastered - for listening to PixelHunt events; provided in libs
     // https://pixelmonmod.com/wiki/PixelHunt_Remastered
     compileOnly group: 'com.envyful', name: 'PixelHuntRemastered', version: '3.0.2'
 
