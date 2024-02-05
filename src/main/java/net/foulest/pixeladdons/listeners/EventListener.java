@@ -285,10 +285,8 @@ public class EventListener implements Listener {
                             }
                         }
                     }
-                } catch (IllegalAccessException ex) {
+                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ex) {
                     MessageUtil.printException(ex);
-                } catch (InvocationTargetException | NoSuchMethodException ex) {
-                    throw new RuntimeException(ex);
                 }
             }
         }
