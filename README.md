@@ -44,6 +44,11 @@ All commands, features, and messages are extensively configurable.
   behalf. This is primarily used to give players items on first join, such as Poke Balls, tools, food, etc. This feature
   is present in Essentials, but for servers not using Essentials, it exists in PixelAddons as well.
 
+- **Custom Shiny & Pokerus Rates:** PixelAddons supports setting custom shiny & pokerus rates per-player in any world.
+  We do this by searching for nearby players in a configurable radius when a Pokemon spawns. If a player is found, and
+  they have the configurable permission, the new shiny and/or pokerus rate is applied. You can adjust the odds to your
+  exact liking - it's all configurable.
+
 ## Dependencies
 
 - **[CatServer (1.12.2)](https://catmc.org/)**
