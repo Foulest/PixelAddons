@@ -8,7 +8,12 @@ import com.pixelmonmod.pixelmon.api.events.EggHatchEvent;
 import com.pixelmonmod.pixelmon.api.events.PickupEvent;
 import com.pixelmonmod.pixelmon.api.events.PixelmonReceivedEvent;
 import com.pixelmonmod.pixelmon.api.events.pokemon.EVsGainedEvent;
+import com.pixelmonmod.pixelmon.api.events.spawning.SpawnEvent;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.api.spawning.SpawnAction;
+import com.pixelmonmod.pixelmon.api.spawning.SpawnInfo;
+import com.pixelmonmod.pixelmon.api.spawning.SpawnLocation;
+import com.pixelmonmod.pixelmon.api.spawning.SpawnSet;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
@@ -16,9 +21,13 @@ import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,8 +37,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
 import static net.foulest.pixeladdons.util.Settings.*;
@@ -203,6 +215,81 @@ public class EventListener implements Listener {
                         }
                     }
                 }.runTaskLater(PixelAddons.instance, 5L);
+            }
+        }
+    }
+
+    /**
+     * Handles modifying shiny & pokerus rates for Pokemon spawns.
+     *
+     * @param event SpawnEvent
+     */
+    @EventHandler
+    public void onCustomRateSpawn(@NotNull ForgeEvent event) {
+        Event forgeEvent = event.getForgeEvent();
+
+        // Returns if the event is null.
+        if (forgeEvent == null) {
+            return;
+        }
+
+        // Returns if neither custom rate settings are enabled.
+        if (!customShinyRateEnabled && !customPokerusRateEnabled) {
+            return;
+        }
+
+        if (forgeEvent instanceof SpawnEvent) {
+            SpawnEvent spawnEvent = (SpawnEvent) forgeEvent;
+            SpawnAction<? extends Entity> spawnAction = spawnEvent.action;
+            SpawnInfo spawnInfo = spawnAction.spawnInfo;
+            SpawnLocation spawnLocation = spawnAction.spawnLocation;
+            SpawnSet spawnSet = spawnInfo.set;
+
+            // Assuming nmsWorld is an instance of net.minecraft.world.World
+            net.minecraft.world.World nmsWorld = spawnLocation.location.world;
+            if (nmsWorld != null) {
+                try {
+                    // Get the func_72912_H method from the World class to obtain WorldInfo
+                    Method getWorldInfoMethod = net.minecraft.world.World.class.getDeclaredMethod("func_72912_H");
+                    getWorldInfoMethod.setAccessible(true); // Make accessible if private
+                    Object worldInfoObject = getWorldInfoMethod.invoke(nmsWorld); // Obtain WorldInfo object
+
+                    // Now, access the func_76065_j (getWorldName) method from the WorldInfo object
+                    Method getWorldNameMethod = worldInfoObject.getClass().getDeclaredMethod("func_76065_j");
+                    getWorldNameMethod.setAccessible(true); // Make accessible if private
+                    String worldName = (String) getWorldNameMethod.invoke(worldInfoObject); // Get the world name
+
+                    // Get the Bukkit world instance
+                    World world = Bukkit.getWorld(worldName);
+
+                    // Get the Bukkit location instance
+                    Location spawnLocBukkit = new Location(world, spawnLocation.location.pos.getX(),
+                            spawnLocation.location.pos.getY(),
+                            spawnLocation.location.pos.getZ());
+
+                    // Checks for nearby players in the pre-defined radius set in the config.
+                    // Note: the radius distance is hard-capped at 100 for performance reasons.
+                    int radius = Math.min(customRateRadius, 100);
+                    for (org.bukkit.entity.Entity entity : world.getNearbyEntities(spawnLocBukkit, radius, radius, radius)) {
+                        if (entity instanceof Player) {
+                            Player player = (Player) entity;
+
+                            // Sets custom shiny rates for qualifying players.
+                            if (customShinyRateEnabled && player.hasPermission(customShinyRatePermission)) {
+                                spawnSet.setSpecificShinyRate = (float) customShinyRateOdds;
+                            }
+
+                            // Sets custom Pokerus rates for qualifying players.
+                            if (customPokerusRateEnabled && player.hasPermission(customPokerusRatePermission)) {
+                                spawnSet.setSpecificPokerusRate = (float) customPokerusRateOdds;
+                            }
+                        }
+                    }
+                } catch (IllegalAccessException ex) {
+                    MessageUtil.printException(ex);
+                } catch (InvocationTargetException | NoSuchMethodException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }

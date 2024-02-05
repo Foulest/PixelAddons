@@ -64,9 +64,9 @@ pixeladdons:
         starter-not-found: "&cYou do not have a starter Pokemon."
         bank-account-not-found: "&cBank account not found."
         not-enough-money: "&cYou need at least $%amount% to hatch this egg."
-        pokemon-hatched: "&aYour %pokemon% was successfully hatched for $%amount%.";
-        confirm-hatch: "&eHatch this egg for &a$%amount%&e? Run the command again to confirm.";
-        cancelled-hatch: "&cHatch command cancelled due to inactivity.";
+        pokemon-hatched: "&aYour %pokemon% was successfully hatched for $%amount%."
+        confirm-hatch: "&eHatch this egg for &a$%amount%&e? Run the command again to confirm."
+        cancelled-hatch: "&cHatch command cancelled due to inactivity."
       reroll:
         cooldown: "&cYou must wait &e%time% &cbetween hunt re-rolls."
         vote-submitted: "&e[Hunt] &f%player% &7has voted to re-roll the hunt. &e(%votes%/%online%)"
@@ -81,13 +81,13 @@ pixeladdons:
       catch: "&r%player% caught a wild %color%[%pokemon%]"
       pickup: "&rYour &e%pokemon% &fpicked up %an% %color%[%itemName%]"
       egg-hatch: "&r%player%'s egg hatched into %color%[%pokemon%]"
-      fossil-revival: "&r%player% revived %an% %color%[%pokemon%] &rfrom a fossil!";
-      choose-starter: "&r%player% chose %color%[%pokemon%] &ras their starter!";
+      fossil-revival: "&r%player% revived %an% %color%[%pokemon%] &rfrom a fossil!"
+      choose-starter: "&r%player% chose %color%[%pokemon%] &ras their starter!"
     receive-pokemon:
       custom: "&7(Custom) &r%player% received a wild %color%[%pokemon%]"
       command: "&7(Command) &r%player% received a wild %color%[%pokemon%]"
       select: "&7(Select) &r%player% received a wild %color%[%pokemon%]"
-      christmas: "&r%player% received a wild %color%[%pokemon%] &rfor christmas!";
+      christmas: "&r%player% received a wild %color%[%pokemon%] &rfor christmas!"
     # This is the message that is displayed when a player uses the /stats command.
     # You can modify the output to display the Pokemon's stats in chat.
     # This is also shown on hover when players use /show and when a Pokemon is caught.
@@ -100,3 +100,23 @@ pixeladdons:
       - "&7(HP/Atk/Def/SpA/SpD/Spe)"
       - "&rEVs: &r%hpEV% %attackEV% %defenceEV% %spAttackEV% %spDefenceEV% %speedEV% &7(%evPercent%)"
       - "&rIVs: &r%hpIV% %attackIV% %defenceIV% %spAttackIV% %spDefenceIV% %speedIV% &7(%ivPercent%)"
+  # You can modify the Shiny/Pokerus rates for individual players below.
+  # This ignores the pre-defined shiny and pokerus rates set in pixelmon.hocon.
+  #
+  # This is PER-PLAYER - not global - and only affects players with the permissions below.
+  # The odds are 1/X, X being the new-odds number. The radius to check is in blocks.
+  # The radius is internally hard-capped to 100 (if the value set is greater) for performance reasons.
+  #
+  # Unfortunately, spawn events aren't targeted per player, so we have to check the
+  # surrounding blocks near a Pokémon for every spawn for nearby players with the permission.
+  # It is recommended to keep this disabled unless you specifically need this feature on your server.
+  custom-rates:
+    radius-to-check: 50
+    shiny-rate:
+      enabled: true
+      new-odds: 1024
+      permission: "pixeladdons.customrates.shiny"
+    pokerus-rate:
+      enabled: false
+      new-odds: 1024
+      permission: "pixeladdons.customrates.pokerus"

@@ -94,6 +94,15 @@ public class Settings {
     // Stats panel message
     public static List<String> statsPanelMessage;
 
+    // Custom rate settings
+    public static int customRateRadius;
+    public static boolean customShinyRateEnabled;
+    public static int customShinyRateOdds;
+    public static String customShinyRatePermission;
+    public static boolean customPokerusRateEnabled;
+    public static int customPokerusRateOdds;
+    public static String customPokerusRatePermission;
+
     /**
      * Loads the configuration file and values.
      */
@@ -222,5 +231,14 @@ public class Settings {
 
         // Stats panel message
         statsPanelMessage = config.getStringList("pixeladdons.messages.stats-panel");
+
+        // Custom rate settings
+        customRateRadius = config.getInt("pixeladdons.custom-rates.radius-to-check");
+        customShinyRateEnabled = config.getBoolean("pixeladdons.custom-rates.shiny-rate.enabled");
+        customShinyRateOdds = config.getInt("pixeladdons.custom-rates.shiny-rate.new-odds");
+        customShinyRatePermission = config.getString("pixeladdons.custom-rates.shiny-rate.permission");
+        customPokerusRateEnabled = config.getBoolean("pixeladdons.custom-rates.pokerus-rate.enabled");
+        customPokerusRateOdds = config.getInt("pixeladdons.custom-rates.pokerus-rate.new-odds");
+        customPokerusRatePermission = config.getString("pixeladdons.custom-rates.pokerus-rate.permission");
     }
 }
