@@ -23,7 +23,6 @@ import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,7 +40,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
 import static net.foulest.pixeladdons.util.Settings.*;
