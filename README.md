@@ -4,7 +4,7 @@
 [![JitPack Badge](https://jitpack.io/v/Foulest/PixelAddons.svg)](https://jitpack.io/#Foulest/PixelAddons)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/338803e66b67417686545c92133604a9)](https://app.codacy.com/gh/Foulest/PixelAddons/dashboard)
 
-A server-side Spigot plugin that improves the Pixelmon Reforged 1.12.2 experience.
+**PixelAddons** is a server-side Spigot plugin that improves the Pixelmon Reforged 1.12.2 experience.
 
 All commands, features, and messages are extensively configurable.
 
