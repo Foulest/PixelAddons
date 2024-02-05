@@ -100,23 +100,25 @@ pixeladdons:
       - "&7(HP/Atk/Def/SpA/SpD/Spe)"
       - "&rEVs: &r%hpEV% %attackEV% %defenceEV% %spAttackEV% %spDefenceEV% %speedEV% &7(%evPercent%)"
       - "&rIVs: &r%hpIV% %attackIV% %defenceIV% %spAttackIV% %spDefenceIV% %speedIV% &7(%ivPercent%)"
-  # You can modify the Shiny/Pokerus rates for individual players below.
-  # This ignores the pre-defined shiny and pokerus rates set in pixelmon.hocon.
+  # You can modify certain custom rates when Pokemon are spawned/captured for players below.
+  # This ignores the pre-defined rates for things like shiny chances set in pixelmon.hocon.
   #
   # This is PER-PLAYER - not global - and only affects players with the permissions below.
-  # The odds are 1/X, X being the new-odds number. The radius to check is in blocks.
-  # The radius is internally hard-capped to 100 (if the value set is greater) for performance reasons.
-  #
-  # Unfortunately, spawn events aren't targeted per player, so we have to check the
-  # surrounding blocks near a Pokémon for every spawn for nearby players with the permission.
-  # It is recommended to keep this disabled unless you specifically need this feature on your server.
+  # The new-odds field represents 1/X odds, X being the new-odds value.
   custom-rates:
-    radius-to-check: 50
+    hidden-ability-rate:
+      enabled: false
+      new-odds: 75
+      permission: "pixeladdons.customrates.hiddenability"
+    boss-rate:
+      enabled: false
+      new-odds: 128
+      permission: "pixeladdons.customrates.boss"
     shiny-rate:
-      enabled: true
-      new-odds: 1024
+      enabled: false
+      new-odds: 2048
       permission: "pixeladdons.customrates.shiny"
     pokerus-rate:
       enabled: false
-      new-odds: 1024
+      new-odds: 6144
       permission: "pixeladdons.customrates.pokerus"

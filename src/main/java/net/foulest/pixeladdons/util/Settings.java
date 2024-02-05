@@ -94,11 +94,22 @@ public class Settings {
     // Stats panel message
     public static List<String> statsPanelMessage;
 
-    // Custom rate settings
-    public static int customRateRadius;
+    // Custom hidden ability rate settings
+    public static boolean customHiddenAbilityRateEnabled;
+    public static int customHiddenAbilityRateOdds;
+    public static String customHiddenAbilityRatePermission;
+
+    // Custom boss rate settings
+    public static boolean customBossRateEnabled;
+    public static int customBossRateOdds;
+    public static String customBossRatePermission;
+
+    // Custom shiny rate settings
     public static boolean customShinyRateEnabled;
     public static int customShinyRateOdds;
     public static String customShinyRatePermission;
+
+    // Custom pokerus rate settings
     public static boolean customPokerusRateEnabled;
     public static int customPokerusRateOdds;
     public static String customPokerusRatePermission;
@@ -232,13 +243,24 @@ public class Settings {
         // Stats panel message
         statsPanelMessage = config.getStringList("pixeladdons.messages.stats-panel");
 
-        // Custom rate settings
-        customRateRadius = config.getInt("pixeladdons.custom-rates.radius-to-check");
+        // Custom hidden ability rate settings
+        customHiddenAbilityRateEnabled = config.getBoolean("pixeladdons.custom-rates.hidden-ability-rate.enabled");
+        customHiddenAbilityRateOdds = Math.max(0, config.getInt("pixeladdons.custom-rates.hidden-ability-rate.new-odds"));
+        customHiddenAbilityRatePermission = config.getString("pixeladdons.custom-rates.hidden-ability-rate.permission");
+
+        // Custom boss rate settings
+        customBossRateEnabled = config.getBoolean("pixeladdons.custom-rates.boss-rate.enabled");
+        customBossRateOdds = Math.max(0, config.getInt("pixeladdons.custom-rates.boss-rate.new-odds"));
+        customBossRatePermission = config.getString("pixeladdons.custom-rates.boss-rate.permission");
+
+        // Custom shiny rate settings
         customShinyRateEnabled = config.getBoolean("pixeladdons.custom-rates.shiny-rate.enabled");
-        customShinyRateOdds = config.getInt("pixeladdons.custom-rates.shiny-rate.new-odds");
+        customShinyRateOdds = Math.max(0, config.getInt("pixeladdons.custom-rates.shiny-rate.new-odds"));
         customShinyRatePermission = config.getString("pixeladdons.custom-rates.shiny-rate.permission");
+
+        // Custom pokerus rate settings
         customPokerusRateEnabled = config.getBoolean("pixeladdons.custom-rates.pokerus-rate.enabled");
-        customPokerusRateOdds = config.getInt("pixeladdons.custom-rates.pokerus-rate.new-odds");
+        customPokerusRateOdds = Math.max(0, config.getInt("pixeladdons.custom-rates.pokerus-rate.new-odds"));
         customPokerusRatePermission = config.getString("pixeladdons.custom-rates.pokerus-rate.permission");
     }
 }

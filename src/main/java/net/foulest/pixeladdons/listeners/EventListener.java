@@ -10,10 +10,10 @@ import com.pixelmonmod.pixelmon.api.events.PixelmonReceivedEvent;
 import com.pixelmonmod.pixelmon.api.events.pokemon.EVsGainedEvent;
 import com.pixelmonmod.pixelmon.api.events.spawning.SpawnEvent;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
-import com.pixelmonmod.pixelmon.api.spawning.SpawnAction;
-import com.pixelmonmod.pixelmon.api.spawning.SpawnInfo;
 import com.pixelmonmod.pixelmon.api.spawning.SpawnLocation;
-import com.pixelmonmod.pixelmon.api.spawning.SpawnSet;
+import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnActionPokemon;
+import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnInfoPokemon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
@@ -21,12 +21,10 @@ import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,10 +34,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
 import static net.foulest.pixeladdons.util.Settings.*;
@@ -218,7 +215,7 @@ public class EventListener implements Listener {
     }
 
     /**
-     * Handles modifying shiny & pokerus rates for Pokemon spawns.
+     * Handles modifying custom rates for Pokemon spawns.
      *
      * @param event SpawnEvent
      */
@@ -231,61 +228,53 @@ public class EventListener implements Listener {
             return;
         }
 
-        // Returns if neither custom rate settings are enabled.
-        if (!customShinyRateEnabled && !customPokerusRateEnabled) {
-            return;
-        }
-
         if (forgeEvent instanceof SpawnEvent) {
+            // Gets the spawn event.
             SpawnEvent spawnEvent = (SpawnEvent) forgeEvent;
-            SpawnAction<? extends Entity> spawnAction = spawnEvent.action;
-            SpawnInfo spawnInfo = spawnAction.spawnInfo;
+            if (!(spawnEvent.action instanceof SpawnActionPokemon)) {
+                return;
+            }
+
+            // Gets the spawn action.
+            SpawnActionPokemon spawnAction = (SpawnActionPokemon) spawnEvent.action;
+            if (!(spawnAction.spawnInfo instanceof SpawnInfoPokemon)) {
+                return;
+            }
+
+            // Gets the spawn location.
             SpawnLocation spawnLocation = spawnAction.spawnLocation;
-            SpawnSet spawnSet = spawnInfo.set;
+            if (!(spawnLocation.cause instanceof EntityPlayerMP)) {
+                return;
+            }
 
-            // Assuming nmsWorld is an instance of net.minecraft.world.World
-            net.minecraft.world.World nmsWorld = spawnLocation.location.world;
-            if (nmsWorld != null) {
-                try {
-                    // Get the func_72912_H method from the World class to obtain WorldInfo
-                    Method getWorldInfoMethod = net.minecraft.world.World.class.getDeclaredMethod("func_72912_H");
-                    getWorldInfoMethod.setAccessible(true); // Make accessible if private
-                    Object worldInfoObject = getWorldInfoMethod.invoke(nmsWorld); // Obtain WorldInfo object
+            // Gets the player that spawned the Pokemon.
+            Player player = Bukkit.getPlayer(spawnLocation.cause.getName());
+            if (player == null || !player.isOnline()) {
+                return;
+            }
 
-                    // Now, access the func_76065_j (getWorldName) method from the WorldInfo object
-                    Method getWorldNameMethod = worldInfoObject.getClass().getDeclaredMethod("func_76065_j");
-                    getWorldNameMethod.setAccessible(true); // Make accessible if private
-                    String worldName = (String) getWorldNameMethod.invoke(worldInfoObject); // Get the world name
+            // Gets the pixelmon.
+            EntityPixelmon pixelmon = spawnAction.getOrCreateEntity();
 
-                    // Get the Bukkit world instance
-                    World world = Bukkit.getWorld(worldName);
+            // Sets the custom boss rate for qualifying players.
+            if (customBossRateEnabled && player.hasPermission(customBossRatePermission)
+                    && new Random().nextInt(customBossRateOdds) == 0) {
+                spawnAction.usingSpec.boss = (byte) Math.min(1, new Random(7).nextInt());
+                spawnAction.usingSpec.apply(pixelmon);
+            }
 
-                    // Get the Bukkit location instance
-                    Location spawnLocBukkit = new Location(world, spawnLocation.location.pos.getX(),
-                            spawnLocation.location.pos.getY(),
-                            spawnLocation.location.pos.getZ());
+            // Sets the custom shiny rate for qualifying players.
+            if (customShinyRateEnabled && player.hasPermission(customShinyRatePermission)
+                    && new Random().nextInt(customShinyRateOdds) == 0) {
+                spawnAction.usingSpec.shiny = true;
+                spawnAction.usingSpec.apply(pixelmon);
+            }
 
-                    // Checks for nearby players in the pre-defined radius set in the config.
-                    // Note: the radius distance is hard-capped at 100 for performance reasons.
-                    int radius = Math.min(customRateRadius, 100);
-                    for (org.bukkit.entity.Entity entity : world.getNearbyEntities(spawnLocBukkit, radius, radius, radius)) {
-                        if (entity instanceof Player) {
-                            Player player = (Player) entity;
-
-                            // Sets custom shiny rates for qualifying players.
-                            if (customShinyRateEnabled && player.hasPermission(customShinyRatePermission)) {
-                                spawnSet.setSpecificShinyRate = (float) customShinyRateOdds;
-                            }
-
-                            // Sets custom Pokerus rates for qualifying players.
-                            if (customPokerusRateEnabled && player.hasPermission(customPokerusRatePermission)) {
-                                spawnSet.setSpecificPokerusRate = (float) customPokerusRateOdds;
-                            }
-                        }
-                    }
-                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ex) {
-                    MessageUtil.printException(ex);
-                }
+            // Sets the custom pokerus rate for qualifying players.
+            if (customPokerusRateEnabled && player.hasPermission(customPokerusRatePermission)
+                    && new Random().nextInt(customPokerusRateOdds) == 0) {
+                spawnAction.usingSpec.pokerusType = (byte) Math.min(1, new Random(5).nextInt());
+                spawnAction.usingSpec.apply(pixelmon);
             }
         }
     }
@@ -304,14 +293,14 @@ public class EventListener implements Listener {
             return;
         }
 
-        // Check if the event is either a regular capture or a raid capture
+        // Checks if the event is either a regular capture or a raid capture.
         if (forgeEvent instanceof CaptureEvent.SuccessfulCapture
                 || forgeEvent instanceof CaptureEvent.SuccessfulRaidCapture) {
             Player player;
             Pokemon pokemon;
             String pokemonName;
 
-            // Differentiate the handling based on the event type
+            // Differentiates the handling based on the event type.
             if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
                 CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
                 player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
@@ -322,19 +311,21 @@ public class EventListener implements Listener {
                 pokemon = captureEvent.getRaidPokemon();
             }
 
+            // Returns if the player is null or offline.
+            if (player == null || !player.isOnline()) {
+                return;
+            }
+
+            // Sets the hidden ability rate for qualifying players.
+            if (customHiddenAbilityRateEnabled && player.hasPermission(customHiddenAbilityRatePermission)
+                    && new Random().nextInt(customHiddenAbilityRateOdds) == 0) {
+                pokemon.setAbilitySlot(2);
+            }
+
+            // Gets the Pokemon's name.
             pokemonName = pokemon.getSpecies().getPokemonName();
 
-            // Returns if the player is null.
-            if (player == null) {
-                return;
-            }
-
-            // Returns if the player is offline.
-            if (!player.isOnline()) {
-                return;
-            }
-
-            // Formats the message.
+            // Formats the hover message.
             String chatMessage = catchMessage
                     .replace("%player%", player.getName())
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
