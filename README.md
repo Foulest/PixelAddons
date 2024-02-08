@@ -51,7 +51,7 @@ All commands, features, and messages are extensively configurable.
 
 - **[CatServer (1.12.2)](https://catmc.org/)**
 - **[Pixelmon Reforged](https://reforged.gg)**
-- **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** *(not required, but recommended)*
+- **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** *(optional)*
 - **[AtomDev](https://github.com/josephworks/AtomMC)** *(only in project)*
 
 ## Getting Help
