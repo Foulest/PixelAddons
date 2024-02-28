@@ -1,8 +1,8 @@
 # PixelAddons
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CodeQL Badge](https://github.com/Foulest/PixelAddons/actions/workflows/codeql.yml/badge.svg)](https://github.com/Foulest/PixelAddons/actions/workflows/codeql.yml)
 [![JitPack Badge](https://jitpack.io/v/Foulest/PixelAddons.svg)](https://jitpack.io/#Foulest/PixelAddons)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/338803e66b67417686545c92133604a9)](https://app.codacy.com/gh/Foulest/PixelAddons/dashboard)
 
 **PixelAddons** is a server-side Spigot plugin that improves the Pixelmon Reforged 1.12.2 experience.
 
