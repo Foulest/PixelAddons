@@ -156,7 +156,7 @@ public class Settings {
             config.options().copyDefaults(true);
             saveConfig(); // Save the config with defaults applied
         } catch (Exception ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -167,7 +167,7 @@ public class Settings {
         try {
             config.save(file);
         } catch (IOException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
     }
 

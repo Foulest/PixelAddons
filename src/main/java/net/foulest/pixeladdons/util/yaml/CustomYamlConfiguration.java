@@ -2,7 +2,6 @@ package net.foulest.pixeladdons.util.yaml;
 
 import com.google.common.base.Charsets;
 import lombok.Cleanup;
-import net.foulest.pixeladdons.util.MessageUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -127,7 +126,7 @@ public class CustomYamlConfiguration extends YamlConfiguration {
             config.load(file);
         } catch (FileNotFoundException ignored) {
         } catch (IOException | InvalidConfigurationException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
         return config;
     }
@@ -138,7 +137,7 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         try {
             config.load(reader);
         } catch (IOException | InvalidConfigurationException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
         return config;
     }

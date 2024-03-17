@@ -2,7 +2,6 @@ package net.foulest.pixeladdons.util.command;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.foulest.pixeladdons.util.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -71,7 +70,7 @@ public class BukkitCompleter implements TabCompleter {
                     return (List<String>) entry.getKey().invoke(entry.getValue(),
                             new CommandArgs(sender, command, label, args, cmdLabel.split("\\.").length - 1));
                 } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {
-                    MessageUtil.printException(ex);
+                    ex.printStackTrace();
                 }
             }
         }

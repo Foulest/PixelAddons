@@ -7,7 +7,7 @@ pixeladdons:
   commands:
     # The 'on-first-join' command allows you to run commands when a player first joins the server.
     # This is useful for giving players items, money, or Pokemon when they first join.
-    on-first-join: []
+    on-first-join: [ ]
     # The 'end-battle' command allows players to end their battle.
     # This overrides the normal battle ending command baked into Pixelmon.
     end-battle:
