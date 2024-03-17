@@ -74,12 +74,15 @@ dependencies {
 }
 
 tasks {
+    jar {
+        archiveFileName.set("${project.name}-${project.version}-default.jar")
+    }
+
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
+        enableRelocation = true
+        relocationPrefix = "net.foulest.pixeladdons.shaded"
         minimize()
-
-        relocate 'org.apache', 'net.foulest.pixeladdons.shaded.org.apache'
-        relocate 'org.jetbrains', 'net.foulest.pixeladdons.shaded.org.jetbrains'
     }
 
     compileJava {
@@ -98,14 +101,6 @@ tasks {
 
     tasks.register('sourceJar', Jar) {
         from sourceSets.main.allJava
-    }
-
-    jar.configure {
-        archiveClassifier = 'default'
-    }
-
-    shadowJar.configure {
-        archiveClassifier = null
     }
 }
 
