@@ -46,7 +46,7 @@ dependencies {
     // Spigot API - necessary for project
     // Note: Keep this version at 1.12.2-R0.1-SNAPSHOT
     // https://hub.spigotmc.org/nexus/content/repositories/snapshots
-    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.20.6-R0.1-SNAPSHOT'
 
     // AtomDev - for accessing Minecraft classes; provided in libs
     // https://github.com/josephworks/AtomMC/releases/download/v2.1/AtomDev.jar
