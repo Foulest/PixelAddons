@@ -27,7 +27,8 @@ import static net.foulest.pixeladdons.util.Settings.*;
 public class EndBattleCmd {
 
     @Command(name = "endbattle", description = "Ends your current battle.",
-            usage = "/endbattle", aliases = {"stopbattle", "exitbattle"}, inGameOnly = true)
+            permission = "pixeladdons.endbattle", usage = "/endbattle",
+            aliases = {"stopbattle", "exitbattle"}, inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) throws CommandException {
         Player player = args.getPlayer();
 

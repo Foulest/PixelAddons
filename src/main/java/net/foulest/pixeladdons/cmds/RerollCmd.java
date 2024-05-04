@@ -24,7 +24,8 @@ public class RerollCmd {
     public static final List<Player> votingToReroll = new ArrayList<>();
 
     @Command(name = "reroll", description = "Votes to re-roll the hunt.",
-            usage = "/reroll", aliases = {"rtv"}, inGameOnly = true)
+            permission = "pixeladdons.reroll", usage = "/reroll",
+            aliases = {"rtv"}, inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 

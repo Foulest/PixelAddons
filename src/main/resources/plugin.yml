@@ -2,3 +2,25 @@ name: PixelAddons
 version: ${project.version}
 main: net.foulest.pixeladdons.PixelAddons
 author: Foulest
+permissions:
+  pixeladdons.endbattle:
+    description: Allows players to end their battle.
+    default: true
+  pixeladdons.hatch:
+    description: Allows players to hatch eggs on command.
+    default: true
+  pixeladdons.main:
+    description: Main permission for PixelAddons.
+    default: op
+  pixeladdons.reload:
+    description: Allows players to reload the plugin.
+    default: op
+  pixeladdons.reroll:
+    description: Allows players to vote to re-roll the hunt.
+    default: true
+  pixeladdons.show:
+    description: Allows players to show their Pokemon in chat.
+    default: true
+  pixeladdons.stats:
+    description: Allows players to view the stats of their Pokemon.
+    default: true

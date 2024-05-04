@@ -21,8 +21,8 @@ import static net.foulest.pixeladdons.util.Settings.*;
 public class StatsCmd {
 
     @Command(name = "stats", description = "Shows the stats of your selected Pokemon.",
-            aliases = {"ivs", "evs", "iv", "ev", "pkstats", "pokestats"},
-            usage = "/stats <slot> [player]", inGameOnly = true)
+            permission = "pixeladdons.stats", usage = "/stats <slot> [player]", inGameOnly = true,
+            aliases = {"ivs", "evs", "iv", "ev", "pkstats", "pokestats"})
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 

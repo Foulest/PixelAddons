@@ -27,7 +27,7 @@ import static net.foulest.pixeladdons.util.Settings.*;
 public class HatchCmd {
 
     @Command(name = "hatch", description = "Hatches the selected Pokemon egg.",
-            usage = "/hatch <slot>", inGameOnly = true)
+            permission = "pixeladdons.hatch", usage = "/hatch <slot>", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
         PlayerData playerData = PlayerDataManager.getPlayerData(player);

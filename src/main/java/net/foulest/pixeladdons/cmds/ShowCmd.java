@@ -21,7 +21,8 @@ import static net.foulest.pixeladdons.util.Settings.*;
 public class ShowCmd {
 
     @Command(name = "show", description = "Shows the stats of your selected Pokemon in chat.",
-            usage = "/show <slot>", aliases = {"pkshow", "pokeshow"}, inGameOnly = true)
+            permission = "pixeladdons.show", usage = "/show <slot>",
+            aliases = {"pkshow", "pokeshow"}, inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
