@@ -55,6 +55,21 @@ All commands, features, and messages are extensively configurable.
 - **[PixelHunt Remastered](https://pixelmonmod.com/wiki/PixelHunt_Remastered)** *(optional)*
 - **[AtomDev](https://github.com/josephworks/AtomMC)** *(only in project)*
 
+## Compiling
+
+1. Clone the repository.
+2. Open a command prompt/terminal to the repository directory.
+3. Run `gradlew shadowJar` on Windows, or `./gradlew shadowJar` on macOS or Linux.
+4. The built `PixelAddons-X.X.X.jar` file will be in the `build/libs` folder.
+
+## Download and Run
+
+1. Download the latest version from the [releases page](https://github.com/Foulest/PixelAddons/releases) or compile it
+   yourself.
+2. Make sure your server is running CatServer on version 1.12.2 and Pixelmon Reforged.
+3. Place the `PixelAddons-X.X.X.jar` file in your server's `plugins` folder.
+4. Start or restart your server.
+
 ## Getting Help
 
 For support or queries, please open an issue in the [Issues section](https://github.com/Foulest/PixelAddons/issues).
