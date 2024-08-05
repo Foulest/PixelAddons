@@ -17,9 +17,7 @@
  */
 package net.foulest.pixeladdons.util;
 
-import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.util.yaml.CustomYamlConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,7 +39,8 @@ import java.util.logging.Level;
  */
 @Getter
 @Setter
-public class Settings {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Settings {
 
     // File settings
     public static File file;
@@ -172,7 +171,7 @@ public class Settings {
             config.setDefaults(defConfig);
             config.options().copyDefaults(true);
             saveConfig(); // Save the config with defaults applied
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             ex.printStackTrace();
         }
     }
@@ -191,7 +190,7 @@ public class Settings {
     /**
      * Loads configuration values into the relevant static fields.
      */
-    public static void loadConfigValues() {
+    private static void loadConfigValues() {
         // Command settings
         commandsOnJoin = config.getStringList("pixeladdons.commands.on-first-join");
         endBattleCommandEnabled = config.getBoolean("pixeladdons.commands.end-battle.enabled");

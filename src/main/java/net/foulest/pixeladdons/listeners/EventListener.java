@@ -33,11 +33,13 @@ import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnIn
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
+import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -55,9 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static net.foulest.pixeladdons.util.MessageUtil.printStatsHoverMessage;
-import static net.foulest.pixeladdons.util.Settings.*;
-
+@NoArgsConstructor
 public class EventListener implements Listener {
 
     /**
@@ -66,22 +66,22 @@ public class EventListener implements Listener {
      * @param event PlayerJoinEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+    public static void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.getPlayerData(player);
 
         // Handles first-join commands.
         if (!player.hasPlayedBefore()) {
-            for (String line : commandsOnJoin) {
+            for (String line : Settings.commandsOnJoin) {
                 if (line.isEmpty()) {
                     break;
                 }
 
                 // Replaces %player% with the player's name.
-                line = line.replace("%player%", player.getName());
+                String replace = line.replace("%player%", player.getName());
 
                 // Runs the command as console.
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), line);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), replace);
             }
         }
     }
@@ -92,12 +92,12 @@ public class EventListener implements Listener {
      * @param event PlayerQuitEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+    public static void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerDataManager.removePlayerData(player);
 
         // Removes the player from the re-roll list if they are on it.
-        if (rerollCommandEnabled) {
+        if (Settings.rerollCommandEnabled) {
             RerollCmd.votingToReroll.remove(player);
             RerollCmd.handleReroll();
         }
@@ -109,7 +109,7 @@ public class EventListener implements Listener {
      * @param event ForgeEvent
      */
     @EventHandler
-    public void onEVGain(@NotNull ForgeEvent event) {
+    public static void onEVGain(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
         // Returns if the event is null.
@@ -162,42 +162,42 @@ public class EventListener implements Listener {
                         List<String> msgList = new ArrayList<>();
 
                         if (hpDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(hpDiff))
                                     .replace("%stat%", "HP")
                                     .replace("%newEVs%", String.valueOf(newEVs[0])));
                         }
 
                         if (atkDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(atkDiff))
                                     .replace("%stat%", "Atk")
                                     .replace("%newEVs%", String.valueOf(newEVs[1])));
                         }
 
                         if (defDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(defDiff))
                                     .replace("%stat%", "Def")
                                     .replace("%newEVs%", String.valueOf(newEVs[2])));
                         }
 
                         if (spaDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(spaDiff))
                                     .replace("%stat%", "SpA")
                                     .replace("%newEVs%", String.valueOf(newEVs[3])));
                         }
 
                         if (spdDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(spdDiff))
                                     .replace("%stat%", "SpD")
                                     .replace("%newEVs%", String.valueOf(newEVs[4])));
                         }
 
                         if (speDiff > 0) {
-                            msgList.add(evIncreaseMessage
+                            msgList.add(Settings.evIncreaseMessage
                                     .replace("%diff%", String.valueOf(speDiff))
                                     .replace("%stat%", "Spe")
                                     .replace("%newEVs%", String.valueOf(newEVs[5])));
@@ -216,7 +216,7 @@ public class EventListener implements Listener {
                             }
 
                             String pokemonName = pokemon.getSpecies().getPokemonName();
-                            String chatMessage = evGainMessage
+                            String chatMessage = Settings.evGainMessage
                                     .replace("%pokemon%", pokemonName)
                                     .replace("%evGains%", totalEVsGained.toString());
 
@@ -236,8 +236,9 @@ public class EventListener implements Listener {
      *
      * @param event SpawnEvent
      */
+    @SuppressWarnings("UnsecureRandomNumberGeneration")
     @EventHandler
-    public void onCustomRateSpawn(@NotNull ForgeEvent event) {
+    public static void onCustomRateSpawn(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
         // Returns if the event is null.
@@ -274,23 +275,23 @@ public class EventListener implements Listener {
             EntityPixelmon pixelmon = spawnAction.getOrCreateEntity();
 
             // Sets the custom boss rate for qualifying players.
-            if (customBossRateEnabled && player.hasPermission(customBossRatePermission)
-                    && new Random().nextInt(customBossRateOdds) == 0) {
-                spawnAction.usingSpec.boss = (byte) Math.min(1, new Random(7).nextInt());
+            if (Settings.customBossRateEnabled && player.hasPermission(Settings.customBossRatePermission)
+                    && new Random().nextInt(Settings.customBossRateOdds) == 0) {
+                spawnAction.usingSpec.boss = (byte) (new Random().nextInt(7) + 1);
                 spawnAction.usingSpec.apply(pixelmon);
             }
 
             // Sets the custom shiny rate for qualifying players.
-            if (customShinyRateEnabled && player.hasPermission(customShinyRatePermission)
-                    && new Random().nextInt(customShinyRateOdds) == 0) {
+            if (Settings.customShinyRateEnabled && player.hasPermission(Settings.customShinyRatePermission)
+                    && new Random().nextInt(Settings.customShinyRateOdds) == 0) {
                 spawnAction.usingSpec.shiny = true;
                 spawnAction.usingSpec.apply(pixelmon);
             }
 
             // Sets the custom pokerus rate for qualifying players.
-            if (customPokerusRateEnabled && player.hasPermission(customPokerusRatePermission)
-                    && new Random().nextInt(customPokerusRateOdds) == 0) {
-                spawnAction.usingSpec.pokerusType = (byte) Math.min(1, new Random(5).nextInt());
+            if (Settings.customPokerusRateEnabled && player.hasPermission(Settings.customPokerusRatePermission)
+                    && new Random().nextInt(Settings.customPokerusRateOdds) == 0) {
+                spawnAction.usingSpec.pokerusType = (byte) (new Random().nextInt(5) + 1);
                 spawnAction.usingSpec.apply(pixelmon);
             }
         }
@@ -301,8 +302,9 @@ public class EventListener implements Listener {
      *
      * @param event ForgeEvent
      */
+    @SuppressWarnings("UnsecureRandomNumberGeneration")
     @EventHandler
-    public void onPokemonCatch(@NotNull ForgeEvent event) {
+    public static void onPokemonCatch(@NotNull ForgeEvent event) {
         Event forgeEvent = event.getForgeEvent();
 
         // Returns if the event is null.
@@ -334,8 +336,8 @@ public class EventListener implements Listener {
             }
 
             // Sets the hidden ability rate for qualifying players.
-            if (customHiddenAbilityRateEnabled && player.hasPermission(customHiddenAbilityRatePermission)
-                    && new Random().nextInt(customHiddenAbilityRateOdds) == 0) {
+            if (Settings.customHiddenAbilityRateEnabled && player.hasPermission(Settings.customHiddenAbilityRatePermission)
+                    && new Random().nextInt(Settings.customHiddenAbilityRateOdds) == 0) {
                 pokemon.setAbilitySlot(2);
             }
 
@@ -343,7 +345,7 @@ public class EventListener implements Listener {
             pokemonName = pokemon.getSpecies().getPokemonName();
 
             // Formats the hover message.
-            String chatMessage = catchMessage
+            String chatMessage = Settings.catchMessage
                     .replace("%player%", player.getName())
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
@@ -352,7 +354,7 @@ public class EventListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    printStatsHoverMessage(player, pokemon, chatMessage);
+                    MessageUtil.printStatsHoverMessage(player, pokemon, chatMessage);
                 }
             }.runTaskLater(PixelAddons.instance, 10L);
         }
@@ -383,14 +385,17 @@ public class EventListener implements Listener {
             itemName = MessageUtil.capitalize(itemName);
 
             // Get the correct article for the item name.
-            String article = "a" + ((itemName.startsWith("A") || itemName.startsWith("E") || itemName.startsWith("I")
-                    || itemName.startsWith("O") || itemName.startsWith("U")) ? "n" : "");
+            String article = "a" + (((!itemName.isEmpty() && itemName.charAt(0) == 'A')
+                    || (!itemName.isEmpty() && itemName.charAt(0) == 'E')
+                    || (!itemName.isEmpty() && itemName.charAt(0) == 'I')
+                    || (!itemName.isEmpty() && itemName.charAt(0) == 'O')
+                    || (!itemName.isEmpty() && itemName.charAt(0) == 'U')) ? "n" : "");
 
             // Formats the message.
-            String chatMessage = pickupMessage
+            String chatMessage = Settings.pickupMessage
                     .replace("%pokemon%", pokemon.getSpecies().getPokemonName())
                     .replace("%an%", article)
-                    .replace("%color%", pickupColor)
+                    .replace("%color%", Settings.pickupColor)
                     .replace("%itemName%", itemName);
 
             // Prints the message.
@@ -415,13 +420,13 @@ public class EventListener implements Listener {
             }
 
             // Formats the message.
-            String chatMessage = eggHatchMessage
+            String chatMessage = Settings.eggHatchMessage
                     .replace("%player%", player.getName())
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
 
             // Prints the hover message.
-            printStatsHoverMessage(player, pokemon, chatMessage);
+            MessageUtil.printStatsHoverMessage(player, pokemon, chatMessage);
         }
 
         // Handles Pokemon receive messages.
@@ -447,7 +452,7 @@ public class EventListener implements Listener {
             // Formats the message.
             switch (receiveType) {
                 case Custom:
-                    chatMessage = receivePokemonCustomMessage
+                    chatMessage = Settings.receivePokemonCustomMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
@@ -455,11 +460,13 @@ public class EventListener implements Listener {
 
                 case Fossil:
                     // Get the correct article for the Pokemon name.
-                    String article = "a" + ((pokemonName.startsWith("A") || pokemonName.startsWith("E")
-                            || pokemonName.startsWith("I") || pokemonName.startsWith("O")
-                            || pokemonName.startsWith("U")) ? "n" : "");
+                    String article = "a" + (((!pokemonName.isEmpty() && pokemonName.charAt(0) == 'A')
+                            || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'E')
+                            || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'I')
+                            || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'O')
+                            || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'U')) ? "n" : "");
 
-                    chatMessage = fossilRevivalMessage
+                    chatMessage = Settings.fossilRevivalMessage
                             .replace("%player%", player.getName())
                             .replace("%an%", article)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
@@ -467,28 +474,28 @@ public class EventListener implements Listener {
                     break;
 
                 case Starter:
-                    chatMessage = chooseStarterMessage
+                    chatMessage = Settings.chooseStarterMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case Command:
-                    chatMessage = receivePokemonCommandMessage
+                    chatMessage = Settings.receivePokemonCommandMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case SelectPokemon:
-                    chatMessage = receivePokemonSelectMessage
+                    chatMessage = Settings.receivePokemonSelectMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case Christmas:
-                    chatMessage = receivePokemonChristmasMessage
+                    chatMessage = Settings.receivePokemonChristmasMessage
                             .replace("%player%", player.getName())
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
@@ -500,7 +507,7 @@ public class EventListener implements Listener {
 
             // Prints the hover message.
             if (!chatMessage.isEmpty()) {
-                printStatsHoverMessage(player, pokemon, chatMessage);
+                MessageUtil.printStatsHoverMessage(player, pokemon, chatMessage);
             }
         }
     }

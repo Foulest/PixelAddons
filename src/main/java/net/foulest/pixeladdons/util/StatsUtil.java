@@ -22,6 +22,8 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumNature;
 import com.pixelmonmod.pixelmon.enums.EnumPokerusType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,9 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static net.foulest.pixeladdons.util.Settings.statsPanelMessage;
-
-public class StatsUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StatsUtil {
 
     /**
      * Gets the stats panel of a Pokemon.
@@ -94,10 +95,13 @@ public class StatsUtil {
         placeholders.put("%ivPercent%", getIVPercent(pokemon));
 
         // Iterate over each line in the settings and replace placeholders
-        for (String line : statsPanelMessage) {
+        for (String message : Settings.statsPanelMessage) {
+            String line = message;
+
             for (Map.Entry<String, String> entry : placeholders.entrySet()) {
                 line = line.replace(entry.getKey(), entry.getValue());
             }
+
             statsPanel.add(line);
         }
         return statsPanel;
@@ -109,7 +113,7 @@ public class StatsUtil {
      * @param pokemon The Pokemon to get the nature effect for.
      * @return The effect of the nature.
      */
-    public static @NotNull String getNatureEffect(@NotNull Pokemon pokemon) {
+    private static @NotNull String getNatureEffect(@NotNull Pokemon pokemon) {
         EnumNature nature = pokemon.getNature();
 
         // Get the increased and decreased stats
@@ -134,7 +138,7 @@ public class StatsUtil {
      * @param pokemon The Pokemon to get the EV percentage for.
      * @return The percentage of EVs across all stats.
      */
-    public static @NotNull String getEVPercent(@NotNull Pokemon pokemon) {
+    private static @NotNull String getEVPercent(@NotNull Pokemon pokemon) {
         DecimalFormat df = new DecimalFormat("#.#");
 
         // Get the total EVs across all stats
@@ -158,7 +162,7 @@ public class StatsUtil {
      * @param pokemon The Pokemon to get the IV percentage for.
      * @return The percentage of IVs across all stats.
      */
-    public static @NotNull String getIVPercent(@NotNull Pokemon pokemon) {
+    private static @NotNull String getIVPercent(@NotNull Pokemon pokemon) {
         DecimalFormat df = new DecimalFormat("#.#");
 
         // Calculate the total IVs across all stats

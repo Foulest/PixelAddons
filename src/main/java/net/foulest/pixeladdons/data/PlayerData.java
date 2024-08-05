@@ -19,12 +19,14 @@ package net.foulest.pixeladdons.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
 public final class PlayerData {
 
     // Player data
@@ -32,9 +34,9 @@ public final class PlayerData {
     private Player player;
 
     // Hatch data
-    private boolean confirmHatch = false;
+    private boolean confirmHatch;
 
-    public PlayerData(UUID uniqueId, Player player) {
+    PlayerData(UUID uniqueId, Player player) {
         this.uniqueId = uniqueId;
         this.player = player;
     }

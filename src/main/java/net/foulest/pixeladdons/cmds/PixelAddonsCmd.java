@@ -18,6 +18,7 @@
 package net.foulest.pixeladdons.cmds;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
@@ -28,9 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-
-import static net.foulest.pixeladdons.util.Settings.commandNoPermissionMessage;
-import static net.foulest.pixeladdons.util.Settings.commandUsageMessage;
+import java.util.Locale;
 
 /**
  * Main command for PixelAddons.
@@ -40,8 +39,10 @@ import static net.foulest.pixeladdons.util.Settings.commandUsageMessage;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class PixelAddonsCmd {
 
+    @SuppressWarnings("MethodMayBeStatic")
     @Command(name = "pixeladdons", description = "Main command for PixelAddons.",
             permission = "pixeladdons.main", usage = "/pixeladdons")
     public void onCommand(@NotNull CommandArgs args) {
@@ -57,15 +58,15 @@ public class PixelAddonsCmd {
         String subCommand = args.getArgs(0);
 
         //noinspection SwitchStatementWithTooFewBranches
-        switch (subCommand.toLowerCase()) {
+        switch (subCommand.toLowerCase(Locale.ROOT)) {
             case "reload":
                 if (!sender.hasPermission("pixeladdons.reload")) {
-                    MessageUtil.messagePlayer(sender, commandNoPermissionMessage);
+                    MessageUtil.messagePlayer(sender, Settings.commandNoPermissionMessage);
                     return;
                 }
 
                 if (args.length() != 1) {
-                    MessageUtil.messagePlayer(sender, commandUsageMessage
+                    MessageUtil.messagePlayer(sender, Settings.commandUsageMessage
                             .replace("%usage%", "/pixeladdons reload"));
                     return;
                 }
@@ -86,9 +87,9 @@ public class PixelAddonsCmd {
      * @param sender The command sender
      * @param args   The command arguments
      */
-    private void handleHelp(@NotNull CommandSender sender, CommandArgs args) {
+    private static void handleHelp(@NotNull CommandSender sender, CommandArgs args) {
         if (!sender.hasPermission("pixeladdons.main")) {
-            MessageUtil.messagePlayer(sender, commandNoPermissionMessage);
+            MessageUtil.messagePlayer(sender, Settings.commandNoPermissionMessage);
             return;
         }
 

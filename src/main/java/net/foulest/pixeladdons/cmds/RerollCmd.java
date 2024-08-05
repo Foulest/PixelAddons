@@ -18,7 +18,9 @@
 package net.foulest.pixeladdons.cmds;
 
 import com.envyful.pixel.hunt.remastered.api.PixelHuntFactory;
+import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
@@ -28,47 +30,51 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.foulest.pixeladdons.util.Settings.*;
-
 /**
  * @author Foulest
  * @project PixelAddons
  */
+@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class RerollCmd {
 
-    public static long lastReroll;
+    private static long lastReroll;
     public static final List<Player> votingToReroll = new ArrayList<>();
 
     @Command(name = "reroll", description = "Votes to re-roll the hunt.",
             permission = "pixeladdons.reroll", usage = "/reroll",
-            aliases = {"rtv"}, inGameOnly = true)
+            aliases = "rtv", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
+        // Silently return to avoid NPEs.
+        if (player == null) {
+            return;
+        }
+
         // Checks if the command is enabled.
-        if (!rerollCommandEnabled) {
-            MessageUtil.messagePlayer(player, commandDisabledMessage
+        if (!Settings.rerollCommandEnabled) {
+            MessageUtil.messagePlayer(player, Settings.commandDisabledMessage
                     .replace("%command%", "/reroll"));
             return;
         }
 
         // Checks for correct command usage.
         if (args.length() != 0) {
-            MessageUtil.messagePlayer(player, commandUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandUsageMessage
                     .replace("%usage%", "/reroll"));
             return;
         }
 
         // Checks if the re-roll command is on cooldown.
-        if (rerollCommandCooldown > 0) {
+        if (Settings.rerollCommandCooldown > 0) {
             long now = System.currentTimeMillis();
-            long cooldownTimeRemainingMillis = (lastReroll + (rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
+            long cooldownTimeRemainingMillis = (lastReroll + (Settings.rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
             long cooldownTimeRemaining = cooldownTimeRemainingMillis / 1000; // Convert milliseconds back to seconds
             String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
 
             if (cooldownTimeRemaining > 0) {
-                MessageUtil.messagePlayer(player, rerollCommandCooldownMessage
+                MessageUtil.messagePlayer(player, Settings.rerollCommandCooldownMessage
                         .replace("%time%", cooldownFormatted));
                 return;
             }
@@ -80,7 +86,7 @@ public class RerollCmd {
             votingToReroll.remove(player);
 
             // Broadcasts the cancellation of the vote.
-            MessageUtil.broadcast(rerollVoteCancelledMessage
+            MessageUtil.broadcast(Settings.rerollVoteCancelledMessage
                     .replace("%player%", player.getName())
                     .replace("%votes%", String.valueOf(votingToReroll.size()))
                     .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
@@ -90,7 +96,7 @@ public class RerollCmd {
             // Only broadcasts the vote if there are other players online.
             // Otherwise, it would be pointless to broadcast it.
             if (Bukkit.getOnlinePlayers().size() > 1) {
-                MessageUtil.broadcast(rerollVoteSubmittedMessage
+                MessageUtil.broadcast(Settings.rerollVoteSubmittedMessage
                         .replace("%player%", player.getName())
                         .replace("%votes%", String.valueOf(votingToReroll.size()))
                         .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
@@ -107,7 +113,7 @@ public class RerollCmd {
      */
     public static void handleReroll() {
         // Checks if the command is enabled.
-        if (!rerollCommandEnabled) {
+        if (!Settings.rerollCommandEnabled) {
             return;
         }
 
@@ -121,10 +127,10 @@ public class RerollCmd {
 
             // Broadcasts the re-roll.
             if (votingToReroll.size() == 1) {
-                MessageUtil.broadcast(rerollHuntMessageWithPlayer
+                MessageUtil.broadcast(Settings.rerollHuntMessageWithPlayer
                         .replace("%player%", votingToReroll.get(0).getName()));
             } else {
-                MessageUtil.broadcast(rerollHuntMessage);
+                MessageUtil.broadcast(Settings.rerollHuntMessage);
             }
 
             // Resets the cooldown and clears the list.

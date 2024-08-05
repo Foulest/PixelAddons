@@ -18,6 +18,8 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -43,6 +45,7 @@ import java.util.stream.IntStream;
  * @author Foulest
  * @project PixelAddons
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("unused")
 public final class MessageUtil {
 
@@ -90,7 +93,7 @@ public final class MessageUtil {
      *
      * @param message The message to send.
      */
-    public static void broadcast(@NotNull List<String> message) {
+    public static void broadcast(@NotNull Iterable<String> message) {
         for (String line : message) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 messagePlayer(player, line);
@@ -124,7 +127,7 @@ public final class MessageUtil {
      * @param message The message to colorize.
      */
     @Contract("_ -> new")
-    public static @NotNull String colorize(String message) {
+    private static @NotNull String colorize(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
@@ -179,12 +182,12 @@ public final class MessageUtil {
         List<String> statsList = StatsUtil.getStatsPanel(player, pokemon);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            TextComponent message = new TextComponent(MessageUtil.colorize(chatMessage));
+            TextComponent message = new TextComponent(colorize(chatMessage));
             TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
             TextComponent hoverMessage = new TextComponent(new ComponentBuilder("").create());
 
             for (String line : statsList) {
-                hoverMessage.addExtra(new TextComponent(MessageUtil.colorize(line)));
+                hoverMessage.addExtra(new TextComponent(colorize(line)));
 
                 if (!statsList.get(statsList.size() - 1).equals(line)) {
                     hoverMessage.addExtra(newLine);
@@ -215,7 +218,7 @@ public final class MessageUtil {
      * @param delimiters The delimiters to use.
      * @return The capitalized string.
      */
-    public static @NotNull String capitalize(@NotNull String str, char... delimiters) {
+    private static @NotNull String capitalize(@NotNull String str, char... delimiters) {
         if (str.isEmpty()) {
             return str;
         }
@@ -228,8 +231,9 @@ public final class MessageUtil {
         int strLen = str.length();
         StringBuilder sb = new StringBuilder(strLen);
         boolean capitalizeNext = true;
+        int index = 0;
 
-        for (int index = 0; index < strLen; ) {
+        while (index < strLen) {
             int codePoint = str.codePointAt(index);
             int charCount = Character.charCount(codePoint);
 
@@ -256,10 +260,8 @@ public final class MessageUtil {
      * @return The set of delimiters.
      */
     private static @NotNull Set<Integer> generateDelimiterSet(char... delimiters) {
-        return delimiters == null ? Collections.singleton((int) ' ') :
-                IntStream.range(0, delimiters.length)
-                        .map(i -> delimiters[i])
-                        .boxed()
-                        .collect(Collectors.toSet());
+        return delimiters == null
+                ? Collections.singleton((int) ' ')
+                : IntStream.range(0, delimiters.length).map(i -> delimiters[i]).boxed().collect(Collectors.toSet());
     }
 }

@@ -18,6 +18,7 @@
 package net.foulest.pixeladdons;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.cmds.*;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.listeners.EventListener;
@@ -39,6 +40,7 @@ import java.util.logging.Level;
  * @project PixelAddons
  */
 @Getter
+@NoArgsConstructor
 public class PixelAddons extends JavaPlugin {
 
     @Getter

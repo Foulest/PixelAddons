@@ -20,7 +20,9 @@ package net.foulest.pixeladdons.cmds;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
+import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.StatsUtil;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
@@ -28,12 +30,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import static net.foulest.pixeladdons.util.Settings.*;
-
 /**
  * @author Foulest
  * @project PixelAddons
  */
+@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class StatsCmd {
 
@@ -43,16 +44,21 @@ public class StatsCmd {
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
 
+        // Silently return to avoid NPEs.
+        if (player == null) {
+            return;
+        }
+
         // Checks if the command is enabled.
-        if (!statsCommandEnabled) {
-            MessageUtil.messagePlayer(player, commandDisabledMessage
+        if (!Settings.statsCommandEnabled) {
+            MessageUtil.messagePlayer(player, Settings.commandDisabledMessage
                     .replace("%command%", "/stats"));
             return;
         }
 
         // Checks for correct command usage.
         if (args.length() == 0 || args.length() > 2) {
-            MessageUtil.messagePlayer(player, commandUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandUsageMessage
                     .replace("%usage%", "/stats <slot> [player]"));
             return;
         }
@@ -62,8 +68,8 @@ public class StatsCmd {
         // Handles viewing other players' stats.
         if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
             // Checks if viewing other players' stats is disabled.
-            if (!statsCommandViewOtherPlayers) {
-                MessageUtil.messagePlayer(player, commandNoPermissionMessage);
+            if (!Settings.statsCommandViewOtherPlayers) {
+                MessageUtil.messagePlayer(player, Settings.commandNoPermissionMessage);
                 return;
             }
 
@@ -71,14 +77,14 @@ public class StatsCmd {
 
             // Checks if the player is invalid.
             if (target == null) {
-                MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+                MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                         .replace("%reason%", "Player is invalid"));
                 return;
             }
 
             // Checks if the player is offline.
             if (!target.isOnline()) {
-                MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+                MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                         .replace("%reason%", "Player is offline"));
                 return;
             }
@@ -88,15 +94,15 @@ public class StatsCmd {
 
         // Checks if the player has a starter Pokemon.
         if (!party.starterPicked) {
-            MessageUtil.messagePlayer(player, starterNotFoundMessage);
+            MessageUtil.messagePlayer(player, Settings.starterNotFoundMessage);
             return;
         }
 
         // Checks if the slot is a number.
         try {
             Integer.parseInt(args.getArgs(0));
-        } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+        } catch (NumberFormatException ex) {
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
@@ -105,7 +111,7 @@ public class StatsCmd {
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Slot is invalid"));
             return;
         }
@@ -114,7 +120,7 @@ public class StatsCmd {
 
         // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Slot is empty"));
             return;
         }
@@ -123,7 +129,7 @@ public class StatsCmd {
 
         // Checks if the Pokemon is missing.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Pokemon is missing"));
             return;
         }
@@ -132,7 +138,7 @@ public class StatsCmd {
 
         // Checks if the owner is missing.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Owner is missing"));
             return;
         }

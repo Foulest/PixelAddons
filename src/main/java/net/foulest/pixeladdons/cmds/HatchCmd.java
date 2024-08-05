@@ -21,10 +21,12 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.economy.IPixelmonBankAccount;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
+import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.data.PlayerData;
 import net.foulest.pixeladdons.data.PlayerDataManager;
 import net.foulest.pixeladdons.util.MessageUtil;
+import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
 import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
@@ -34,12 +36,11 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
-import static net.foulest.pixeladdons.util.Settings.*;
-
 /**
  * @author Foulest
  * @project PixelAddons
  */
+@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class HatchCmd {
 
@@ -47,20 +48,26 @@ public class HatchCmd {
             permission = "pixeladdons.hatch", usage = "/hatch <slot>", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
         Player player = args.getPlayer();
+
+        // Silently return to avoid NPEs.
+        if (player == null) {
+            return;
+        }
+
         PlayerData playerData = PlayerDataManager.getPlayerData(player);
         DecimalFormat df = new DecimalFormat("###,###.###");
-        String formattedCost = df.format(hatchCommandCost);
+        String formattedCost = df.format(Settings.hatchCommandCost);
 
         // Checks if the command is enabled.
-        if (!hatchCommandEnabled) {
-            MessageUtil.messagePlayer(player, commandDisabledMessage
+        if (!Settings.hatchCommandEnabled) {
+            MessageUtil.messagePlayer(player, Settings.commandDisabledMessage
                     .replace("%command%", "/hatch"));
             return;
         }
 
         // Checks for correct command usage.
         if (args.length() != 1) {
-            MessageUtil.messagePlayer(player, commandUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandUsageMessage
                     .replace("%usage%", "/hatch <slot>"));
             return;
         }
@@ -69,15 +76,15 @@ public class HatchCmd {
 
         // Checks if the player has a starter Pokemon.
         if (!party.starterPicked) {
-            MessageUtil.messagePlayer(player, starterNotFoundMessage);
+            MessageUtil.messagePlayer(player, Settings.starterNotFoundMessage);
             return;
         }
 
         // Checks if the slot is a number.
         try {
             Integer.parseInt(args.getArgs(0));
-        } catch (Exception ex) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+        } catch (NumberFormatException ex) {
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
@@ -86,7 +93,7 @@ public class HatchCmd {
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Slot is invalid"));
             return;
         }
@@ -95,7 +102,7 @@ public class HatchCmd {
 
         // Checks if the slot is empty.
         if (party.get(slot) == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Slot is empty"));
             return;
         }
@@ -104,14 +111,14 @@ public class HatchCmd {
 
         // Checks if the Pokemon is valid.
         if (pokemon == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Egg is missing"));
             return;
         }
 
         // Checks if the Pokemon is an egg.
         if (!pokemon.isEgg()) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Not an egg"));
             return;
         }
@@ -120,7 +127,7 @@ public class HatchCmd {
 
         // Checks if the owner is valid.
         if (owner == null) {
-            MessageUtil.messagePlayer(player, commandInvalidUsageMessage
+            MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Owner is missing"));
             return;
         }
@@ -130,36 +137,36 @@ public class HatchCmd {
 
         // Checks if the player has a bank account.
         if (!bankAccount.isPresent()) {
-            MessageUtil.messagePlayer(player, bankAccountNotFoundMessage);
+            MessageUtil.messagePlayer(player, Settings.bankAccountNotFoundMessage);
             return;
         }
 
         // Checks if the player has enough money.
-        if (bankAccount.get().getMoney() < hatchCommandCost) {
-            MessageUtil.messagePlayer(player, notEnoughMoneyMessage
+        if (bankAccount.get().getMoney() < Settings.hatchCommandCost) {
+            MessageUtil.messagePlayer(player, Settings.notEnoughMoneyMessage
                     .replace("%amount%", formattedCost));
             return;
         }
 
         // Handles hatching the egg.
         if (playerData.isConfirmHatch()) {
-            bankAccount.get().setMoney(bankAccount.get().getMoney() - hatchCommandCost);
+            bankAccount.get().setMoney(bankAccount.get().getMoney() - Settings.hatchCommandCost);
             pokemon.hatchEgg();
 
             playerData.setConfirmHatch(false);
-            MessageUtil.messagePlayer(player, pokemonHatchedMessage
+            MessageUtil.messagePlayer(player, Settings.pokemonHatchedMessage
                     .replace("%pokemon%", pokemon.getSpecies().getPokemonName())
                     .replace("%amount%", formattedCost));
 
         } else {
             playerData.setConfirmHatch(true);
-            MessageUtil.messagePlayer(player, confirmHatchMessage
+            MessageUtil.messagePlayer(player, Settings.confirmHatchMessage
                     .replace("%amount%", formattedCost));
 
             Bukkit.getScheduler().runTaskLater(PixelAddons.instance, () -> {
                 if (playerData.isConfirmHatch()) {
                     playerData.setConfirmHatch(false);
-                    MessageUtil.messagePlayer(player, hatchCommandCancelledMessage);
+                    MessageUtil.messagePlayer(player, Settings.hatchCommandCancelledMessage);
                 }
             }, 400L);
         }

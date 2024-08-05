@@ -19,6 +19,7 @@ package net.foulest.pixeladdons.util.yaml;
 
 import com.google.common.base.Charsets;
 import lombok.Cleanup;
+import lombok.NoArgsConstructor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,7 @@ import java.util.regex.Pattern;
  * @author Foulest
  * @project PixelAddons
  */
+@NoArgsConstructor
 public class CustomYamlConfiguration extends YamlConfiguration {
 
     // Map to store the path of the YAML keys and their associated comments
@@ -128,7 +130,13 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         StringBuilder builder = new StringBuilder();
         String line;
 
-        while ((line = input.readLine()) != null) {
+        while (true) {
+            line = input.readLine();
+
+            if (line == null) {
+                break;
+            }
+
             builder.append(line);
             builder.append('\n');
         }
@@ -165,7 +173,7 @@ public class CustomYamlConfiguration extends YamlConfiguration {
      * @param line The line of YAML to extract the key from.
      * @return The key if the line contains a key-value pair, otherwise null.
      */
-    private @Nullable String getKeyFromLine(String line) {
+    private static @Nullable String getKeyFromLine(CharSequence line) {
         Matcher matcher = Pattern.compile("^\\s*([\\w\\-]+):").matcher(line);
         return matcher.find() ? matcher.group(1) : null;
     }
@@ -185,7 +193,7 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         Pattern keyPattern = Pattern.compile("^\\s*([\\w\\-]+):.*");
 
         for (String line : lines) {
-            if (line.trim().startsWith("#")) {
+            if (!line.trim().isEmpty() && line.trim().charAt(0) == '#') {
                 if (commentBuilder.length() > 0) {
                     commentBuilder.append("\n");
                 }

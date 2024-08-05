@@ -32,11 +32,11 @@ import java.util.List;
  * @author minnymin3
  * @see <a href="https://github.com/mcardy/CommandFramework">CommandFramework GitHub</a>
  */
-public class BukkitCommand extends org.bukkit.command.Command {
+class BukkitCommand extends org.bukkit.command.Command {
 
     private final Plugin owningPlugin;
     private final CommandExecutor executor;
-    protected BukkitCompleter completer;
+    BukkitCompleter completer;
 
     /**
      * Constructs a BukkitCommand instance.
@@ -45,9 +45,7 @@ public class BukkitCommand extends org.bukkit.command.Command {
      * @param executor The CommandExecutor responsible for handling this command.
      * @param owner    The owning Plugin of this command.
      */
-    protected BukkitCommand(String label,
-                            CommandExecutor executor,
-                            Plugin owner) {
+    BukkitCommand(String label, CommandExecutor executor, Plugin owner) {
         super(label);
         this.executor = executor;
         owningPlugin = owner;

@@ -20,6 +20,8 @@ package net.foulest.pixeladdons.util;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,7 +30,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Foulest
  * @project PixelAddons
  */
-public class HiddenPowerUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class HiddenPowerUtil {
 
     /**
      * Gets the hidden power type of a Pokemon.
@@ -36,14 +39,14 @@ public class HiddenPowerUtil {
      * @param pokemon Pokemon to get the hidden power type of.
      * @return Hidden power type of the Pokemon.
      */
-    public static EnumType getHiddenPower(@NotNull Pokemon pokemon) {
+    static EnumType getHiddenPower(@NotNull Pokemon pokemon) {
         int hp = (pokemon.getIVs().getStat(StatsType.HP) % 2 == 0) ? 0 : 1;
         int atk = (pokemon.getIVs().getStat(StatsType.Attack) % 2 == 0) ? 0 : 1;
         int def = (pokemon.getIVs().getStat(StatsType.Defence) % 2 == 0) ? 0 : 1;
         int spa = (pokemon.getIVs().getStat(StatsType.SpecialAttack) % 2 == 0) ? 0 : 1;
         int spd = (pokemon.getIVs().getStat(StatsType.SpecialDefence) % 2 == 0) ? 0 : 1;
         int spe = (pokemon.getIVs().getStat(StatsType.Speed) % 2 == 0) ? 0 : 1;
-        int hiddenPowerInt = (int) Math.floor((double) ((hp + (2 * atk) + (4 * def) + (8 * spe) + (16 * spa) + (32 * spd)) * 15) / 63);
+        int hiddenPowerInt = (int) Math.floor((double) getHiddenPowerInt(hp, atk, def, spe, spa, spd) / 63);
 
         // Returns the hidden power type.
         switch (hiddenPowerInt) {
@@ -82,5 +85,9 @@ public class HiddenPowerUtil {
             default:
                 return EnumType.getAllTypes().get(17);
         }
+    }
+
+    private static int getHiddenPowerInt(int hp, int atk, int def, int spe, int spa, int spd) {
+        return (hp + (2 * atk) + (4 * def) + (8 * spe) + (16 * spa) + (32 * spd)) * 15;
     }
 }
