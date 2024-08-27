@@ -23,10 +23,6 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Utility class for formatting.
  *
@@ -114,19 +110,5 @@ public final class FormatUtil {
         stat = stat.replace("specialDef", "SpD");
         stat = stat.replace("speed", "Spe");
         return stat;
-    }
-
-    /**
-     * Converts a StringBuilder to a List.
-     *
-     * @param builder StringBuilder to convert.
-     * @return Converted List.
-     */
-    public static @NotNull List<String> convertToList(@NotNull CharSequence builder) {
-        String[] splitData = builder.toString().split("\n");
-        List<String> output = new ArrayList<>();
-
-        Collections.addAll(output, splitData);
-        return output;
     }
 }
