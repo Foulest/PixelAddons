@@ -18,7 +18,6 @@
 package net.foulest.pixeladdons.cmds;
 
 import com.envyful.pixel.hunt.remastered.api.PixelHuntFactory;
-import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
@@ -31,10 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Command for voting to re-roll the hunt.
+ *
  * @author Foulest
- * @project PixelAddons
  */
-@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class RerollCmd {
 

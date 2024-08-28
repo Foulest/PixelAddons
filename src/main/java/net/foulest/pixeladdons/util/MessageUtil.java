@@ -43,7 +43,6 @@ import java.util.stream.IntStream;
  * Utility class for sending messages.
  *
  * @author Foulest
- * @project PixelAddons
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("unused")
@@ -135,6 +134,7 @@ public final class MessageUtil {
      * Strips the color from the specified message.
      *
      * @param message The message to strip the color from.
+     * @return The message without color.
      */
     public static String stripColor(String message) {
         return ChatColor.stripColor(message);

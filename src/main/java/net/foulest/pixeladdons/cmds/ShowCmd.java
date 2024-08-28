@@ -20,7 +20,6 @@ package net.foulest.pixeladdons.cmds;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.util.FormatUtil;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
@@ -31,10 +30,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Command for showing the stats of a selected Pokemon.
+ *
  * @author Foulest
- * @project PixelAddons
  */
-@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class ShowCmd {
 

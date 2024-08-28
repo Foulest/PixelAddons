@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
  * Utility class for formatting.
  *
  * @author Foulest
- * @project PixelAddons
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FormatUtil {

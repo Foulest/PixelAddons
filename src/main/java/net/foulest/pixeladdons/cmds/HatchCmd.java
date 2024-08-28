@@ -21,7 +21,6 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.economy.IPixelmonBankAccount;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.data.PlayerData;
 import net.foulest.pixeladdons.data.PlayerDataManager;
@@ -37,10 +36,10 @@ import java.text.DecimalFormat;
 import java.util.Optional;
 
 /**
+ * Command for hatching a Pokemon egg.
+ *
  * @author Foulest
- * @project PixelAddons
  */
-@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class HatchCmd {
 

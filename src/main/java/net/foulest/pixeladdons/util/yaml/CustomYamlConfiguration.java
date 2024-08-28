@@ -19,7 +19,6 @@ package net.foulest.pixeladdons.util.yaml;
 
 import com.google.common.base.Charsets;
 import lombok.Cleanup;
-import lombok.NoArgsConstructor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +35,7 @@ import java.util.regex.Pattern;
  * that allows for comments to be stored and loaded.
  *
  * @author Foulest
- * @project PixelAddons
  */
-@NoArgsConstructor
 public class CustomYamlConfiguration extends YamlConfiguration {
 
     // Map to store the path of the YAML keys and their associated comments

@@ -18,7 +18,6 @@
 package net.foulest.pixeladdons.cmds;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
@@ -35,11 +34,9 @@ import java.util.Locale;
  * Main command for PixelAddons.
  *
  * @author Foulest
- * @project PixelAddons
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class PixelAddonsCmd {
 
     @SuppressWarnings("MethodMayBeStatic")

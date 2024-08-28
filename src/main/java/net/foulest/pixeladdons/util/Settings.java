@@ -35,11 +35,11 @@ import java.util.logging.Level;
  * Utility class for settings.
  *
  * @author Foulest
- * @project PixelAddons
  */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("WeakerAccess")
 public final class Settings {
 
     // File settings

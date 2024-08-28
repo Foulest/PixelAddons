@@ -33,7 +33,6 @@ import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnIn
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.cmds.RerollCmd;
 import net.foulest.pixeladdons.data.PlayerDataManager;
@@ -57,7 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@NoArgsConstructor
 public class EventListener implements Listener {
 
     /**

@@ -26,7 +26,6 @@ import com.pixelmonmod.pixelmon.comm.packetHandlers.battles.EndSpectate;
 import com.pixelmonmod.pixelmon.comm.packetHandlers.battles.ExitBattle;
 import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import com.pixelmonmod.pixelmon.enums.battle.EnumBattleForceEndCause;
-import lombok.NoArgsConstructor;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
@@ -37,10 +36,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Command for ending a player's current battle.
+ *
  * @author Foulest
- * @project PixelAddons
  */
-@NoArgsConstructor
 @SuppressWarnings("MethodMayBeStatic")
 public class EndBattleCmd {
 
