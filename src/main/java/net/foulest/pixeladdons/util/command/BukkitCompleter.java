@@ -17,8 +17,7 @@
  */
 package net.foulest.pixeladdons.util.command;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -35,9 +34,8 @@ import java.util.*;
  * @author minnymin3
  * @see <a href="https://github.com/mcardy/CommandFramework">CommandFramework GitHub</a>
  */
-@Getter
-@Setter
-class BukkitCompleter implements TabCompleter {
+@Data
+public class BukkitCompleter implements TabCompleter {
 
     private final Map<String, Map.Entry<Method, Object>> completers = new HashMap<>();
 
@@ -83,8 +81,9 @@ class BukkitCompleter implements TabCompleter {
                 Map.Entry<Method, Object> entry = completers.get(cmdLabel);
 
                 try {
-                    return (List<String>) entry.getKey().invoke(entry.getValue(),
-                            new CommandArgs(sender, command, label, args, cmdLabel.split("\\.").length - 1));
+                    Object value = entry.getValue();
+                    String[] split = cmdLabel.split("\\.");
+                    return (List<String>) entry.getKey().invoke(value, new CommandArgs(sender, command, label, args, split.length - 1));
                 } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {
                     ex.printStackTrace();
                 }

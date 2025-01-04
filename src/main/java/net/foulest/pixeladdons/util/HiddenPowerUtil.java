@@ -20,8 +20,7 @@ package net.foulest.pixeladdons.util;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumType;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,8 +29,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Foulest
  * @project PixelAddons
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class HiddenPowerUtil {
+@Data
+class HiddenPowerUtil {
 
     /**
      * Gets the hidden power type of a Pokemon.

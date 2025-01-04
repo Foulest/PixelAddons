@@ -32,6 +32,7 @@ import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnAc
 import com.pixelmonmod.pixelmon.api.spawning.archetypes.entities.pokemon.SpawnInfoPokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.EVStore;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.cmds.RerollCmd;
@@ -55,6 +56,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class EventListener implements Listener {
 
@@ -76,7 +78,8 @@ public class EventListener implements Listener {
                 }
 
                 // Replaces %player% with the player's name.
-                String replace = line.replace("%player%", player.getName());
+                String playerName = player.getName();
+                String replace = line.replace("%player%", playerName);
 
                 // Runs the command as console.
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), replace);
@@ -118,114 +121,127 @@ public class EventListener implements Listener {
         // Handles EV gain messages.
         if (forgeEvent instanceof EVsGainedEvent) {
             EVsGainedEvent eVsGainedEvent = (EVsGainedEvent) forgeEvent;
+            EntityPlayerMP ownerPlayer = eVsGainedEvent.pokemon.getOwnerPlayer();
 
-            // Checks if the Pokemon has an owner.
-            if (eVsGainedEvent.pokemon.getOwnerPlayer() != null
-                    && Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID()) != null) {
-                Player player = Bukkit.getPlayer(eVsGainedEvent.pokemon.getOwnerPlayer().getUniqueID());
+            // Returns if the owner player is null.
+            if (ownerPlayer == null) {
+                return;
+            }
 
-                // Returns if the player is null.
-                if (player == null) {
-                    return;
-                }
+            UUID ownerPlayerUUID = ownerPlayer.getUniqueID();
 
-                EVStore evStore = eVsGainedEvent.evStore;
-                PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
-                int[] oldEVs = evStore.getArray();
+            // Returns if the owner is null.
+            if (Bukkit.getPlayer(ownerPlayerUUID) == null) {
+                return;
+            }
 
-                // Returns if the player is offline.
-                if (!player.isOnline()) {
-                    return;
-                }
+            Player player = Bukkit.getPlayer(ownerPlayerUUID);
 
-                // Handles EV gain messages.
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        Pokemon pokemon = party.get(party.getSlot(eVsGainedEvent.pokemon.getUUID()));
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
 
-                        // Returns if the Pokemon is null.
-                        if (pokemon == null) {
-                            return;
-                        }
+            EVStore evStore = eVsGainedEvent.evStore;
+            int[] oldEVs = evStore.getArray();
 
-                        // Calculates the EV differences.
-                        int[] newEVs = pokemon.getEVs().getArray();
-                        int hpDiff = newEVs[0] - oldEVs[0];
-                        int atkDiff = newEVs[1] - oldEVs[1];
-                        int defDiff = newEVs[2] - oldEVs[2];
-                        int spaDiff = newEVs[3] - oldEVs[3];
-                        int spdDiff = newEVs[4] - oldEVs[4];
-                        int speDiff = newEVs[5] - oldEVs[5];
-                        List<String> msgList = new ArrayList<>();
+            UUID playerUUID = player.getUniqueId();
+            PlayerPartyStorage party = Pixelmon.storageManager.getParty(playerUUID);
 
-                        if (hpDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(hpDiff))
-                                    .replace("%stat%", "HP")
-                                    .replace("%newEVs%", String.valueOf(newEVs[0])));
-                        }
+            // Returns if the player is offline.
+            if (!player.isOnline()) {
+                return;
+            }
 
-                        if (atkDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(atkDiff))
-                                    .replace("%stat%", "Atk")
-                                    .replace("%newEVs%", String.valueOf(newEVs[1])));
-                        }
+            // Handles EV gain messages.
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    UUID pokemonUUID = eVsGainedEvent.pokemon.getUUID();
+                    int partySlot = party.getSlot(pokemonUUID);
+                    Pokemon pokemon = party.get(partySlot);
 
-                        if (defDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(defDiff))
-                                    .replace("%stat%", "Def")
-                                    .replace("%newEVs%", String.valueOf(newEVs[2])));
-                        }
+                    // Returns if the Pokemon is null.
+                    if (pokemon == null) {
+                        return;
+                    }
 
-                        if (spaDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(spaDiff))
-                                    .replace("%stat%", "SpA")
-                                    .replace("%newEVs%", String.valueOf(newEVs[3])));
-                        }
+                    // Calculates the EV differences.
+                    int[] newEVs = pokemon.getEVs().getArray();
+                    int hpDiff = newEVs[0] - oldEVs[0];
+                    int atkDiff = newEVs[1] - oldEVs[1];
+                    int defDiff = newEVs[2] - oldEVs[2];
+                    int spaDiff = newEVs[3] - oldEVs[3];
+                    int spdDiff = newEVs[4] - oldEVs[4];
+                    int speDiff = newEVs[5] - oldEVs[5];
+                    List<String> msgList = new ArrayList<>();
 
-                        if (spdDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(spdDiff))
-                                    .replace("%stat%", "SpD")
-                                    .replace("%newEVs%", String.valueOf(newEVs[4])));
-                        }
+                    if (hpDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(hpDiff))
+                                .replace("%stat%", "HP")
+                                .replace("%newEVs%", String.valueOf(newEVs[0])));
+                    }
 
-                        if (speDiff > 0) {
-                            msgList.add(Settings.evIncreaseMessage
-                                    .replace("%diff%", String.valueOf(speDiff))
-                                    .replace("%stat%", "Spe")
-                                    .replace("%newEVs%", String.valueOf(newEVs[5])));
-                        }
+                    if (atkDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(atkDiff))
+                                .replace("%stat%", "Atk")
+                                .replace("%newEVs%", String.valueOf(newEVs[1])));
+                    }
 
-                        StringBuilder totalEVsGained = new StringBuilder();
+                    if (defDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(defDiff))
+                                .replace("%stat%", "Def")
+                                .replace("%newEVs%", String.valueOf(newEVs[2])));
+                    }
 
-                        // Formats the message.
-                        if (!msgList.isEmpty()) {
-                            for (int i = 0; i < msgList.size(); i++) {
-                                totalEVsGained.append(msgList.get(i));
+                    if (spaDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(spaDiff))
+                                .replace("%stat%", "SpA")
+                                .replace("%newEVs%", String.valueOf(newEVs[3])));
+                    }
 
-                                if (i + 1 < msgList.size()) {
-                                    totalEVsGained.append(" ");
-                                }
+                    if (spdDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(spdDiff))
+                                .replace("%stat%", "SpD")
+                                .replace("%newEVs%", String.valueOf(newEVs[4])));
+                    }
+
+                    if (speDiff > 0) {
+                        msgList.add(Settings.evIncreaseMessage
+                                .replace("%diff%", String.valueOf(speDiff))
+                                .replace("%stat%", "Spe")
+                                .replace("%newEVs%", String.valueOf(newEVs[5])));
+                    }
+
+                    StringBuilder totalEVsGained = new StringBuilder();
+
+                    // Formats the message.
+                    if (!msgList.isEmpty()) {
+                        for (int i = 0; i < msgList.size(); i++) {
+                            totalEVsGained.append(msgList.get(i));
+
+                            if (i + 1 < msgList.size()) {
+                                totalEVsGained.append(" ");
                             }
+                        }
 
-                            String pokemonName = pokemon.getSpecies().getPokemonName();
-                            String chatMessage = Settings.evGainMessage
-                                    .replace("%pokemon%", pokemonName)
-                                    .replace("%evGains%", totalEVsGained.toString());
+                        String pokemonName = pokemon.getSpecies().getPokemonName();
+                        String chatMessage = Settings.evGainMessage
+                                .replace("%pokemon%", pokemonName)
+                                .replace("%evGains%", totalEVsGained.toString());
 
-                            // Sends the message.
-                            if (player.isOnline()) {
-                                MessageUtil.messagePlayer(player, chatMessage);
-                            }
+                        // Sends the message.
+                        if (player.isOnline()) {
+                            MessageUtil.messagePlayer(player, chatMessage);
                         }
                     }
-                }.runTaskLater(PixelAddons.instance, 5L);
-            }
+                }
+            }.runTaskLater(PixelAddons.instance, 5L);
         }
     }
 
@@ -264,7 +280,8 @@ public class EventListener implements Listener {
             }
 
             // Gets the player that spawned the Pokemon.
-            Player player = Bukkit.getPlayer(spawnLocation.cause.getName());
+            String playerName = spawnLocation.cause.getName();
+            Player player = Bukkit.getPlayer(playerName);
             if (player == null || !player.isOnline()) {
                 return;
             }
@@ -286,7 +303,7 @@ public class EventListener implements Listener {
                 spawnAction.usingSpec.apply(pixelmon);
             }
 
-            // Sets the custom pokerus rate for qualifying players.
+            // Sets the custom Pokerus rate for qualifying players.
             if (Settings.customPokerusRateEnabled && player.hasPermission(Settings.customPokerusRatePermission)
                     && new Random().nextInt(Settings.customPokerusRateOdds) == 0) {
                 spawnAction.usingSpec.pokerusType = (byte) (new Random().nextInt(5) + 1);
@@ -320,11 +337,13 @@ public class EventListener implements Listener {
             // Differentiates the handling based on the event type.
             if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
                 CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
-                player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
+                UUID uniqueID = captureEvent.player.getUniqueID();
+                player = Bukkit.getPlayer(uniqueID);
                 pokemon = captureEvent.getPokemon().getStoragePokemonData();
             } else {
                 CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
-                player = Bukkit.getPlayer(captureEvent.player.getUniqueID());
+                UUID uniqueID = captureEvent.player.getUniqueID();
+                player = Bukkit.getPlayer(uniqueID);
                 pokemon = captureEvent.getRaidPokemon();
             }
 
@@ -339,12 +358,12 @@ public class EventListener implements Listener {
                 pokemon.setAbilitySlot(2);
             }
 
-            // Gets the Pokemon's name.
             pokemonName = pokemon.getSpecies().getPokemonName();
+            String playerName = player.getName();
 
             // Formats the hover message.
             String chatMessage = Settings.catchMessage
-                    .replace("%player%", player.getName())
+                    .replace("%player%", playerName)
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
 
@@ -360,7 +379,8 @@ public class EventListener implements Listener {
         // Handles Pokemon pickup messages.
         if (forgeEvent instanceof PickupEvent) {
             PickupEvent pickupEvent = (PickupEvent) forgeEvent;
-            Player player = Bukkit.getPlayer(pickupEvent.player.player.getUniqueID());
+            UUID uniqueID = pickupEvent.player.player.getUniqueID();
+            Player player = Bukkit.getPlayer(uniqueID);
             Pokemon pokemon = pickupEvent.pokemon.pokemon;
             ItemStack itemStack = pickupEvent.stack;
 
@@ -389,9 +409,12 @@ public class EventListener implements Listener {
                     || (!itemName.isEmpty() && itemName.charAt(0) == 'O')
                     || (!itemName.isEmpty() && itemName.charAt(0) == 'U')) ? "n" : "");
 
+            EnumSpecies species = pokemon.getSpecies();
+            String pokemonName = species.getPokemonName();
+
             // Formats the message.
             String chatMessage = Settings.pickupMessage
-                    .replace("%pokemon%", pokemon.getSpecies().getPokemonName())
+                    .replace("%pokemon%", pokemonName)
                     .replace("%an%", article)
                     .replace("%color%", Settings.pickupColor)
                     .replace("%itemName%", itemName);
@@ -403,8 +426,10 @@ public class EventListener implements Listener {
         // Handles egg hatch messages.
         if (forgeEvent instanceof EggHatchEvent.Post) {
             EggHatchEvent.Post eggHatchEvent = (EggHatchEvent.Post) forgeEvent;
-            Player player = Bukkit.getPlayer(eggHatchEvent.getPokemon().getOwnerPlayer().getUniqueID());
             Pokemon pokemon = eggHatchEvent.getPokemon();
+            EntityPlayerMP ownerPlayer = pokemon.getOwnerPlayer();
+            UUID ownerPlayerUUID = ownerPlayer.getUniqueID();
+            Player player = Bukkit.getPlayer(ownerPlayerUUID);
             String pokemonName = pokemon.getSpecies().getPokemonName();
 
             // Returns if the player is null.
@@ -417,9 +442,11 @@ public class EventListener implements Listener {
                 return;
             }
 
+            String playerName = player.getName();
+
             // Formats the message.
             String chatMessage = Settings.eggHatchMessage
-                    .replace("%player%", player.getName())
+                    .replace("%player%", playerName)
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
 
@@ -430,7 +457,8 @@ public class EventListener implements Listener {
         // Handles Pokemon receive messages.
         if (forgeEvent instanceof PixelmonReceivedEvent) {
             PixelmonReceivedEvent receivedEvent = (PixelmonReceivedEvent) forgeEvent;
-            Player player = Bukkit.getPlayer(receivedEvent.player.getUniqueID());
+            UUID uniqueID = receivedEvent.player.getUniqueID();
+            Player player = Bukkit.getPlayer(uniqueID);
             Pokemon pokemon = receivedEvent.pokemon;
             String pokemonName = pokemon.getSpecies().getPokemonName();
             ReceiveType receiveType = receivedEvent.receiveType;
@@ -446,12 +474,13 @@ public class EventListener implements Listener {
             }
 
             String chatMessage = "";
+            String playerName = player.getName();
 
             // Formats the message.
             switch (receiveType) {
                 case Custom:
                     chatMessage = Settings.receivePokemonCustomMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
@@ -465,7 +494,7 @@ public class EventListener implements Listener {
                             || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'U')) ? "n" : "");
 
                     chatMessage = Settings.fossilRevivalMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%an%", article)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
@@ -473,28 +502,28 @@ public class EventListener implements Listener {
 
                 case Starter:
                     chatMessage = Settings.chooseStarterMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case Command:
                     chatMessage = Settings.receivePokemonCommandMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case SelectPokemon:
                     chatMessage = Settings.receivePokemonSelectMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;
 
                 case Christmas:
                     chatMessage = Settings.receivePokemonChristmasMessage
-                            .replace("%player%", player.getName())
+                            .replace("%player%", playerName)
                             .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                             .replace("%pokemon%", pokemonName);
                     break;

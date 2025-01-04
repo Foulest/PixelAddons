@@ -17,7 +17,8 @@
  */
 package net.foulest.pixeladdons.util;
 
-import lombok.*;
+import lombok.Cleanup;
+import lombok.Data;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.util.yaml.CustomYamlConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,11 +37,9 @@ import java.util.logging.Level;
  *
  * @author Foulest
  */
-@Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
 @SuppressWarnings("WeakerAccess")
-public final class Settings {
+public class Settings {
 
     // File settings
     public static File file;

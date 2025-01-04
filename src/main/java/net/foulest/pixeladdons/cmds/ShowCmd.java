@@ -29,6 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Command for showing the stats of a selected Pokemon.
  *
@@ -62,7 +64,8 @@ public class ShowCmd {
             return;
         }
 
-        PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
+        UUID uniqueId = player.getUniqueId();
+        PlayerPartyStorage party = Pixelmon.storageManager.getParty(uniqueId);
 
         // Checks if the player has a starter Pokemon.
         if (!party.starterPicked) {
@@ -70,16 +73,18 @@ public class ShowCmd {
             return;
         }
 
+        String firstArgs = args.getArgs(0);
+
         // Checks if the slot is a number.
         try {
-            Integer.parseInt(args.getArgs(0));
+            Integer.parseInt(firstArgs);
         } catch (NumberFormatException ex) {
             MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Not a number"));
             return;
         }
 
-        int slot = Integer.parseInt(args.getArgs(0));
+        int slot = Integer.parseInt(firstArgs);
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
@@ -106,7 +111,8 @@ public class ShowCmd {
             return;
         }
 
-        Player owner = Bukkit.getPlayer(pokemon.getOwnerPlayerUUID());
+        UUID ownerPlayerUUID = pokemon.getOwnerPlayerUUID();
+        Player owner = Bukkit.getPlayer(ownerPlayerUUID);
 
         // Checks if the owner is valid.
         if (owner == null) {
@@ -116,10 +122,11 @@ public class ShowCmd {
         }
 
         String pokemonName = pokemon.getSpecies().getPokemonName();
+        String ownerName = owner.getName();
 
         // Handles printing the stats.
         String chatMessage = Settings.showMessage
-                .replace("%player%", owner.getName())
+                .replace("%player%", ownerName)
                 .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                 .replace("%pokemon%", pokemonName);
 

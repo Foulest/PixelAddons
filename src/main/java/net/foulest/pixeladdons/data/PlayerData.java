@@ -17,17 +17,13 @@
  */
 package net.foulest.pixeladdons.data;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@ToString
-public final class PlayerData {
+@Data
+public class PlayerData {
 
     // Player data
     private UUID uniqueId;

@@ -68,7 +68,8 @@ public class EndBattleCmd {
             return;
         }
 
-        EntityPlayerMP playerMP = PixelmonCommand.requireEntityPlayer(player.getName());
+        String playerName = player.getName();
+        EntityPlayerMP playerMP = PixelmonCommand.requireEntityPlayer(playerName);
         BattleControllerBase battleController = BattleRegistry.getBattle(playerMP);
 
         // Checks if the player is in a battle.

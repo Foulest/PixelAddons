@@ -17,7 +17,6 @@
  */
 package net.foulest.pixeladdons.util.yaml;
 
-import com.google.common.base.Charsets;
 import lombok.Cleanup;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,10 +24,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * CustomYamlConfiguration is an extension of YamlConfiguration
@@ -38,9 +39,17 @@ import java.util.regex.Pattern;
  */
 public class CustomYamlConfiguration extends YamlConfiguration {
 
-    // Map to store the path of the YAML keys and their associated comments
+    /**
+     * Map to store the path of the YAML keys and their associated comments
+     */
     private final Map<String, String> commentsMap = new LinkedHashMap<>();
 
+    /**
+     * Loads the CustomYamlConfiguration from a String.
+     *
+     * @param contents The YAML data to load.
+     * @throws InvalidConfigurationException If the configuration is invalid.
+     */
     @Override
     public void loadFromString(String contents) throws InvalidConfigurationException {
         super.loadFromString(contents); // Call the original method to load the data
@@ -52,13 +61,18 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         parseAndStoreComments(contents);
     }
 
+    /**
+     * Saves the CustomYamlConfiguration to a String.
+     *
+     * @return The YAML data as a String.
+     */
     @Override
     public String saveToString() {
         // Strip all comments from the original data
         String dataWithoutComments = super.saveToString().trim();
 
         // Use a pattern to match YAML comments and remove them
-        String dataStrippedOfComments = dataWithoutComments.replaceAll("(?m)^\\s*#.*?$", "").trim();
+        String dataStrippedOfComments = dataWithoutComments.replaceAll("(?m)^\\s*#.*$", "").trim();
 
         StringBuilder dataWithComments = new StringBuilder();
 
@@ -114,33 +128,41 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         return dataWithComments.toString();
     }
 
+    /**
+     * Loads a CustomYamlConfiguration from a file.
+     *
+     * @param file The file to load the configuration from.
+     * @throws IOException If an I/O error occurs.
+     * @throws InvalidConfigurationException If the configuration is invalid.
+     */
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
         @Cleanup FileInputStream stream = new FileInputStream(file);
-        @Cleanup InputStreamReader reader = new InputStreamReader(stream, Charsets.UTF_8);
+        @Cleanup InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         load(reader);
     }
 
+    /**
+     * Loads a CustomYamlConfiguration from a reader.
+     *
+     * @param reader The reader to load the configuration from.
+     * @throws IOException If an I/O error occurs.
+     * @throws InvalidConfigurationException If the configuration is invalid.
+     */
     @Override
+    @SuppressWarnings("RedundantThrows")
     public void load(Reader reader) throws IOException, InvalidConfigurationException {
         @Cleanup BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
-        StringBuilder builder = new StringBuilder();
-        String line;
-
-        while (true) {
-            line = input.readLine();
-
-            if (line == null) {
-                break;
-            }
-
-            builder.append(line);
-            builder.append('\n');
-        }
-
-        loadFromString(builder.toString());
+        String builder = input.lines().map(line -> line + '\n').collect(Collectors.joining());
+        loadFromString(builder);
     }
 
+    /**
+     * Loads a CustomYamlConfiguration from a file.
+     *
+     * @param file The file to load the configuration from.
+     * @return The loaded CustomYamlConfiguration.
+     */
     public static @NotNull CustomYamlConfiguration loadConfiguration(File file) {
         CustomYamlConfiguration config = new CustomYamlConfiguration();
 
@@ -153,6 +175,12 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         return config;
     }
 
+    /**
+     * Loads a CustomYamlConfiguration from a reader.
+     *
+     * @param reader The reader to load the configuration from.
+     * @return The loaded CustomYamlConfiguration.
+     */
     public static @NotNull CustomYamlConfiguration loadConfiguration(Reader reader) {
         CustomYamlConfiguration config = new CustomYamlConfiguration();
 
@@ -189,12 +217,20 @@ public class CustomYamlConfiguration extends YamlConfiguration {
         // Define the pattern within this method
         Pattern keyPattern = Pattern.compile("^\\s*([\\w\\-]+):.*");
 
-        for (String line : lines) {
+        for (String entry : lines) {
+            String line = entry;
+
             if (!line.trim().isEmpty() && line.trim().charAt(0) == '#') {
                 if (commentBuilder.length() > 0) {
                     commentBuilder.append("\n");
                 }
-                commentBuilder.append(line.trim().substring(1).trim()); // Remove '#' and trim
+
+                // Remove '#' and trim
+                line = line.trim();
+                line = line.replaceFirst("^#", "");
+                line = line.trim();
+
+                commentBuilder.append(line);
 
             } else {
                 if (!line.trim().isEmpty() && isHeader) {
@@ -221,7 +257,8 @@ public class CustomYamlConfiguration extends YamlConfiguration {
 
         // In case the file ends with comments not associated with a key
         if (commentBuilder.length() > 0 && !isHeader) {
-            commentsMap.put("__footer__", commentBuilder.toString());
+            String lastComment = commentBuilder.toString();
+            commentsMap.put("__footer__", lastComment);
         }
     }
 }

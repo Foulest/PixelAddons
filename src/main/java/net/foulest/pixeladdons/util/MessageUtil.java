@@ -18,8 +18,8 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -44,9 +44,9 @@ import java.util.stream.IntStream;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
 @SuppressWarnings("unused")
-public final class MessageUtil {
+public class MessageUtil {
 
     private static final Logger logger = Bukkit.getLogger();
 
@@ -184,12 +184,16 @@ public final class MessageUtil {
         for (Player online : Bukkit.getOnlinePlayers()) {
             TextComponent message = new TextComponent(colorize(chatMessage));
             TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
-            TextComponent hoverMessage = new TextComponent(new ComponentBuilder("").create());
+
+            BaseComponent[] components = new ComponentBuilder("").create();
+            TextComponent hoverMessage = new TextComponent(components);
 
             for (String line : statsList) {
                 hoverMessage.addExtra(new TextComponent(colorize(line)));
 
-                if (!statsList.get(statsList.size() - 1).equals(line)) {
+                int size = statsList.size();
+
+                if (!statsList.get(size - 1).equals(line)) {
                     hoverMessage.addExtra(newLine);
                 }
             }

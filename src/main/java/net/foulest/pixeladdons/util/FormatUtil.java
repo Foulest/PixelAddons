@@ -18,8 +18,7 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FormatUtil {
+@Data
+public class FormatUtil {
 
     /**
      * Gets the display color of a Pokemon.

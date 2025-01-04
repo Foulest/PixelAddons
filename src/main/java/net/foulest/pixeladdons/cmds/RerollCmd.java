@@ -79,6 +79,10 @@ public class RerollCmd {
             }
         }
 
+        String playerName = player.getName();
+        int votingSize = votingToReroll.size();
+        int onlineSize = Bukkit.getOnlinePlayers().size();
+
         // Counts the player's vote and broadcasts it.
         // If the player has already voted, it removes their vote.
         if (votingToReroll.contains(player)) {
@@ -86,19 +90,19 @@ public class RerollCmd {
 
             // Broadcasts the cancellation of the vote.
             MessageUtil.broadcast(Settings.rerollVoteCancelledMessage
-                    .replace("%player%", player.getName())
-                    .replace("%votes%", String.valueOf(votingToReroll.size()))
-                    .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
+                    .replace("%player%", playerName)
+                    .replace("%votes%", String.valueOf(votingSize))
+                    .replace("%online%", String.valueOf(onlineSize)));
         } else {
             votingToReroll.add(player);
 
             // Only broadcasts the vote if there are other players online.
             // Otherwise, it would be pointless to broadcast it.
-            if (Bukkit.getOnlinePlayers().size() > 1) {
+            if (onlineSize > 1) {
                 MessageUtil.broadcast(Settings.rerollVoteSubmittedMessage
-                        .replace("%player%", player.getName())
-                        .replace("%votes%", String.valueOf(votingToReroll.size()))
-                        .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size())));
+                        .replace("%player%", playerName)
+                        .replace("%votes%", String.valueOf(votingSize))
+                        .replace("%online%", String.valueOf(onlineSize)));
             }
         }
 
@@ -126,8 +130,9 @@ public class RerollCmd {
 
             // Broadcasts the re-roll.
             if (votingToReroll.size() == 1) {
-                MessageUtil.broadcast(Settings.rerollHuntMessageWithPlayer
-                        .replace("%player%", votingToReroll.get(0).getName()));
+                Player player = votingToReroll.get(0);
+                String playerName = player.getName();
+                MessageUtil.broadcast(Settings.rerollHuntMessageWithPlayer.replace("%player%", playerName));
             } else {
                 MessageUtil.broadcast(Settings.rerollHuntMessage);
             }

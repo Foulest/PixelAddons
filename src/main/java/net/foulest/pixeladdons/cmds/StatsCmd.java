@@ -29,6 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Command for showing the stats of a selected Pokemon.
  *
@@ -62,17 +64,19 @@ public class StatsCmd {
             return;
         }
 
-        PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
+        UUID playerUUID = player.getUniqueId();
+        PlayerPartyStorage party = Pixelmon.storageManager.getParty(playerUUID);
+        String args1 = args.getArgs(1);
 
         // Handles viewing other players' stats.
-        if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
+        if (args.length() == 2 && !args1.isEmpty()) {
             // Checks if viewing other players' stats is disabled.
             if (!Settings.statsCommandViewOtherPlayers) {
                 MessageUtil.messagePlayer(player, Settings.commandNoPermissionMessage);
                 return;
             }
 
-            Player target = Bukkit.getPlayer(args.getArgs(1));
+            Player target = Bukkit.getPlayer(args1);
 
             // Checks if the player is invalid.
             if (target == null) {
@@ -88,7 +92,8 @@ public class StatsCmd {
                 return;
             }
 
-            party = Pixelmon.storageManager.getParty(target.getUniqueId());
+            UUID targetUUID = target.getUniqueId();
+            party = Pixelmon.storageManager.getParty(targetUUID);
         }
 
         // Checks if the player has a starter Pokemon.
@@ -97,16 +102,18 @@ public class StatsCmd {
             return;
         }
 
+        String args0 = args.getArgs(0);
+
         // Checks if the slot is a number.
         try {
-            Integer.parseInt(args.getArgs(0));
+            Integer.parseInt(args0);
         } catch (NumberFormatException ex) {
             MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
 
-        int slot = Integer.parseInt(args.getArgs(0));
+        int slot = Integer.parseInt(args0);
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
@@ -133,7 +140,8 @@ public class StatsCmd {
             return;
         }
 
-        Player owner = Bukkit.getPlayer(pokemon.getOwnerPlayerUUID());
+        UUID ownerPlayerUUID = pokemon.getOwnerPlayerUUID();
+        Player owner = Bukkit.getPlayer(ownerPlayerUUID);
 
         // Checks if the owner is missing.
         if (owner == null) {

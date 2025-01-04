@@ -96,12 +96,14 @@ public class PixelAddonsCmd {
         );
 
         int itemsPerPage = 4;
-        int maxPages = (int) Math.ceil((double) commands.size() / itemsPerPage);
+        int size = commands.size();
+        int maxPages = (int) Math.ceil((double) size / itemsPerPage);
         int page = 1;
 
         if (args.length() > 1) {
             try {
-                page = Integer.parseInt(args.getArgs(1));
+                String args1 = args.getArgs(1);
+                page = Integer.parseInt(args1);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -112,13 +114,14 @@ public class PixelAddonsCmd {
         }
 
         int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = Math.min(commands.size(), startIndex + itemsPerPage);
+        int endIndex = Math.min(size, startIndex + itemsPerPage);
 
         MessageUtil.messagePlayer(sender, "");
         MessageUtil.messagePlayer(sender, "&ePixelAddons Help &7(Page " + page + "/" + maxPages + ")");
 
         for (int i = startIndex; i < endIndex; i++) {
-            MessageUtil.messagePlayer(sender, commands.get(i));
+            String line = commands.get(i);
+            MessageUtil.messagePlayer(sender, line);
         }
 
         MessageUtil.messagePlayer(sender, "");

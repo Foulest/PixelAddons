@@ -18,12 +18,15 @@
 package net.foulest.pixeladdons.util;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.abilities.AbilityBase;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.IVStore;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Pokerus;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumNature;
 import com.pixelmonmod.pixelmon.enums.EnumPokerusType;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import lombok.Data;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatsUtil {
+@Data
+public class StatsUtil {
 
     /**
      * Gets the stats panel of a Pokemon.
@@ -56,26 +59,54 @@ public final class StatsUtil {
         int speedEV = pokemon.getEVs().getStat(StatsType.Speed);
 
         // Get the IVs of the Pokemon
-        int hpIV = pokemon.getIVs().getStat(StatsType.HP);
-        int attackIV = pokemon.getIVs().getStat(StatsType.Attack);
-        int defenceIV = pokemon.getIVs().getStat(StatsType.Defence);
-        int spAttackIV = pokemon.getIVs().getStat(StatsType.SpecialAttack);
-        int spDefenceIV = pokemon.getIVs().getStat(StatsType.SpecialDefence);
-        int speedIV = pokemon.getIVs().getStat(StatsType.Speed);
+        IVStore iVs = pokemon.getIVs();
+        int hpIV = iVs.getStat(StatsType.HP);
+        int attackIV = iVs.getStat(StatsType.Attack);
+        int defenceIV = iVs.getStat(StatsType.Defence);
+        int spAttackIV = iVs.getStat(StatsType.SpecialAttack);
+        int spDefenceIV = iVs.getStat(StatsType.SpecialDefence);
+        int speedIV = iVs.getStat(StatsType.Speed);
+
+        String playerName = player.getName();
+        boolean isEgg = pokemon.isEgg();
+        EnumSpecies species = pokemon.getSpecies();
+        String pokemonName = species.getPokemonName();
+        boolean shiny = pokemon.isShiny();
+        Pokerus pokerus = pokemon.getPokerus();
+        Gender gender = pokemon.getGender();
+        int level = pokemon.getLevel();
+        AbilityBase ability = pokemon.getAbility();
+        String abilityName = ability.getLocalizedName();
+        EnumNature nature = pokemon.getNature();
+        String natureName = nature.getLocalizedName();
+        String hiddenPowerName = HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName();
+        String genderSymbol = "";
+
+        // Gets the gender symbol for the Pokemon.
+        switch (gender) {
+            case Male:
+                genderSymbol = "&b(M)";
+                break;
+            case Female:
+                genderSymbol = "&d(F)";
+                break;
+            default:
+                break;
+        }
 
         // Define all placeholders and their corresponding values
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%color%", FormatUtil.getDisplayColor(pokemon));
-        placeholders.put("%player%", player.getName());
-        placeholders.put("%pokemon%", (pokemon.isEgg() ? "Egg" : pokemon.getSpecies().getPokemonName()));
-        placeholders.put("%shinyStar%", pokemon.isShiny() ? " &6★" : "");
-        placeholders.put("%PKRS%", (pokemon.getPokerus() != null && pokemon.getPokerus().type != EnumPokerusType.UNINFECTED) ? " &5(PKRS)" : "");
-        placeholders.put("%gender%", pokemon.getGender() == Gender.Male ? "&b(M)" : (pokemon.getGender() == Gender.Female ? "&d(F)" : ""));
-        placeholders.put("%level%", String.valueOf(pokemon.getLevel()));
-        placeholders.put("%ability%", pokemon.getAbility().getLocalizedName());
-        placeholders.put("%nature%", pokemon.getNature().getLocalizedName());
+        placeholders.put("%player%", playerName);
+        placeholders.put("%pokemon%", (isEgg ? "Egg" : pokemonName));
+        placeholders.put("%shinyStar%", shiny ? " &6★" : "");
+        placeholders.put("%PKRS%", (pokerus != null && pokerus.type != EnumPokerusType.UNINFECTED) ? " &5(PKRS)" : "");
+        placeholders.put("%gender%", genderSymbol);
+        placeholders.put("%level%", String.valueOf(level));
+        placeholders.put("%ability%", abilityName);
+        placeholders.put("%nature%", natureName);
         placeholders.put("%natureEffect%", getNatureEffect(pokemon));
-        placeholders.put("%hiddenPower%", HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName());
+        placeholders.put("%hiddenPower%", hiddenPowerName);
 
         placeholders.put("%hpEV%", FormatUtil.evColor(hpEV) + hpEV);
         placeholders.put("%attackEV%", FormatUtil.evColor(attackEV) + attackEV);
@@ -84,12 +115,19 @@ public final class StatsUtil {
         placeholders.put("%spDefenceEV%", FormatUtil.evColor(spDefenceEV) + spDefenceEV);
         placeholders.put("%speedEV%", FormatUtil.evColor(speedEV) + speedEV);
 
-        placeholders.put("%hpIV%", (pokemon.getIVs().isHyperTrained(StatsType.HP) ? "&6&o" : FormatUtil.ivColor(hpIV)) + hpIV);
-        placeholders.put("%attackIV%", (pokemon.getIVs().isHyperTrained(StatsType.Attack) ? "&6&o" : FormatUtil.ivColor(attackIV)) + attackIV);
-        placeholders.put("%defenceIV%", (pokemon.getIVs().isHyperTrained(StatsType.Defence) ? "&6&o" : FormatUtil.ivColor(defenceIV)) + defenceIV);
-        placeholders.put("%spAttackIV%", (pokemon.getIVs().isHyperTrained(StatsType.SpecialAttack) ? "&6&o" : FormatUtil.ivColor(spAttackIV)) + spAttackIV);
-        placeholders.put("%spDefenceIV%", (pokemon.getIVs().isHyperTrained(StatsType.SpecialDefence) ? "&6&o" : FormatUtil.ivColor(spDefenceIV)) + spDefenceIV);
-        placeholders.put("%speedIV%", (pokemon.getIVs().isHyperTrained(StatsType.Speed) ? "&6&o" : FormatUtil.ivColor(speedIV)) + speedIV);
+        boolean hyperTrainedHP = iVs.isHyperTrained(StatsType.HP);
+        boolean hyperTrainedAtk = iVs.isHyperTrained(StatsType.Attack);
+        boolean hyperTrainedDef = iVs.isHyperTrained(StatsType.Defence);
+        boolean hyperTrainedSpA = iVs.isHyperTrained(StatsType.SpecialAttack);
+        boolean hyperTrainedSpD = iVs.isHyperTrained(StatsType.SpecialDefence);
+        boolean hyperTrainedSpe = iVs.isHyperTrained(StatsType.Speed);
+
+        placeholders.put("%hpIV%", (hyperTrainedHP ? "&6&o" : FormatUtil.ivColor(hpIV)) + hpIV);
+        placeholders.put("%attackIV%", (hyperTrainedAtk ? "&6&o" : FormatUtil.ivColor(attackIV)) + attackIV);
+        placeholders.put("%defenceIV%", (hyperTrainedDef ? "&6&o" : FormatUtil.ivColor(defenceIV)) + defenceIV);
+        placeholders.put("%spAttackIV%", (hyperTrainedSpA ? "&6&o" : FormatUtil.ivColor(spAttackIV)) + spAttackIV);
+        placeholders.put("%spDefenceIV%", (hyperTrainedSpD ? "&6&o" : FormatUtil.ivColor(spDefenceIV)) + spDefenceIV);
+        placeholders.put("%speedIV%", (hyperTrainedSpe ? "&6&o" : FormatUtil.ivColor(speedIV)) + speedIV);
 
         placeholders.put("%evPercent%", getEVPercent(pokemon));
         placeholders.put("%ivPercent%", getIVPercent(pokemon));
@@ -99,7 +137,9 @@ public final class StatsUtil {
             String line = message;
 
             for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                line = line.replace(entry.getKey(), entry.getValue());
+                String key = entry.getKey();
+                String value = entry.getValue();
+                line = line.replace(key, value);
             }
 
             statsPanel.add(line);
@@ -120,9 +160,12 @@ public final class StatsUtil {
         StatsType increasedStat = nature.increasedStat;
         StatsType decreasedStat = nature.decreasedStat;
 
+        String increasedName = increasedStat.getUnlocalizedName();
+        String decreasedName = decreasedStat.getUnlocalizedName();
+
         // Format the stats
-        String increasedStatFormatted = FormatUtil.formatStat(increasedStat.getUnlocalizedName());
-        String decreasedStatFormatted = FormatUtil.formatStat(decreasedStat.getUnlocalizedName());
+        String increasedStatFormatted = FormatUtil.formatStat(increasedName);
+        String decreasedStatFormatted = FormatUtil.formatStat(decreasedName);
 
         // Check if the nature has an effect
         if (increasedStat == StatsType.None && decreasedStat == StatsType.None) {

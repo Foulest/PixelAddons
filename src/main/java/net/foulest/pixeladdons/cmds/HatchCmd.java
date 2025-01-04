@@ -20,6 +20,7 @@ package net.foulest.pixeladdons.cmds;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.economy.IPixelmonBankAccount;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.data.PlayerData;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Command for hatching a Pokemon egg.
@@ -71,7 +73,8 @@ public class HatchCmd {
             return;
         }
 
-        PlayerPartyStorage party = Pixelmon.storageManager.getParty(player.getUniqueId());
+        UUID uniqueId = player.getUniqueId();
+        PlayerPartyStorage party = Pixelmon.storageManager.getParty(uniqueId);
 
         // Checks if the player has a starter Pokemon.
         if (!party.starterPicked) {
@@ -79,16 +82,18 @@ public class HatchCmd {
             return;
         }
 
+        String firstArgs = args.getArgs(0);
+
         // Checks if the slot is a number.
         try {
-            Integer.parseInt(args.getArgs(0));
+            Integer.parseInt(firstArgs);
         } catch (NumberFormatException ex) {
             MessageUtil.messagePlayer(player, Settings.commandInvalidUsageMessage
                     .replace("%reason%", "Number is invalid"));
             return;
         }
 
-        int slot = Integer.parseInt(args.getArgs(0));
+        int slot = Integer.parseInt(firstArgs);
 
         // Checks if the slot is valid.
         if (slot <= 0 || slot > 6) {
@@ -122,7 +127,8 @@ public class HatchCmd {
             return;
         }
 
-        Player owner = Bukkit.getPlayer(pokemon.getOwnerPlayerUUID());
+        UUID ownerPlayerUUID = pokemon.getOwnerPlayerUUID();
+        Player owner = Bukkit.getPlayer(ownerPlayerUUID);
 
         // Checks if the owner is valid.
         if (owner == null) {
@@ -132,7 +138,7 @@ public class HatchCmd {
         }
 
         Optional<? extends IPixelmonBankAccount> bankAccount
-                = Pixelmon.moneyManager.getBankAccount(player.getUniqueId());
+                = Pixelmon.moneyManager.getBankAccount(uniqueId);
 
         // Checks if the player has a bank account.
         if (!bankAccount.isPresent()) {
@@ -140,8 +146,11 @@ public class HatchCmd {
             return;
         }
 
+        IPixelmonBankAccount account = bankAccount.get();
+        int currentBalance = account.getMoney();
+
         // Checks if the player has enough money.
-        if (bankAccount.get().getMoney() < Settings.hatchCommandCost) {
+        if (currentBalance < Settings.hatchCommandCost) {
             MessageUtil.messagePlayer(player, Settings.notEnoughMoneyMessage
                     .replace("%amount%", formattedCost));
             return;
@@ -149,16 +158,21 @@ public class HatchCmd {
 
         // Handles hatching the egg.
         if (playerData.isConfirmHatch()) {
-            bankAccount.get().setMoney(bankAccount.get().getMoney() - Settings.hatchCommandCost);
+            account.setMoney(currentBalance - Settings.hatchCommandCost);
             pokemon.hatchEgg();
 
             playerData.setConfirmHatch(false);
+
+            EnumSpecies species = pokemon.getSpecies();
+            String pokemonName = species.getPokemonName();
+
             MessageUtil.messagePlayer(player, Settings.pokemonHatchedMessage
-                    .replace("%pokemon%", pokemon.getSpecies().getPokemonName())
+                    .replace("%pokemon%", pokemonName)
                     .replace("%amount%", formattedCost));
 
         } else {
             playerData.setConfirmHatch(true);
+
             MessageUtil.messagePlayer(player, Settings.confirmHatchMessage
                     .replace("%amount%", formattedCost));
 
