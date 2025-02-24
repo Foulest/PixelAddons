@@ -28,6 +28,7 @@ import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -39,11 +40,12 @@ import java.util.UUID;
 @SuppressWarnings("MethodMayBeStatic")
 public class ShowCmd {
 
-    @Command(name = "show", description = "Shows the stats of your selected Pokemon in chat.",
-            permission = "pixeladdons.show", usage = "/show <slot>",
-            aliases = {"pkshow", "pokeshow"}, inGameOnly = true)
+    @Command(name = "show",  permission = "pixeladdons.show",
+            aliases = {"pkshow", "pokeshow"},
+            description = "Shows the stats of your selected Pokemon in chat.",
+            usage = "/show <slot>", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
-        Player player = args.getPlayer();
+        @Nullable Player player = args.getPlayer();
 
         // Silently return to avoid NPEs.
         if (player == null) {
@@ -102,7 +104,7 @@ public class ShowCmd {
             return;
         }
 
-        Pokemon pokemon = party.get(slot);
+        @Nullable Pokemon pokemon = party.get(slot);
 
         // Checks if the Pokemon is valid.
         if (pokemon == null) {
@@ -125,7 +127,7 @@ public class ShowCmd {
         String ownerName = owner.getName();
 
         // Handles printing the stats.
-        String chatMessage = Settings.showMessage
+        @NotNull String chatMessage = Settings.showMessage
                 .replace("%player%", ownerName)
                 .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                 .replace("%pokemon%", pokemonName);

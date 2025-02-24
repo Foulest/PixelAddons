@@ -32,6 +32,7 @@ import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -45,10 +46,11 @@ import java.util.UUID;
 @SuppressWarnings("MethodMayBeStatic")
 public class HatchCmd {
 
-    @Command(name = "hatch", description = "Hatches the selected Pokemon egg.",
-            permission = "pixeladdons.hatch", usage = "/hatch <slot>", inGameOnly = true)
+    @Command(name = "hatch", permission = "pixeladdons.hatch",
+            description = "Hatches the selected Pokemon egg.",
+            usage = "/hatch <slot>", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
-        Player player = args.getPlayer();
+        @Nullable Player player = args.getPlayer();
 
         // Silently return to avoid NPEs.
         if (player == null) {
@@ -56,8 +58,8 @@ public class HatchCmd {
         }
 
         PlayerData playerData = PlayerDataManager.getPlayerData(player);
-        DecimalFormat df = new DecimalFormat("###,###.###");
-        String formattedCost = df.format(Settings.hatchCommandCost);
+        @NotNull DecimalFormat df = new DecimalFormat("###,###.###");
+        @NotNull String formattedCost = df.format(Settings.hatchCommandCost);
 
         // Checks if the command is enabled.
         if (!Settings.hatchCommandEnabled) {
@@ -111,7 +113,7 @@ public class HatchCmd {
             return;
         }
 
-        Pokemon pokemon = party.get(slot);
+        @Nullable Pokemon pokemon = party.get(slot);
 
         // Checks if the Pokemon is valid.
         if (pokemon == null) {
@@ -146,7 +148,7 @@ public class HatchCmd {
             return;
         }
 
-        IPixelmonBankAccount account = bankAccount.get();
+        @NotNull IPixelmonBankAccount account = bankAccount.get();
         int currentBalance = account.getMoney();
 
         // Checks if the player has enough money.

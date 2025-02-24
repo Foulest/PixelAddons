@@ -17,8 +17,6 @@
  */
 package net.foulest.pixeladdons.cmds;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.foulest.pixeladdons.util.MessageUtil;
 import net.foulest.pixeladdons.util.Settings;
 import net.foulest.pixeladdons.util.command.Command;
@@ -35,13 +33,12 @@ import java.util.Locale;
  *
  * @author Foulest
  */
-@Getter
-@Setter
+@SuppressWarnings("MethodMayBeStatic")
 public class PixelAddonsCmd {
 
-    @SuppressWarnings("MethodMayBeStatic")
-    @Command(name = "pixeladdons", description = "Main command for PixelAddons.",
-            permission = "pixeladdons.main", usage = "/pixeladdons")
+    @Command(name = "pixeladdons", permission = "pixeladdons.main",
+            description = "Main command for PixelAddons.",
+            usage = "/pixeladdons")
     public void onCommand(@NotNull CommandArgs args) {
         CommandSender sender = args.getSender();
 
@@ -84,14 +81,14 @@ public class PixelAddonsCmd {
      * @param sender The command sender
      * @param args   The command arguments
      */
-    private static void handleHelp(@NotNull CommandSender sender, CommandArgs args) {
+    private static void handleHelp(@NotNull CommandSender sender, @NotNull CommandArgs args) {
         if (!sender.hasPermission("pixeladdons.main")) {
             MessageUtil.messagePlayer(sender, Settings.commandNoPermissionMessage);
             return;
         }
 
         // A list of available commands with their usages.
-        List<String> commands = Collections.singletonList(
+        @NotNull List<String> commands = Collections.singletonList(
                 "&f/pixeladdons reload &7- Reloads the config."
         );
 

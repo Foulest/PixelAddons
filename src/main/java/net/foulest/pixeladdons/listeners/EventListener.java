@@ -19,11 +19,9 @@ package net.foulest.pixeladdons.listeners;
 
 import catserver.api.bukkit.event.ForgeEvent;
 import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.economy.IPixelmonBankAccount;
 import com.pixelmonmod.pixelmon.api.enums.ReceiveType;
-import com.pixelmonmod.pixelmon.api.events.CaptureEvent;
-import com.pixelmonmod.pixelmon.api.events.EggHatchEvent;
-import com.pixelmonmod.pixelmon.api.events.PickupEvent;
-import com.pixelmonmod.pixelmon.api.events.PixelmonReceivedEvent;
+import com.pixelmonmod.pixelmon.api.events.*;
 import com.pixelmonmod.pixelmon.api.events.pokemon.EVsGainedEvent;
 import com.pixelmonmod.pixelmon.api.events.spawning.SpawnEvent;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
@@ -44,19 +42,23 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class EventListener implements Listener {
 
@@ -72,14 +74,14 @@ public class EventListener implements Listener {
 
         // Handles first-join commands.
         if (!player.hasPlayedBefore()) {
-            for (String line : Settings.commandsOnJoin) {
+            for (@NotNull String line : Settings.commandsOnJoin) {
                 if (line.isEmpty()) {
                     break;
                 }
 
                 // Replaces %player% with the player's name.
                 String playerName = player.getName();
-                String replace = line.replace("%player%", playerName);
+                @NotNull String replace = line.replace("%player%", playerName);
 
                 // Runs the command as console.
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), replace);
@@ -105,6 +107,89 @@ public class EventListener implements Listener {
     }
 
     /**
+     * Cancels block explosion damage for tamed entities.
+     *
+     * @param event EntityDamageEvent
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public static void onOtherDamageTamedEntity(@NotNull EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Tameable)) {
+            return;
+        }
+
+        Tameable tameable = (Tameable) event.getEntity();
+
+        // Cancels block explosion damage for tamed entities.
+        if (event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
+            if (tameable.isTamed()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    /**
+     * Cancels damage for tamed entities.
+     *
+     * @param event EntityDamageEvent
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public static void onPlayerDamageTamedEntity(@NotNull EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Tameable)) {
+            return;
+        }
+
+        Tameable tameable = (Tameable) event.getEntity();
+
+        // Cancels damage for tamed entities from their owners.
+        if (event.getDamager() instanceof Player) {
+            Player player = (Player) event.getDamager();
+
+            if (tameable.isTamed() && tameable.getOwner() != null && tameable.getOwner().equals(player)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    /**
+     * Handles item right-click events.
+     *
+     * @param event PlayerInteractEvent
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public static void onRightClickItem(@NotNull PlayerInteractEvent event) {
+        // Ignores the event if the player isn't right-clicking.
+        if (event.getAction() != Action.RIGHT_CLICK_AIR
+                && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        org.bukkit.inventory.ItemStack itemStack = event.getItem();
+
+        if (itemStack == null) {
+            return;
+        }
+
+        Material material = itemStack.getType();
+
+        if (material == null) {
+            return;
+        }
+
+        @NotNull String materialName = material.name().toLowerCase(Locale.ROOT);
+
+        // Cancels the event if the item is disabled.
+        for (String line : Settings.disabledItems) {
+            if (materialName.contains(line)) {
+                MessageUtil.messagePlayer(player, "&cThis item's functionality has been disabled.");
+                event.setCancelled(true);
+                player.updateInventory();
+                return;
+            }
+        }
+    }
+
+    /**
      * Handles EV gain messages.
      *
      * @param event ForgeEvent
@@ -120,7 +205,7 @@ public class EventListener implements Listener {
 
         // Handles EV gain messages.
         if (forgeEvent instanceof EVsGainedEvent) {
-            EVsGainedEvent eVsGainedEvent = (EVsGainedEvent) forgeEvent;
+            @NotNull EVsGainedEvent eVsGainedEvent = (EVsGainedEvent) forgeEvent;
             EntityPlayerMP ownerPlayer = eVsGainedEvent.pokemon.getOwnerPlayer();
 
             // Returns if the owner player is null.
@@ -159,7 +244,7 @@ public class EventListener implements Listener {
                 public void run() {
                     UUID pokemonUUID = eVsGainedEvent.pokemon.getUUID();
                     int partySlot = party.getSlot(pokemonUUID);
-                    Pokemon pokemon = party.get(partySlot);
+                    @Nullable Pokemon pokemon = party.get(partySlot);
 
                     // Returns if the Pokemon is null.
                     if (pokemon == null) {
@@ -174,7 +259,7 @@ public class EventListener implements Listener {
                     int spaDiff = newEVs[3] - oldEVs[3];
                     int spdDiff = newEVs[4] - oldEVs[4];
                     int speDiff = newEVs[5] - oldEVs[5];
-                    List<String> msgList = new ArrayList<>();
+                    @NotNull List<String> msgList = new ArrayList<>();
 
                     if (hpDiff > 0) {
                         msgList.add(Settings.evIncreaseMessage
@@ -218,7 +303,7 @@ public class EventListener implements Listener {
                                 .replace("%newEVs%", String.valueOf(newEVs[5])));
                     }
 
-                    StringBuilder totalEVsGained = new StringBuilder();
+                    @NotNull StringBuilder totalEVsGained = new StringBuilder();
 
                     // Formats the message.
                     if (!msgList.isEmpty()) {
@@ -231,7 +316,7 @@ public class EventListener implements Listener {
                         }
 
                         String pokemonName = pokemon.getSpecies().getPokemonName();
-                        String chatMessage = Settings.evGainMessage
+                        @NotNull String chatMessage = Settings.evGainMessage
                                 .replace("%pokemon%", pokemonName)
                                 .replace("%evGains%", totalEVsGained.toString());
 
@@ -262,13 +347,13 @@ public class EventListener implements Listener {
 
         if (forgeEvent instanceof SpawnEvent) {
             // Gets the spawn event.
-            SpawnEvent spawnEvent = (SpawnEvent) forgeEvent;
+            @NotNull SpawnEvent spawnEvent = (SpawnEvent) forgeEvent;
             if (!(spawnEvent.action instanceof SpawnActionPokemon)) {
                 return;
             }
 
             // Gets the spawn action.
-            SpawnActionPokemon spawnAction = (SpawnActionPokemon) spawnEvent.action;
+            @NotNull SpawnActionPokemon spawnAction = (SpawnActionPokemon) spawnEvent.action;
             if (!(spawnAction.spawnInfo instanceof SpawnInfoPokemon)) {
                 return;
             }
@@ -313,6 +398,88 @@ public class EventListener implements Listener {
     }
 
     /**
+     * Handles economy changes.
+     *
+     * @param event ForgeEvent
+     */
+    @SuppressWarnings("UnsecureRandomNumberGeneration")
+    @EventHandler
+    public static void onEconomyChange(@NotNull ForgeEvent event) {
+        Event forgeEvent = event.getForgeEvent();
+
+        // Returns if the event is null.
+        if (forgeEvent == null) {
+            return;
+        }
+
+        // EconomyEvent.PreTransactionEvent = Before the transaction happens; can cancel; cancelling won't stop
+        // the Shopkeeper.Sell event, so the item will still be sold but the player won't receive the money.
+
+        // EconomyEvent.PostTransactionEvent = After the transaction happens; can't cancel; can only cap the new balance.
+
+        // Shopkeeper.Sell = When a player sells an item to a shopkeeper; can cancel; cancelling will stop the
+        // transaction, but there's no way to see how much the item costs, so can only cancel if the player has
+        // reached the maximum balance.
+
+        // Solution: cap the balance with Post; cancel the Sell event if the balance is capped.
+
+        // Problem: players don't receive full amount if they sell more than the maximum balance, and
+        // there's no way of cancelling the transaction if the player hasn't reached the maximum balance.
+
+        // Example: Player has $24,999 and sells an item for $1,000. They only receive $1 because the maximum balance
+        // would be reached at $25,000. This creates a problem because the player would expect to receive $1,000, but
+        // they only receive $1. The only way to fix this would be to cancel the transaction if the player hasn't
+        // reached the maximum balance, but there's no way to see how much the item costs, so the transaction can't be
+        // cancelled. The only way to fix this would be to cap the balance with Post, but then the player wouldn't
+        // receive the full amount if they sell more than the maximum balance.
+
+        // Caps the transaction amount to the maximum balance.
+        if (forgeEvent instanceof EconomyEvent.PostTransactionEvent) {
+            EconomyEvent.@NotNull PostTransactionEvent economyEvent = (EconomyEvent.PostTransactionEvent) forgeEvent;
+            EntityPlayerMP player = economyEvent.player;
+
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
+
+            UUID uniqueID = player.getUniqueID();
+
+            // Caps the balance to the maximum balance.
+            if (economyEvent.newBalance > Settings.maxBalance) {
+                if (Pixelmon.moneyManager.getBankAccount(uniqueID).isPresent()) {
+                    @NotNull IPixelmonBankAccount bankAccount = Pixelmon.moneyManager.getBankAccount(uniqueID).get();
+                    bankAccount.setMoney(Settings.maxBalance);
+                    MessageUtil.messagePlayer(Bukkit.getPlayer(uniqueID), "&aYou have reached the maximum balance.");
+                }
+            }
+        }
+
+        // Handles selling items to shopkeepers.
+        if (forgeEvent instanceof ShopkeeperEvent.Sell) {
+            ShopkeeperEvent.@NotNull Sell sellEvent = (ShopkeeperEvent.Sell) forgeEvent;
+            EntityPlayerMP player = sellEvent.getPlayer();
+
+            // Returns if the player is null.
+            if (player == null) {
+                return;
+            }
+
+            UUID uniqueID = player.getUniqueID();
+
+            if (Pixelmon.moneyManager.getBankAccount(uniqueID).isPresent()) {
+                @NotNull IPixelmonBankAccount bankAccount = Pixelmon.moneyManager.getBankAccount(uniqueID).get();
+
+                // Cancels transactions that would exceed the maximum balance.
+                if (bankAccount.getMoney() >= Settings.maxBalance) {
+                    sellEvent.setCanceled(true);
+                    MessageUtil.messagePlayer(Bukkit.getPlayer(uniqueID), "&cThis transaction would exceed the maximum balance.");
+                }
+            }
+        }
+    }
+
+    /**
      * Handles Pokemon catch messages.
      *
      * @param event ForgeEvent
@@ -336,12 +503,12 @@ public class EventListener implements Listener {
 
             // Differentiates the handling based on the event type.
             if (forgeEvent instanceof CaptureEvent.SuccessfulCapture) {
-                CaptureEvent.SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
+                CaptureEvent.@NotNull SuccessfulCapture captureEvent = (CaptureEvent.SuccessfulCapture) forgeEvent;
                 UUID uniqueID = captureEvent.player.getUniqueID();
                 player = Bukkit.getPlayer(uniqueID);
                 pokemon = captureEvent.getPokemon().getStoragePokemonData();
             } else {
-                CaptureEvent.SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
+                CaptureEvent.@NotNull SuccessfulRaidCapture captureEvent = (CaptureEvent.SuccessfulRaidCapture) forgeEvent;
                 UUID uniqueID = captureEvent.player.getUniqueID();
                 player = Bukkit.getPlayer(uniqueID);
                 pokemon = captureEvent.getRaidPokemon();
@@ -362,7 +529,7 @@ public class EventListener implements Listener {
             String playerName = player.getName();
 
             // Formats the hover message.
-            String chatMessage = Settings.catchMessage
+            @NotNull String chatMessage = Settings.catchMessage
                     .replace("%player%", playerName)
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
@@ -378,7 +545,7 @@ public class EventListener implements Listener {
 
         // Handles Pokemon pickup messages.
         if (forgeEvent instanceof PickupEvent) {
-            PickupEvent pickupEvent = (PickupEvent) forgeEvent;
+            @NotNull PickupEvent pickupEvent = (PickupEvent) forgeEvent;
             UUID uniqueID = pickupEvent.player.player.getUniqueID();
             Player player = Bukkit.getPlayer(uniqueID);
             Pokemon pokemon = pickupEvent.pokemon.pokemon;
@@ -395,7 +562,7 @@ public class EventListener implements Listener {
             }
 
             // Formats the item name.
-            String itemName = itemStack.toString();
+            @NotNull String itemName = itemStack.toString();
             itemName = itemName.replace("1x", "");
             itemName = itemName.replace("@0", "");
             itemName = itemName.replace("item.", "");
@@ -403,7 +570,7 @@ public class EventListener implements Listener {
             itemName = MessageUtil.capitalize(itemName);
 
             // Get the correct article for the item name.
-            String article = "a" + (((!itemName.isEmpty() && itemName.charAt(0) == 'A')
+            @NotNull String article = "a" + (((!itemName.isEmpty() && itemName.charAt(0) == 'A')
                     || (!itemName.isEmpty() && itemName.charAt(0) == 'E')
                     || (!itemName.isEmpty() && itemName.charAt(0) == 'I')
                     || (!itemName.isEmpty() && itemName.charAt(0) == 'O')
@@ -413,7 +580,7 @@ public class EventListener implements Listener {
             String pokemonName = species.getPokemonName();
 
             // Formats the message.
-            String chatMessage = Settings.pickupMessage
+            @NotNull String chatMessage = Settings.pickupMessage
                     .replace("%pokemon%", pokemonName)
                     .replace("%an%", article)
                     .replace("%color%", Settings.pickupColor)
@@ -425,7 +592,7 @@ public class EventListener implements Listener {
 
         // Handles egg hatch messages.
         if (forgeEvent instanceof EggHatchEvent.Post) {
-            EggHatchEvent.Post eggHatchEvent = (EggHatchEvent.Post) forgeEvent;
+            EggHatchEvent.@NotNull Post eggHatchEvent = (EggHatchEvent.Post) forgeEvent;
             Pokemon pokemon = eggHatchEvent.getPokemon();
             EntityPlayerMP ownerPlayer = pokemon.getOwnerPlayer();
             UUID ownerPlayerUUID = ownerPlayer.getUniqueID();
@@ -445,7 +612,7 @@ public class EventListener implements Listener {
             String playerName = player.getName();
 
             // Formats the message.
-            String chatMessage = Settings.eggHatchMessage
+            @NotNull String chatMessage = Settings.eggHatchMessage
                     .replace("%player%", playerName)
                     .replace("%color%", FormatUtil.getDisplayColor(pokemon))
                     .replace("%pokemon%", pokemonName);
@@ -456,7 +623,7 @@ public class EventListener implements Listener {
 
         // Handles Pokemon receive messages.
         if (forgeEvent instanceof PixelmonReceivedEvent) {
-            PixelmonReceivedEvent receivedEvent = (PixelmonReceivedEvent) forgeEvent;
+            @NotNull PixelmonReceivedEvent receivedEvent = (PixelmonReceivedEvent) forgeEvent;
             UUID uniqueID = receivedEvent.player.getUniqueID();
             Player player = Bukkit.getPlayer(uniqueID);
             Pokemon pokemon = receivedEvent.pokemon;
@@ -473,7 +640,7 @@ public class EventListener implements Listener {
                 return;
             }
 
-            String chatMessage = "";
+            @NotNull String chatMessage = "";
             String playerName = player.getName();
 
             // Formats the message.
@@ -487,7 +654,7 @@ public class EventListener implements Listener {
 
                 case Fossil:
                     // Get the correct article for the Pokemon name.
-                    String article = "a" + (((!pokemonName.isEmpty() && pokemonName.charAt(0) == 'A')
+                    @NotNull String article = "a" + (((!pokemonName.isEmpty() && pokemonName.charAt(0) == 'A')
                             || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'E')
                             || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'I')
                             || (!pokemonName.isEmpty() && pokemonName.charAt(0) == 'O')

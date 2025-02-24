@@ -48,7 +48,7 @@ public class StatsUtil {
      */
     public static @NotNull List<String> getStatsPanel(@NotNull Player player,
                                                       @NotNull Pokemon pokemon) {
-        List<String> statsPanel = new ArrayList<>();
+        @NotNull List<String> statsPanel = new ArrayList<>();
 
         // Get the EVs of the Pokemon
         int hpEV = pokemon.getEVs().getStat(StatsType.HP);
@@ -80,7 +80,7 @@ public class StatsUtil {
         EnumNature nature = pokemon.getNature();
         String natureName = nature.getLocalizedName();
         String hiddenPowerName = HiddenPowerUtil.getHiddenPower(pokemon).getLocalizedName();
-        String genderSymbol = "";
+        @NotNull String genderSymbol = "";
 
         // Gets the gender symbol for the Pokemon.
         switch (gender) {
@@ -95,7 +95,7 @@ public class StatsUtil {
         }
 
         // Define all placeholders and their corresponding values
-        Map<String, String> placeholders = new HashMap<>();
+        @NotNull Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%color%", FormatUtil.getDisplayColor(pokemon));
         placeholders.put("%player%", playerName);
         placeholders.put("%pokemon%", (isEgg ? "Egg" : pokemonName));
@@ -136,7 +136,7 @@ public class StatsUtil {
         for (String message : Settings.statsPanelMessage) {
             String line = message;
 
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            for (Map.@NotNull Entry<String, String> entry : placeholders.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 line = line.replace(key, value);
@@ -160,12 +160,12 @@ public class StatsUtil {
         StatsType increasedStat = nature.increasedStat;
         StatsType decreasedStat = nature.decreasedStat;
 
-        String increasedName = increasedStat.getUnlocalizedName();
-        String decreasedName = decreasedStat.getUnlocalizedName();
+        @NotNull String increasedName = increasedStat.getUnlocalizedName();
+        @NotNull String decreasedName = decreasedStat.getUnlocalizedName();
 
         // Format the stats
-        String increasedStatFormatted = FormatUtil.formatStat(increasedName);
-        String decreasedStatFormatted = FormatUtil.formatStat(decreasedName);
+        @NotNull String increasedStatFormatted = FormatUtil.formatStat(increasedName);
+        @NotNull String decreasedStatFormatted = FormatUtil.formatStat(decreasedName);
 
         // Check if the nature has an effect
         if (increasedStat == StatsType.None && decreasedStat == StatsType.None) {
@@ -182,7 +182,7 @@ public class StatsUtil {
      * @return The percentage of EVs across all stats.
      */
     private static @NotNull String getEVPercent(@NotNull Pokemon pokemon) {
-        DecimalFormat df = new DecimalFormat("#.#");
+        @NotNull DecimalFormat df = new DecimalFormat("#.#");
 
         // Get the total EVs across all stats
         int totalEVs = pokemon.getEVs().getStat(StatsType.HP)
@@ -206,7 +206,7 @@ public class StatsUtil {
      * @return The percentage of IVs across all stats.
      */
     private static @NotNull String getIVPercent(@NotNull Pokemon pokemon) {
-        DecimalFormat df = new DecimalFormat("#.#");
+        @NotNull DecimalFormat df = new DecimalFormat("#.#");
 
         // Calculate the total IVs across all stats
         int totalIVs = pokemon.getIVs().getStat(StatsType.HP)

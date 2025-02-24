@@ -30,6 +30,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,8 +67,8 @@ public class MessageUtil {
      * @param sender  The player to send the message to.
      * @param message The message to send.
      */
-    public static void messagePlayer(CommandSender sender, String @NotNull ... message) {
-        for (String line : message) {
+    public static void messagePlayer(@NotNull CommandSender sender, String @NotNull ... message) {
+        for (@NotNull String line : message) {
             sender.sendMessage(colorize(line));
         }
     }
@@ -79,7 +80,7 @@ public class MessageUtil {
      */
     public static void broadcast(String @NotNull ... message) {
         for (String line : message) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (@NotNull Player player : Bukkit.getOnlinePlayers()) {
                 messagePlayer(player, line);
             }
 
@@ -94,7 +95,7 @@ public class MessageUtil {
      */
     public static void broadcast(@NotNull Iterable<String> message) {
         for (String line : message) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (@NotNull Player player : Bukkit.getOnlinePlayers()) {
                 messagePlayer(player, line);
             }
 
@@ -110,7 +111,7 @@ public class MessageUtil {
      */
     public static void broadcastWithPerm(String permission, String @NotNull ... message) {
         for (String line : message) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
+            for (@NotNull Player online : Bukkit.getOnlinePlayers()) {
                 if (online.hasPermission(permission)) {
                     messagePlayer(online, line);
                 }
@@ -126,7 +127,7 @@ public class MessageUtil {
      * @param message The message to colorize.
      */
     @Contract("_ -> new")
-    private static @NotNull String colorize(String message) {
+    private static @NotNull String colorize(@NotNull String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
@@ -155,7 +156,7 @@ public class MessageUtil {
         long minutes = (seconds % 3600) / 60;
         long secs = seconds % 60;
 
-        StringBuilder timeBuilder = new StringBuilder();
+        @NotNull StringBuilder timeBuilder = new StringBuilder();
 
         if (hours > 0) {
             timeBuilder.append(hours).append("h ");
@@ -176,19 +177,19 @@ public class MessageUtil {
      * @param pokemon     The Pokemon to get the stats from.
      * @param chatMessage The message to send.
      */
-    public static void printStatsHoverMessage(Player player,
-                                              Pokemon pokemon,
-                                              String chatMessage) {
-        List<String> statsList = StatsUtil.getStatsPanel(player, pokemon);
+    public static void printStatsHoverMessage(@NotNull Player player,
+                                              @NotNull Pokemon pokemon,
+                                              @NotNull String chatMessage) {
+        @NotNull List<String> statsList = StatsUtil.getStatsPanel(player, pokemon);
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            TextComponent message = new TextComponent(colorize(chatMessage));
-            TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
+        for (@NotNull Player online : Bukkit.getOnlinePlayers()) {
+            @NotNull TextComponent message = new TextComponent(colorize(chatMessage));
+            @NotNull TextComponent newLine = new TextComponent(ComponentSerializer.parse("{text: \"\n\"}"));
 
             BaseComponent[] components = new ComponentBuilder("").create();
-            TextComponent hoverMessage = new TextComponent(components);
+            @NotNull TextComponent hoverMessage = new TextComponent(components);
 
-            for (String line : statsList) {
+            for (@NotNull String line : statsList) {
                 hoverMessage.addExtra(new TextComponent(colorize(line)));
 
                 int size = statsList.size();
@@ -210,7 +211,7 @@ public class MessageUtil {
      * @param str The string to capitalize.
      * @return The capitalized string.
      */
-    public static @NotNull String capitalize(String str) {
+    public static @NotNull String capitalize(@NotNull String str) {
         return capitalize(str, ' '); // Default delimiter is space if null is passed
     }
 
@@ -222,18 +223,18 @@ public class MessageUtil {
      * @param delimiters The delimiters to use.
      * @return The capitalized string.
      */
-    private static @NotNull String capitalize(@NotNull String str, char... delimiters) {
+    private static @NotNull String capitalize(@NotNull String str, char @Nullable ... delimiters) {
         if (str.isEmpty()) {
             return str;
         }
 
         // Use a more efficient delimiter check if no custom delimiters are provided
-        Set<Integer> delimiterSet = (delimiters != null && delimiters.length > 0)
+        @NotNull Set<Integer> delimiterSet = (delimiters != null && delimiters.length > 0)
                 ? generateDelimiterSet(delimiters)
                 : Collections.singleton((int) ' ');
 
         int strLen = str.length();
-        StringBuilder sb = new StringBuilder(strLen);
+        @NotNull StringBuilder sb = new StringBuilder(strLen);
         boolean capitalizeNext = true;
         int index = 0;
 
@@ -263,7 +264,7 @@ public class MessageUtil {
      * @param delimiters The delimiters to use.
      * @return The set of delimiters.
      */
-    private static @NotNull Set<Integer> generateDelimiterSet(char... delimiters) {
+    private static @NotNull Set<Integer> generateDelimiterSet(char @Nullable ... delimiters) {
         return delimiters == null
                 ? Collections.singleton((int) ' ')
                 : IntStream.range(0, delimiters.length).map(i -> delimiters[i]).boxed().collect(Collectors.toSet());

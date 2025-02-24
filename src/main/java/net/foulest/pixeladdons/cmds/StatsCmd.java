@@ -28,6 +28,7 @@ import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -39,11 +40,12 @@ import java.util.UUID;
 @SuppressWarnings("MethodMayBeStatic")
 public class StatsCmd {
 
-    @Command(name = "stats", description = "Shows the stats of your selected Pokemon.",
-            permission = "pixeladdons.stats", usage = "/stats <slot> [player]", inGameOnly = true,
-            aliases = {"ivs", "evs", "iv", "ev", "pkstats", "pokestats"})
+    @Command(name = "stats", permission = "pixeladdons.stats",
+            aliases = {"ivs", "evs", "iv", "ev", "pkstats", "pokestats", "pokemonstats"},
+            description = "Shows the stats of your selected Pokemon.",
+            usage = "/stats <slot> [player]", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
-        Player player = args.getPlayer();
+        @Nullable Player player = args.getPlayer();
 
         // Silently return to avoid NPEs.
         if (player == null) {
@@ -66,17 +68,16 @@ public class StatsCmd {
 
         UUID playerUUID = player.getUniqueId();
         PlayerPartyStorage party = Pixelmon.storageManager.getParty(playerUUID);
-        String args1 = args.getArgs(1);
 
         // Handles viewing other players' stats.
-        if (args.length() == 2 && !args1.isEmpty()) {
+        if (args.length() == 2 && !args.getArgs(1).isEmpty()) {
             // Checks if viewing other players' stats is disabled.
             if (!Settings.statsCommandViewOtherPlayers) {
                 MessageUtil.messagePlayer(player, Settings.commandNoPermissionMessage);
                 return;
             }
 
-            Player target = Bukkit.getPlayer(args1);
+            Player target = Bukkit.getPlayer(args.getArgs(1));
 
             // Checks if the player is invalid.
             if (target == null) {
@@ -131,7 +132,7 @@ public class StatsCmd {
             return;
         }
 
-        Pokemon pokemon = party.get(slot);
+        @Nullable Pokemon pokemon = party.get(slot);
 
         // Checks if the Pokemon is missing.
         if (pokemon == null) {

@@ -59,12 +59,12 @@ public @interface Command {
     /**
      * @return The description that will appear in the /help of the command.
      */
-    String description();
+    String description() default "";
 
     /**
      * @return The usage that will appear in the /help of the command.
      */
-    String usage();
+    String usage() default "";
 
     /**
      * @return If the command is available to players only.

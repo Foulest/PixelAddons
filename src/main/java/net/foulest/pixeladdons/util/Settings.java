@@ -22,6 +22,7 @@ import lombok.Data;
 import net.foulest.pixeladdons.PixelAddons;
 import net.foulest.pixeladdons.util.yaml.CustomYamlConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class Settings {
     // File settings
     public static File file;
     public static FileConfiguration config;
-    public static String fileName = "config.yml";
+    public static @NotNull String fileName = "config.yml";
 
     // Command settings
     public static List<String> commandsOnJoin = new ArrayList<>();
@@ -56,6 +57,12 @@ public class Settings {
     public static boolean showCommandEnabled;
     public static boolean statsCommandEnabled;
     public static boolean statsCommandViewOtherPlayers;
+
+    // Economy
+    public static int maxBalance;
+
+    // Disabled items
+    public static List<String> disabledItems;
 
     // Pokemon colors
     public static String normalColor;
@@ -164,8 +171,8 @@ public class Settings {
             // Now that we've ensured the file exists (either it already did, or we've just created it),
             // we can safely load it into our CustomYamlConfiguration object
             config = CustomYamlConfiguration.loadConfiguration(file);
-            @Cleanup InputStreamReader reader = new InputStreamReader(defConfigStream, StandardCharsets.UTF_8);
-            CustomYamlConfiguration defConfig = CustomYamlConfiguration.loadConfiguration(reader);
+            @Cleanup @NotNull InputStreamReader reader = new InputStreamReader(defConfigStream, StandardCharsets.UTF_8);
+            @NotNull CustomYamlConfiguration defConfig = CustomYamlConfiguration.loadConfiguration(reader);
 
             // Ensure defaults are applied
             config.setDefaults(defConfig);
@@ -202,6 +209,12 @@ public class Settings {
         statsCommandEnabled = config.getBoolean("pixeladdons.commands.stats.enabled");
         statsCommandViewOtherPlayers = config.getBoolean("pixeladdons.commands.stats.view-other-players");
 
+        // Economy
+        maxBalance = config.getInt("pixeladdons.economy.max-balance");
+
+        // Disabled items
+        disabledItems = config.getStringList("pixeladdons.disabled-items");
+
         // Pokemon colors
         normalColor = config.getString("pixeladdons.messages.colors.normal");
         shinyColor = config.getString("pixeladdons.messages.colors.shiny");
@@ -212,7 +225,7 @@ public class Settings {
 
         // Misc command messages
         commandNoPermissionMessage = config.getString("pixeladdons.messages.commands.misc.no-permission");
-        commandInvalidUsageMessage = config.getString("pixeladdons.messages.commands.invalid-usage");
+        commandInvalidUsageMessage = config.getString("pixeladdons.messages.commands.misc.invalid-usage");
         commandDisabledMessage = config.getString("pixeladdons.messages.commands.misc.disabled");
         commandUsageMessage = config.getString("pixeladdons.messages.commands.misc.usage");
 

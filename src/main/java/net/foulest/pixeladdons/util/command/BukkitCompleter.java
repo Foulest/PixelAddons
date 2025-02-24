@@ -66,7 +66,7 @@ public class BukkitCompleter implements TabCompleter {
                                       @NotNull String label,
                                       String @NotNull [] args) {
         for (int i = args.length; i >= 0; i--) {
-            StringBuilder buffer = new StringBuilder();
+            @NotNull StringBuilder buffer = new StringBuilder();
             buffer.append(label.toLowerCase(Locale.ROOT));
 
             for (int x = 0; x < i; x++) {
@@ -75,14 +75,14 @@ public class BukkitCompleter implements TabCompleter {
                 }
             }
 
-            String cmdLabel = buffer.toString();
+            @NotNull String cmdLabel = buffer.toString();
 
             if (completers.containsKey(cmdLabel)) {
                 Map.Entry<Method, Object> entry = completers.get(cmdLabel);
 
                 try {
                     Object value = entry.getValue();
-                    String[] split = cmdLabel.split("\\.");
+                    String @NotNull [] split = cmdLabel.split("\\.");
                     return (List<String>) entry.getKey().invoke(value, new CommandArgs(sender, command, label, args, split.length - 1));
                 } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {
                     ex.printStackTrace();

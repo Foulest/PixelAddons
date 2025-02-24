@@ -25,6 +25,7 @@ import net.foulest.pixeladdons.util.command.CommandArgs;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +41,11 @@ public class RerollCmd {
     private static long lastReroll;
     public static final List<Player> votingToReroll = new ArrayList<>();
 
-    @Command(name = "reroll", description = "Votes to re-roll the hunt.",
-            permission = "pixeladdons.reroll", usage = "/reroll",
-            aliases = "rtv", inGameOnly = true)
+    @Command(name = "reroll", permission = "pixeladdons.reroll", aliases = "rtv",
+            description = "Votes to re-roll the hunt.",
+            usage = "/reroll", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) {
-        Player player = args.getPlayer();
+        @Nullable Player player = args.getPlayer();
 
         // Silently return to avoid NPEs.
         if (player == null) {
@@ -70,7 +71,7 @@ public class RerollCmd {
             long now = System.currentTimeMillis();
             long cooldownTimeRemainingMillis = (lastReroll + (Settings.rerollCommandCooldown * 1000)) - now; // Convert cooldown to milliseconds and calculate remaining time
             long cooldownTimeRemaining = cooldownTimeRemainingMillis / 1000; // Convert milliseconds back to seconds
-            String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
+            @NotNull String cooldownFormatted = MessageUtil.formatTime(cooldownTimeRemaining);
 
             if (cooldownTimeRemaining > 0) {
                 MessageUtil.messagePlayer(player, Settings.rerollCommandCooldownMessage
@@ -80,13 +81,13 @@ public class RerollCmd {
         }
 
         String playerName = player.getName();
-        int votingSize = votingToReroll.size();
-        int onlineSize = Bukkit.getOnlinePlayers().size();
 
         // Counts the player's vote and broadcasts it.
         // If the player has already voted, it removes their vote.
         if (votingToReroll.contains(player)) {
             votingToReroll.remove(player);
+            int votingSize = votingToReroll.size();
+            int onlineSize = Bukkit.getOnlinePlayers().size();
 
             // Broadcasts the cancellation of the vote.
             MessageUtil.broadcast(Settings.rerollVoteCancelledMessage
@@ -95,6 +96,8 @@ public class RerollCmd {
                     .replace("%online%", String.valueOf(onlineSize)));
         } else {
             votingToReroll.add(player);
+            int votingSize = votingToReroll.size();
+            int onlineSize = Bukkit.getOnlinePlayers().size();
 
             // Only broadcasts the vote if there are other players online.
             // Otherwise, it would be pointless to broadcast it.

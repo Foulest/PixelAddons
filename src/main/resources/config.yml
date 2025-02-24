@@ -34,6 +34,25 @@ pixeladdons:
     stats:
       enabled: true
       view-other-players: true
+  # The 'economy' section allows you to modify the economy settings for the plugin.
+  # The 'max-balance' option is the maximum amount of money a player can have.
+  economy:
+    max-balance: 999999
+  # The 'disabled-items' section allows you to disable certain items from being used in the plugin.
+  # This is useful for disabling items that could be used to exploit the plugin.
+  # The item name is any part of the item's name, so you can use 'staff' to disable all staffs.
+  disabled-items:
+    - staff_vampiric
+    - staff_poison
+    - staff_thunder
+    - staff_spider
+    - staff_gun
+    - bubble_pistol
+    - bubble_rifle
+    - hookshot
+    - longshot
+    - spiderhook
+    - magic_bell
   # You can modify the messages for commands, events, receiving Pokemon, and the stats panel.
   # The '%placeholder%' options are replaced with the corresponding values.
   # It's not recommended to modify the '%placeholder%' options unless you know what you're doing.
@@ -85,9 +104,9 @@ pixeladdons:
       choose-starter: "&r%player% chose %color%[%pokemon%] &ras their starter!"
     receive-pokemon:
       custom: "&7(Custom) &r%player% received a wild %color%[%pokemon%]"
-      command: "&7(Command) &r%player% received a wild %color%[%pokemon%]"
+      command: "&7(Reward) &r%player% received a wild %color%[%pokemon%]"
       select: "&7(Select) &r%player% received a wild %color%[%pokemon%]"
-      christmas: "&r%player% received a wild %color%[%pokemon%] &rfor christmas!"
+      christmas: "&r%player% received a wild %color%[%pokemon%] &rfor Christmas!"
     # This is the message that is displayed when a player uses the /stats command.
     # You can modify the output to display the Pokemon's stats in chat.
     # This is also shown on hover when players use /show and when a Pokemon is caught.

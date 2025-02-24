@@ -34,6 +34,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Command for ending a player's current battle.
@@ -43,11 +44,12 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("MethodMayBeStatic")
 public class EndBattleCmd {
 
-    @Command(name = "endbattle", description = "Ends your current battle.",
-            permission = "pixeladdons.endbattle", usage = "/endbattle",
-            aliases = {"stopbattle", "exitbattle"}, inGameOnly = true)
+    @Command(name = "endbattle", permission = "pixeladdons.endbattle",
+            aliases = {"stopbattle", "exitbattle"},
+            description = "Ends your current battle.",
+            usage = "/endbattle", inGameOnly = true)
     public void onCommand(@NotNull CommandArgs args) throws CommandException {
-        Player player = args.getPlayer();
+        @Nullable Player player = args.getPlayer();
 
         // Silently return to avoid NPEs.
         if (player == null) {
@@ -69,12 +71,12 @@ public class EndBattleCmd {
         }
 
         String playerName = player.getName();
-        EntityPlayerMP playerMP = PixelmonCommand.requireEntityPlayer(playerName);
+        @NotNull EntityPlayerMP playerMP = PixelmonCommand.requireEntityPlayer(playerName);
         BattleControllerBase battleController = BattleRegistry.getBattle(playerMP);
 
         // Checks if the player is in a battle.
         if (battleController != null) {
-            ForceEndBattleEvent event = new ForceEndBattleEvent(battleController, EnumBattleForceEndCause.ENDBATTLE);
+            @NotNull ForceEndBattleEvent event = new ForceEndBattleEvent(battleController, EnumBattleForceEndCause.ENDBATTLE);
 
             // Removes the player from the battle.
             if (Pixelmon.EVENT_BUS.post(event)) {

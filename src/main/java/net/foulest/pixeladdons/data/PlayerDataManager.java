@@ -57,7 +57,7 @@ public class PlayerDataManager {
         UUID uniqueId = player.getUniqueId();
 
         if (!playerDataMap.containsKey(uniqueId)) {
-            PlayerData data = new PlayerData(uniqueId, player);
+            @NotNull PlayerData data = new PlayerData(uniqueId, player);
             playerDataMap.put(uniqueId, data);
         }
     }

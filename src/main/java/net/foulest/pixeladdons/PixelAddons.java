@@ -66,8 +66,13 @@ public class PixelAddons extends JavaPlugin {
 
         // Loads the plugin's commands.
         MessageUtil.log(Level.INFO, "Loading Commands...");
-        loadCommands(new HatchCmd(), new PixelAddonsCmd(), new RerollCmd(),
-                new StatsCmd(), new ShowCmd(), new EndBattleCmd());
+        loadCommands(new HatchCmd(),
+                new PixelAddonsCmd(),
+                new RerollCmd(),
+                new StatsCmd(),
+                new ShowCmd(),
+                new EndBattleCmd()
+        );
 
         MessageUtil.log(Level.INFO, "Loaded successfully.");
     }
@@ -76,7 +81,7 @@ public class PixelAddons extends JavaPlugin {
     public void onDisable() {
         // Saves all online players' player data.
         MessageUtil.log(Level.INFO, "Saving Player Data...");
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        for (@NotNull Player player : Bukkit.getServer().getOnlinePlayers()) {
             PlayerDataManager.removePlayerData(player);
         }
 
@@ -100,7 +105,7 @@ public class PixelAddons extends JavaPlugin {
      * @param commands Command to load.
      */
     private void loadCommands(Object @NotNull ... commands) {
-        for (Object command : commands) {
+        for (@NotNull Object command : commands) {
             framework.registerCommands(command);
         }
     }
