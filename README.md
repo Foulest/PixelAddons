@@ -5,6 +5,8 @@
 [![Downloads](https://img.shields.io/github/downloads/Foulest/PixelAddons/total.svg)](https://github.com/Foulest/PixelAddons/releases)
 [![JitPack Badge](https://jitpack.io/v/Foulest/PixelAddons.svg)](https://jitpack.io/#Foulest/PixelAddons)
 
+> **Note:** Support for this project has been officially dropped as of May 23, 2025.
+
 **PixelAddons** is a server-side Spigot plugin that improves the Pixelmon Reforged 1.12.2 experience.
 
 All commands, features, and messages are extensively configurable.
